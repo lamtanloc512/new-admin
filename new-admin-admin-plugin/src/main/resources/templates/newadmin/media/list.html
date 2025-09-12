@@ -16,51 +16,60 @@
 
 <!DOCTYPE html>
 <html
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{ezyadmin}">
-
-<body>
-<div layout:fragment="content">
-    <div class="d-flex align-items-center px-2p5 pb-3">
-        <input type="search" class="form-control"
-               th:placeholder="#{keyword}"
-               oninput="ezyadmin.onKeydownToSearchMedia(this);"
-               onkeydown="ezyadmin.onKeydownToSearchMedia(this);">
-        <select class="form-control w-30p"
-                onchange="ezyadmin.onSearchMediaTypeChanged(this);">
-            <option value="">[[#{all}]]</option>
-            <option th:each="searchMediaType : ${searchMediaTypes}"
-                    th:value="${searchMediaType}">
-                [[#{${searchMediaType.toString().toLowerCase()}}]]
-            </option>
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{newadmin}"
+>
+  <body>
+    <div layout:fragment="content">
+      <div class="d-flex align-items-center px-2p5 pb-3">
+        <input
+          type="search"
+          class="form-control"
+          th:placeholder="#{keyword}"
+          oninput="ezyadmin.onKeydownToSearchMedia(this);"
+          onkeydown="ezyadmin.onKeydownToSearchMedia(this);"
+        />
+        <select
+          class="form-control w-30p"
+          onchange="ezyadmin.onSearchMediaTypeChanged(this);"
+        >
+          <option value="">[[#{all}]]</option>
+          <option
+            th:each="searchMediaType : ${searchMediaTypes}"
+            th:value="${searchMediaType}"
+          >
+            [[#{${searchMediaType.toString().toLowerCase()}}]]
+          </option>
         </select>
-    </div>
-    <div class="text-center media-list-page">
+      </div>
+      <div class="text-center media-list-page">
         <ul class="media-list" id="mediaListBody"></ul>
-    </div>
-    <div class="d-flex flex-column text-center">
+      </div>
+      <div class="d-flex flex-column text-center">
         <span>
-            [[#{showing}]] <span id="mediaCountText">30</span>
-            [[${#strings.toLowerCase(#messages.msg('of'))}]]
-            <span id="totalMediaText">150</span>
-            [[${#strings.toLowerCase(#messages.msg('media_items'))}]]
+          [[#{showing}]] <span id="mediaCountText">30</span>
+          [[${#strings.toLowerCase(#messages.msg('of'))}]]
+          <span id="totalMediaText">150</span>
+          [[${#strings.toLowerCase(#messages.msg('media_items'))}]]
         </span>
         <div class="mb-3">
-            <button class="btn btn-primary pl-5 pr-5 mt-2" id="loadMoreMediaButton">
-                [[#{load_more}]]
-            </button>
+          <button
+            class="btn btn-primary pl-5 pr-5 mt-2"
+            id="loadMoreMediaButton"
+          >
+            [[#{load_more}]]
+          </button>
         </div>
+      </div>
     </div>
-</div>
-<script layout:fragment="scripts">
-ezyadmin.onNewButtonClick = function() {
-    ezyadmin.showAddNewMediaModal();
-}
+    <script layout:fragment="scripts">
+      ezyadmin.onNewButtonClick = function () {
+        ezyadmin.showAddNewMediaModal();
+      };
 
-ezyadmin.fetchMediaList();
-</script>
-</body>
-
+      ezyadmin.fetchMediaList();
+    </script>
+  </body>
 </html>

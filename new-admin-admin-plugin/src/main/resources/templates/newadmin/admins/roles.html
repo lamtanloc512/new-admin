@@ -16,147 +16,151 @@
 
 <!DOCTYPE html>
 <html
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{ezyadmin}">
-
-<body>
-<div layout:fragment="content" class="row">
-    <div class="col-12">
-        <table id="adminRoleList" class="table table-bordered table-hover bg-white align-middle-cells">
-            <thead>
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{newadmin}"
+>
+  <body>
+    <div layout:fragment="content" class="row">
+      <div class="col-12">
+        <table
+          id="adminRoleList"
+          class="table table-bordered table-hover bg-white align-middle-cells"
+        >
+          <thead>
             <tr>
-                <th>#</th>
-                <th>[[#{name}]]</th>
-                <th>[[#{display_name}]]</th>
-                <th class="text-center">[[#{priority}]]</th>
-                <th class="text-center">[[#{admins}]]</th>
-                <th class="text-center">[[#{created_at}]]</th>
-                <th class="text-center">[[#{actions}]]</th>
+              <th>#</th>
+              <th>[[#{name}]]</th>
+              <th>[[#{display_name}]]</th>
+              <th class="text-center">[[#{priority}]]</th>
+              <th class="text-center">[[#{admins}]]</th>
+              <th class="text-center">[[#{created_at}]]</th>
+              <th class="text-center">[[#{actions}]]</th>
             </tr>
-            </thead>
-            <tbody id="adminRoleListBody">
-            </tbody>
+          </thead>
+          <tbody id="adminRoleListBody"></tbody>
         </table>
+      </div>
     </div>
-</div>
-<th:block layout:fragment="modals">
-<th:block th:replace="~{modals/add-new-role :: content}" />
-<th:block th:replace="~{fragments/prompt :: content(id='delete-admin-role-modal', title=confirm, confirmButton=delete, closeButton=close)}" />
-</th:block>
-<script layout:fragment="scripts" th:inline="javascript">
-/*<![CDATA[*/
-ezyadmin.accessibleUris['/admins/roles/{roleName}'] = /*[[${adminRoles.isAccessible('/admins/roles/{roleName}')}]]*/;
-ezyadmin.accessibleUris['/api/v1/admin/role-names/{roleName}'] = /*[[${adminRoles.isAccessible('/api/v1/admin/role-names/{roleName}', 'DELETE')}]]*/;
-ezyadmin.messages.do_you_want_to_delete_role = /*[[#{do_you_want_to_delete_role}]]*/;
-/*]]>*/
+    <th:block layout:fragment="modals">
+      <th:block th:replace="~{modals/add-new-role :: content}" />
+      <th:block
+        th:replace="~{fragments/prompt :: content(id='delete-admin-role-modal', title=confirm, confirmButton=delete, closeButton=close)}"
+      />
+    </th:block>
+    <script layout:fragment="scripts" th:inline="javascript">
+      /*<![CDATA[*/
+      ezyadmin.accessibleUris['/admins/roles/{roleName}'] = /*[[${adminRoles.isAccessible('/admins/roles/{roleName}')}]]*/;
+      ezyadmin.accessibleUris['/api/v1/admin/role-names/{roleName}'] = /*[[${adminRoles.isAccessible('/api/v1/admin/role-names/{roleName}', 'DELETE')}]]*/;
+      ezyadmin.messages.do_you_want_to_delete_role = /*[[#{do_you_want_to_delete_role}]]*/;
+      /*]]>*/
 
-// ========== roles init =============
-ezyadmin.onNewButtonClick = function() {
-    $('#add-new-role-modal').modal('show');
-}
+      // ========== roles init =============
+      ezyadmin.onNewButtonClick = function() {
+          $('#add-new-role-modal').modal('show');
+      }
 
-// ========== role list =============
-ezyadmin.fetchAdminRoleList = function() {
-    $.ajax({
-        url: '/api/v1/admin/roles',
-        type: 'GET',
-        dataType: 'json'
-    })
-    .done(function(data) {
-        ezyadmin.renderAdminRoleListTable(data);
-    })
-    .fail(function(e) {
-        ezyadmin.processGetApiErrors(e);
-    });
-}
+      // ========== role list =============
+      ezyadmin.fetchAdminRoleList = function() {
+          $.ajax({
+              url: '/api/v1/admin/roles',
+              type: 'GET',
+              dataType: 'json'
+          })
+          .done(function(data) {
+              ezyadmin.renderAdminRoleListTable(data);
+          })
+          .fail(function(e) {
+              ezyadmin.processGetApiErrors(e);
+          });
+      }
 
-ezyadmin.renderAdminRoleListTable = function(adminRoleList) {
-    var html = ezyadmin.buildAdminRoleListBodyHtml(adminRoleList);
-    ezyadmin.destroyDataTableIfExists('adminRoleList');
-    $('#adminRoleListBody').html(html);
-    ezyadmin.createDataTable('adminRoleList', 12);
-}
+      ezyadmin.renderAdminRoleListTable = function(adminRoleList) {
+          var html = ezyadmin.buildAdminRoleListBodyHtml(adminRoleList);
+          ezyadmin.destroyDataTableIfExists('adminRoleList');
+          $('#adminRoleListBody').html(html);
+          ezyadmin.createDataTable('adminRoleList', 12);
+      }
 
-ezyadmin.buildAdminRoleListBodyHtml = function(adminRoleList) {
-    var html = '';
-    adminRoleList.forEach((role, index) => {
-        html += ezyadmin.buildAdminRoleListItemHtml(role, index);
-    });
-    return html;
-}
+      ezyadmin.buildAdminRoleListBodyHtml = function(adminRoleList) {
+          var html = '';
+          adminRoleList.forEach((role, index) => {
+              html += ezyadmin.buildAdminRoleListItemHtml(role, index);
+          });
+          return html;
+      }
 
-ezyadmin.buildAdminRoleListItemHtml = function(role, index) {
-    var html = `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${role.name}</td>
-            <td>
-                <a href="/admins/roles/${role.name}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
-                    ${role.displayName}
-                </a>
-            </td>
-            <td class="text-center">${ezyadmin.formatNumberWithCommas(role.priority)}</td>
-            <td class="text-center">${ezyadmin.formatNumberWithCommas(role.admins)}</td>
-            <td class="text-center">${ezyadmin.formatTimeStamp(role.createdAt)}</td>
-            <td class="text-center">
-                ${ezyadmin.accessibleUris['/admins/roles/{roleName}'] ? `
-                    <a class="btn pr-1" href="/admins/roles/${role.name}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
-                        <i class="fas fa-eye text-primary"></i>
-                    </a>
-                ` : ''}
-                ${role.name !== 'super_admin' && role.name !== 'devops' &&
-                ezyadmin.accessibleUris['/api/v1/admin/role-names/{roleName}'] ? `
-                    <button type="button" class="btn pl-1" onclick="ezyadmin.onDeleteAdminRole('${role.name}');">
-                        <i class="text-danger fas fa-trash"></i>
-                    </button>
-                ` : ''}
-            </td>
-        </tr>
-        `;
-	return html;
-}
-ezyadmin.fetchAdminRoleList();
+      ezyadmin.buildAdminRoleListItemHtml = function(role, index) {
+          var html = `
+              <tr>
+                  <td>${index + 1}</td>
+                  <td>${role.name}</td>
+                  <td>
+                      <a href="/admins/roles/${role.name}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                          ${role.displayName}
+                      </a>
+                  </td>
+                  <td class="text-center">${ezyadmin.formatNumberWithCommas(role.priority)}</td>
+                  <td class="text-center">${ezyadmin.formatNumberWithCommas(role.admins)}</td>
+                  <td class="text-center">${ezyadmin.formatTimeStamp(role.createdAt)}</td>
+                  <td class="text-center">
+                      ${ezyadmin.accessibleUris['/admins/roles/{roleName}'] ? `
+                          <a class="btn pr-1" href="/admins/roles/${role.name}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                              <i class="fas fa-eye text-primary"></i>
+                          </a>
+                      ` : ''}
+                      ${role.name !== 'super_admin' && role.name !== 'devops' &&
+                      ezyadmin.accessibleUris['/api/v1/admin/role-names/{roleName}'] ? `
+                          <button type="button" class="btn pl-1" onclick="ezyadmin.onDeleteAdminRole('${role.name}');">
+                              <i class="text-danger fas fa-trash"></i>
+                          </button>
+                      ` : ''}
+                  </td>
+              </tr>
+              `;
+      	return html;
+      }
+      ezyadmin.fetchAdminRoleList();
 
-// ==================== add new role ============
-ezyadmin.addNewRoleApi = {
-    url: '/api/v1/admin/role-names/add',
-    onSuccess: function() {
-        ezyadmin.fetchAdminRoleList('current');
-    }
-};
+      // ==================== add new role ============
+      ezyadmin.addNewRoleApi = {
+          url: '/api/v1/admin/role-names/add',
+          onSuccess: function() {
+              ezyadmin.fetchAdminRoleList('current');
+          }
+      };
 
-// ==================== delete a role ============
-ezyadmin.onDeleteAdminRole = function(roleName) {
-    ezyadmin.selectedRoleName = roleName;
-    $('#delete-admin-role-modal-body-content')
-        .text(ezyadmin.messages.do_you_want_to_delete_role.replace('{0}', roleName));
-    $('#delete-admin-role-modal').modal('show');
-}
+      // ==================== delete a role ============
+      ezyadmin.onDeleteAdminRole = function(roleName) {
+          ezyadmin.selectedRoleName = roleName;
+          $('#delete-admin-role-modal-body-content')
+              .text(ezyadmin.messages.do_you_want_to_delete_role.replace('{0}', roleName));
+          $('#delete-admin-role-modal').modal('show');
+      }
 
-ezyadmin.onPromptConfirmed = function(modalId) {
-    if (modalId == 'delete-admin-role-modal') {
-        ezyadmin.deleteAdminRole();
-    }
-}
+      ezyadmin.onPromptConfirmed = function(modalId) {
+          if (modalId == 'delete-admin-role-modal') {
+              ezyadmin.deleteAdminRole();
+          }
+      }
 
-ezyadmin.deleteAdminRole = function() {
-    $.ajax({
-        type: 'DELETE',
-        url: '/api/v1/admin/role-names/' + ezyadmin.selectedRoleName,
-        success: function () {
-            ezyadmin.fetchAdminRoleList('current');
-            $('#delete-admin-role-modal').modal('hide');
-        },
-        error: function (data, e) {
-            ezyadmin.processUpdateApiErrors({}, data);
-        }
-    });
-}
-</script>
-<th:block layout:fragment="post-scripts">
-<script th:replace="~{modals/add-new-role :: scripts}" />
-</th:block>
-</body>
+      ezyadmin.deleteAdminRole = function() {
+          $.ajax({
+              type: 'DELETE',
+              url: '/api/v1/admin/role-names/' + ezyadmin.selectedRoleName,
+              success: function () {
+                  ezyadmin.fetchAdminRoleList('current');
+                  $('#delete-admin-role-modal').modal('hide');
+              },
+              error: function (data, e) {
+                  ezyadmin.processUpdateApiErrors({}, data);
+              }
+          });
+      }
+    </script>
+    <th:block layout:fragment="post-scripts">
+      <script th:replace="~{modals/add-new-role :: scripts}" />
+    </th:block>
+  </body>
 </html>

@@ -16,42 +16,48 @@
 
 <!DOCTYPE html>
 <html
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{ezyadmin}">
-
-<body>
-<div layout:fragment="content" class="row">
-    <div class="col-md-12 mb-4 d-flex flex-column">
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{newadmin}"
+>
+  <body>
+    <div layout:fragment="content" class="row">
+      <div class="col-md-12 mb-4 d-flex flex-column">
         <h4 th:text="${letter.title}">You received an email from admin</h4>
         <div>
-            <span>[[#{from}]]</span>:
-            <th:block th:if="${fromAdmin != null}">
-                <a th:href="${'/admins/' + fromAdmin.username}">[[${fromAdmin.getName()}]]</a>
-                &lt;
-                <a th:href="${'mailto:' + fromAdmin.email}">
-                [[${fromAdmin.email}]]
-                </a>
-                &gt;
-            </th:block>
-            <th:block th:if="${fromUser != null}">
-                <a th:href="${'/users/' + fromUser.username}">[[${fromUser.getName()}]]</a>
-                &lt;
-                <a th:href="${'mailto:' + fromUser.email}">
-                    [[${fromUser.email}]]
-                </a>
-                &gt;
-            </th:block>
+          <span>[[#{from}]]</span>:
+          <th:block th:if="${fromAdmin != null}">
+            <a th:href="${'/admins/' + fromAdmin.username}"
+              >[[${fromAdmin.getName()}]]</a
+            >
+            &lt;
+            <a th:href="${'mailto:' + fromAdmin.email}">
+              [[${fromAdmin.email}]]
+            </a>
+            &gt;
+          </th:block>
+          <th:block th:if="${fromUser != null}">
+            <a th:href="${'/users/' + fromUser.username}"
+              >[[${fromUser.getName()}]]</a
+            >
+            &lt;
+            <a th:href="${'mailto:' + fromUser.email}">
+              [[${fromUser.email}]]
+            </a>
+            &gt;
+          </th:block>
         </div>
         <div>
-            <span>[[#{received_at}]]:</span>
-            <span class="date-time-string" th:text="${letter.sentAt}"></span>
+          <span>[[#{received_at}]]:</span>
+          <span class="date-time-string" th:text="${letter.sentAt}"></span>
         </div>
+      </div>
+      <div class="col-md-12">
+        <p th:utext="${letter.content}">
+          You plugin has already submitted successfully
+        </p>
+      </div>
     </div>
-    <div class="col-md-12">
-        <p th:utext="${letter.content}">You plugin has already submitted successfully</p>
-    </div>
-</div>
-</body>
+  </body>
 </html>

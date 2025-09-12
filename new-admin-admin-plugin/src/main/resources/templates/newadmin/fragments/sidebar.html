@@ -176,8 +176,9 @@
                       >
                         <span>
                           [[#{web}]]
+
                           <span
-                            class="badge badge-info right commas-number-string"
+                            class="badge text-bg-info"
                             th:text="${totalWebPlugin}"
                           />
                         </span>
@@ -196,7 +197,7 @@
                         <span>
                           [[#{socket}]]
                           <span
-                            class="badge badge-info right commas-number-string"
+                            class="badge text-bg-info"
                             th:text="${totalSocketPlugin}"
                           />
                         </span>
@@ -215,7 +216,7 @@
                         <span>
                           [[#{admin}]]
                           <span
-                            class="badge badge-info right commas-number-string"
+                            class="badge text-bg-info"
                             th:text="${totalAdminPlugin}"
                           />
                         </span>
@@ -223,6 +224,335 @@
                     </li>
                   </ul>
                 </div>
+              </li>
+
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/themes')}"
+              >
+                <a
+                  href="/themes"
+                  class="nav-link"
+                  th:classappend="${currentMenu == 'themes'} ? active : ''"
+                >
+                  <i class="menu-icon fa fa-window-restore"></i>
+                  <span>
+                    [[#{themes}]]
+                    <span class="badge text-bg-info" th:text="${totalTheme}" />
+                  </span>
+                </a>
+              </li>
+
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/socket-apps')}"
+              >
+                <a
+                  href="/socket-apps"
+                  class="nav-link"
+                  th:classappend="${currentMenu == 'socket.apps'} ? active : ''"
+                >
+                  <i class="menu-icon fa fa-cubes"></i>
+                  <span>
+                    [[#{socket_apps}]]
+                    <span
+                      class="badge text-bg-info"
+                      th:text="${totalSocketApp}"
+                    />
+                  </span>
+                </a>
+              </li>
+
+              <th:block
+                th:replace="~{newadmin/fragments/menu-items :: menu-items(menus=${componentsMenus.menus})}"
+              />
+
+              <li class="menu-label mt-2">
+                <small class="label-border">
+                  <div class="border_left hidden-xs"></div>
+                  <div class="border_right"></div>
+                </small>
+                <span
+                  th:if="${adminRoles.isAccessibleAny({'/admins', '/admin-list'})}"
+                  th:with="administratorTitle=#{administrator.title}"
+                  th:text="${#strings.toUpperCase(administratorTitle)}"
+                ></span>
+              </li>
+
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="#sidebarAdmin"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  th:attr="aria-expanded=${currentOpen == 'admins'} ? true : false"
+                  aria-controls="sidebarAdmin"
+                  th:if="${adminRoles.isAccessible('/admins')}"
+                  th:classappend="${currentMenu == 'admins'} ? active : ''"
+                >
+                  <i class="menu-icon fa fa-user-circle"></i>
+                  <span>[[#{admins}]]</span>
+                </a>
+                <div class="collapse" id="sidebarAdmin">
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users')}"
+                    >
+                      <a
+                        href="/users"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.list'} ? active : ''"
+                      >
+                        <i class="fa fa-list menu-icon"></i>
+                        <span>
+                          [[#{list}]]
+                          <span
+                            class="badge text-bg-info"
+                            th:text="${totalUser}"
+                          />
+                        </span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users/roles')}"
+                    >
+                      <a
+                        href="/users/roles"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.roles'} ? active : ''"
+                      >
+                        <i class="fas fa-users-cog menu-icon"></i>
+                        <span>
+                          [[#{roles}]]
+                          <span
+                            class="badge text-bg-info"
+                            th:text="${totalUserRoles}"
+                          />
+                        </span>
+                      </a>
+                    </li>
+
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins/add')}"
+                    >
+                      <a
+                        href="/admins/add"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.add'} ? active : ''"
+                      >
+                        <i class="fa fa-plus-circle menu-icon"></i>
+                        <span>[[#{add_new}]]</span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins/me')}"
+                    >
+                      <a
+                        href="/admins/me"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.profile'} ? active : ''"
+                      >
+                        <i class="fa fa-user menu-icon"></i>
+                        <span>[[#{profile}]]</span>
+                      </a>
+                    </li>
+
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins/inbox')}"
+                    >
+                      <a
+                        th:href="${'/admins/inbox'}"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.inbox'} ? active : ''"
+                      >
+                        <i class="fas fa-envelope-open-text menu-icon"></i>
+                        <span> [[#{inbox}]] </span>
+                        <span
+                          class="badge rounded text-success bg-success-subtle ms-1"
+                        ></span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="#sidebarUsers"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  th:attr="aria-expanded=${currentOpen == 'users'} ? true : false"
+                  aria-controls="sidebarUsers"
+                  th:if="${adminRoles.isAccessible('/users')}"
+                  th:classappend="${currentMenu == 'users'} ? active : ''"
+                >
+                  <i class="menu-icon fas fa-users"></i>
+                  <span>[[#{users}]]</span>
+                </a>
+
+                <div class="collapse" id="sidebarUsers">
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users')}"
+                    >
+                      <a
+                        href="/users"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.list'} ? active : ''"
+                      >
+                        <i class="fa fa-list menu-icon"></i>
+                        <span>
+                          [[#{list}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalUser}"
+                          />
+                        </span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users/roles')}"
+                    >
+                      <a
+                        href="/users/roles"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.roles'} ? active : ''"
+                      >
+                        <i class="fas fa-users-cog menu-icon"></i>
+                        <span>
+                          [[#{roles}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalUserRoles}"
+                          />
+                        </span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users/add')}"
+                    >
+                      <a
+                        href="/users/add"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.add'} ? active : ''"
+                      >
+                        <i class="fa fa-plus-circle menu-icon"></i>
+                        <span>[[#{add_new}]]</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="#sidebarSettings"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  th:attr="aria-expanded=${currentOpen == 'settings'} ? true : false"
+                  aria-controls="sidebarSettings"
+                  th:if="${adminRoles.isAccessible('/settings')}"
+                  th:classappend="${currentMenu == 'settings'} ? active : ''"
+                >
+                  <i class="menu-icon fas fa-users"></i>
+                  <span>[[#{settings}]]</span>
+                </a>
+
+                <div class="collapse" id="sidebarSettings">
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/settings/regular')}"
+                    >
+                      <a
+                        href="/settings/regular"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.regular'} ? active : ''"
+                      >
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <span> [[#{regular}]] </span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users/roles')}"
+                    >
+                      <a
+                        href="/settings/website"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.website'} ? active : ''"
+                      >
+                        <i class="fab fa-firefox nav-icon"></i>
+                        <span> [[#{website}]] </span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="/settings"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.list'} ? active : ''"
+                      >
+                        <i class="fa fa-list nav-icon"></i>
+                        <span>[[#{list}]]</span>
+                        <span
+                          class="badge rounded text-success bg-success-subtle ms-1"
+                          id="totalSetting"
+                          th:text="${totalSetting}"
+                        />
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/settings/encryption')}"
+                    >
+                      <a
+                        href="/settings/encryption"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.encryption'} ? active : ''"
+                      >
+                        <i class="fas fa-key nav-icon"></i>
+                        <span>[[#{encryption}]]</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <th:block
+                th:replace="~{newadmin/fragments/menu-items :: menu-items(menus=${administratorMenus.menus})}"
+              />
+
+              <li class="menu-label mt-2">
+                <small class="label-border">
+                  <div class="border_left hidden-xs"></div>
+                  <div class="border_right"></div>
+                </small>
+                <span
+                  th:if="${extensionsMenus.hasMenus()}"
+                  th:with="extensionsTitle=#{extensions.title}"
+                  th:text="${#strings.toUpperCase(extensionsTitle)}"
+                ></span>
+              </li>
+
+              <th:block
+                th:replace="~{newadmin/fragments/menu-items :: menu-items(menus=${extensionsMenus.menus})}"
+              />
+
+              <li class="nav-item">
+                <a href="#" class="nav-link" onclick="ezyadmin.logout()">
+                  <i class="menu-icon fas fa-sign-out-alt"></i>
+                  <span>[[#{logout}]]</span>
+                </a>
               </li>
             </ul>
             <!--end navbar-nav--->
