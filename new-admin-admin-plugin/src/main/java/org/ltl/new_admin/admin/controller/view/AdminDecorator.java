@@ -11,6 +11,7 @@ public class AdminDecorator implements ViewDecorator {
   @Override
   public void decorate(HttpServletRequest request, View view) {
     String template = view.getTemplate();
+    System.out.println("HELLOO: " + template);
     view.setTemplate("newadmin/" + template);
   }
 }

@@ -24,146 +24,160 @@
   <body>
     <div layout:fragment="content" class="row">
       <div class="col-lg-12">
-        <table id="moduleList" class="table bg-white vertical-align-middle">
-          <thead>
-            <tr>
-              <th style="width: 10px">#</th>
-              <th>[[#{icon}]]</th>
-              <th th:if="${moduleType == ''}">[[#{type}]]</th>
-              <th>[[#{name}]]</th>
-              <th>[[#{description}]]</th>
-              <th class="text-center white-space-nowrap">
-                [[#{latest_version}]]
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="module, iterator : ${modules}">
-              <td class="text-center">[[${iterator.index + 1}]]</td>
-              <td>
-                <a th:href="${'/' + module.typeName + 's/' + module.name}">
-                  <div class="rounded-circle image-button wh-72px">
-                    <img
-                      class="object-fit-cover d-none"
-                      width="72"
-                      height="72"
-                      th:classappend="${'project-icon-' + module.name}"
-                    />
-                    <span
-                      class="rounded-circle avatar-tmp wh-72px"
-                      th:classappend="${'project-icon-tmp-' + module.name}"
-                    >
-                      [[${#strings.capitalize(module.name.charAt(0))}]]
-                    </span>
-                  </div>
-                </a>
-              </td>
-              <td th:if="${moduleType == ''}">
-                [[${module.type.displayName}]]
-              </td>
-              <td>
-                <div class="d-flex flex-column">
-                  <p
-                    class="project-name"
-                    th:text="${module.projectName}"
-                    th:attr="project-name-version=|${module.name + '-' + module.version + ':' + projectNewVersions.getOrDefault(module.name, module.version)}|"
-                  ></p>
-                  <button
-                    class="btn btn-link text-left p-0"
-                    th:if="${module.name != 'socket-monitor' && module.active == true}"
-                    th:text="#{deactivate}"
-                    th:attr="onclick=|ezyadmin.showDeactivateModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
-                  ></button>
-                  <div th:if="${module.active == false}" class="d-flex">
-                    <button
-                      class="btn btn-link text-left p-0"
-                      th:text="#{activate}"
-                      th:attr="onclick=|ezyadmin.showActivateModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
-                    ></button>
-                    <span th:if="${module.name != 'welcome'}">|</span>
-                    <button
-                      class="btn btn-link text-left p-0 text-danger"
-                      th:text="#{delete}"
-                      th:if="${module.name != 'welcome'}"
-                      th:attr="onclick=|ezyadmin.showDeleteModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
-                    ></button>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div class="d-flex flex-column">
-                  <div>
-                    [[#{version}]]:
-                    <label th:text="${module.version}"></label> | [[#{by}]]
-                    <a
-                      th:href="${module.authorUrl}"
-                      th:text="${module.authorName}"
-                      target="_blank"
-                      th:classappend="${'author-of-' + module.name}"
-                    ></a>
-                  </div>
-                  <div>
-                    [[#{last_updated}]]:
-                    <label
-                      class="date-time-string"
-                      th:text="${module.lastUpdated}"
-                    ></label>
-                    |
-                    <a
-                      th:href="${'/' + module.typeName + 's/' + module.name}"
-                      th:text="#{view_details}"
-                    ></a>
-                  </div>
-                  <div
-                    th:if="${projectsContainsSqlScripts.contains(module.name)}"
-                  >
-                    [[#{sql_scripts}]]:
-                    <a
-                      th:href="${'/api/v1/projects/' + module.name + '/sql'}"
-                      target="_blank"
-                      >[[#{export}]]</a
-                    >
-                  </div>
-                </div>
-              </td>
-              <td class="text-center">
-                <div class="d-flex flex-column">
-                  <span th:id="${'update-to-date-' + module.name}"
-                    >[[#{up_to_date}]]</span
-                  >
-                  <button
-                    type="button"
-                    class="btn btn-link white-space-nowrap d-none"
-                    th:id="${'update-from-market-' + module.name}"
-                    th:attr="onclick=|ezyadmin.onUpdateButtonClick('${module.name}')|"
-                  ></button>
-                  <button
-                    type="button"
-                    class="btn btn-link white-space-nowrap"
-                    onclick="ezyadmin.onUpdateManuallyButtonClick();"
-                  >
-                    [[#{update_manually}]]
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-link white-space-nowrap"
-                    th:attr="onclick=|ezyadmin.onRestartToApplyButtonClick(this, '${module.name}', '${module.projectName}', '${projectNewVersions.get(module.name)}')|"
-                    th:if="${projectNewVersions.containsKey(module.name)}"
-                  >
-                    [[#{apply_version}]]
-                    [[${projectNewVersions.get(module.name)}]]
-                    <i
-                      class="fas fa-info-circle text-info"
-                      data-toggle="tooltip"
-                      data-placement="top"
-                      th:title="#{restart_server_and_apply}"
-                    ></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table
+                id="tableModuleList"
+                class="table datatable vertical-align-middle"
+              >
+                <thead>
+                  <tr>
+                    <th style="width: 10px">#</th>
+                    <th>[[#{icon}]]</th>
+                    <th th:if="${moduleType == ''}">[[#{type}]]</th>
+                    <th>[[#{name}]]</th>
+                    <th>[[#{description}]]</th>
+                    <th class="text-center white-space-nowrap">
+                      [[#{latest_version}]]
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="module, iterator : ${modules}">
+                    <td class="text-center">[[${iterator.index + 1}]]</td>
+                    <td>
+                      <a
+                        th:href="${'/' + module.typeName + 's/' + module.name}"
+                      >
+                        <div class="rounded-circle image-button wh-72px">
+                          <img
+                            class="object-fit-cover d-none"
+                            width="72"
+                            height="72"
+                            th:classappend="${'project-icon-' + module.name}"
+                          />
+                          <span
+                            class="rounded-circle avatar-tmp wh-72px"
+                            th:classappend="${'project-icon-tmp-' + module.name}"
+                          >
+                            [[${#strings.capitalize(module.name.charAt(0))}]]
+                          </span>
+                        </div>
+                      </a>
+                    </td>
+                    <td th:if="${moduleType == ''}">
+                      [[${module.type.displayName}]]
+                    </td>
+                    <td>
+                      <div class="d-flex flex-column">
+                        <p
+                          class="project-name"
+                          th:text="${module.projectName}"
+                          th:attr="project-name-version=|${module.name + '-' + module.version + ':' + projectNewVersions.getOrDefault(module.name, module.version)}|"
+                        ></p>
+                        <div th:if="${module.active == true}" class="d-flex">
+                          <button
+                            class="btn btn-link text-left p-0"
+                            th:if="${module.name != 'socket-monitor' && module.active == true}"
+                            th:text="#{deactivate}"
+                            th:attr="onclick=|ezyadmin.showDeactivateModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
+                          ></button>
+                        </div>
+                        <div th:if="${module.active == false}" class="d-flex">
+                          <button
+                            class="btn btn-link text-left p-0"
+                            th:text="#{activate}"
+                            th:attr="onclick=|ezyadmin.showActivateModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
+                          ></button>
+                          <span th:if="${module.name != 'welcome'}">|</span>
+                          <button
+                            class="btn btn-link text-left p-0 text-danger"
+                            th:text="#{delete}"
+                            th:if="${module.name != 'welcome'}"
+                            th:attr="onclick=|ezyadmin.showDeleteModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
+                          ></button>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="d-flex flex-column">
+                        <div>
+                          [[#{version}]]:
+                          <label th:text="${module.version}"></label> |
+                          [[#{by}]]
+                          <a
+                            th:href="${module.authorUrl}"
+                            th:text="${module.authorName}"
+                            target="_blank"
+                            th:classappend="${'author-of-' + module.name}"
+                          ></a>
+                        </div>
+                        <div>
+                          [[#{last_updated}]]:
+                          <label
+                            class="date-time-string"
+                            th:text="${module.lastUpdated}"
+                          ></label>
+                          |
+                          <a
+                            th:href="${'/' + module.typeName + 's/' + module.name}"
+                            th:text="#{view_details}"
+                          ></a>
+                        </div>
+                        <div
+                          th:if="${projectsContainsSqlScripts.contains(module.name)}"
+                        >
+                          [[#{sql_scripts}]]:
+                          <a
+                            th:href="${'/api/v1/projects/' + module.name + '/sql'}"
+                            target="_blank"
+                            >[[#{export}]]</a
+                          >
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <div class="d-flex flex-column">
+                        <span th:id="${'update-to-date-' + module.name}"
+                          >[[#{up_to_date}]]</span
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-link white-space-nowrap d-none"
+                          th:id="${'update-from-market-' + module.name}"
+                          th:attr="onclick=|ezyadmin.onUpdateButtonClick('${module.name}')|"
+                        ></button>
+                        <button
+                          type="button"
+                          class="btn btn-link white-space-nowrap"
+                          onclick="ezyadmin.onUpdateManuallyButtonClick();"
+                        >
+                          [[#{update_manually}]]
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-link white-space-nowrap"
+                          th:attr="onclick=|ezyadmin.onRestartToApplyButtonClick(this, '${module.name}', '${module.projectName}', '${projectNewVersions.get(module.name)}')|"
+                          th:if="${projectNewVersions.containsKey(module.name)}"
+                        >
+                          [[#{apply_version}]]
+                          [[${projectNewVersions.get(module.name)}]]
+                          <i
+                            class="fas fa-info-circle text-info"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            th:title="#{restart_server_and_apply}"
+                          ></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <th:block layout:fragment="modals">
@@ -286,6 +300,11 @@
         });
       };
       ezyadmin.getReleasedProjectsSimpleData();
+
+      new simpleDatatables.DataTable("#tableModuleList", {
+        searchable: !0,
+        fixedHeight: !1,
+      });
     </script>
     <th:block layout:fragment="post-scripts">
       <script th:replace="~{modules/scripts :: scripts}" />

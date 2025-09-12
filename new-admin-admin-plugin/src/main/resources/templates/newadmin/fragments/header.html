@@ -141,6 +141,35 @@
                 </a>
               </li>
             </ul>
+
+            <li
+              class="dropdown topbar-item"
+              th:if="${adminRoles.isAccessible('/admins/me')}"
+            >
+              <a
+                class="nav-link dropdown-toggle arrow-none nav-icon show"
+                data-bs-toggle="dropdown"
+                href="/admins/me"
+                role="button"
+                aria-haspopup="false"
+                aria-expanded="true"
+                data-bs-offset="0,19"
+                onclick="ezyadmin.showProfile();"
+              >
+                <img
+                  th:src="${avatarImage != null ? avatarImage.getMeUrlOrDefault('') : '#'}"
+                  alt="user Image"
+                  id="mainAdminAvatar"
+                  class="thumb-md rounded-circle"
+                />
+                <div
+                  id="mainAdminAvatarTmp"
+                  th:classappend="${avatarImage == null ? '' : 'd-none'}"
+                  th:text="${#strings.capitalize(admin != null ? admin.getName().charAt(0) : 'A')}"
+                  class="rounded-circle avatar-tmp main-avatar-tmp mx-0"
+                ></div>
+              </a>
+            </li>
           </div>
         </li>
       </ul>

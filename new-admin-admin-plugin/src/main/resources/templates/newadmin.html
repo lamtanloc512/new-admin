@@ -22,7 +22,7 @@
   xmlns:ezy="http://www.ezyplatform.com/thymeleaf/layout"
   lang="en"
   dir="ltr"
-  data-startbar="light"
+  data-startbar="dark"
   data-bs-theme="light"
 >
   <head>
@@ -46,12 +46,19 @@
     <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/app.min.css" rel="stylesheet" type="text/css" />
-
+    <link
+      href="/libs/simple-datatables/style.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <!-- Admin -->
     <link rel="stylesheet" type="text/css" ezy:vhref="/css/ezyadmin.css" />
     <style th:inline="css">
       .custom-file-label::after {
         content: "[[#{browse}]]" !important;
+      }
+      body[data-sidebar-size="collapsed"] .startbar:not(:hover) .brand-text {
+        display: none;
       }
     </style>
     <th:block
@@ -79,7 +86,7 @@
 
     <div class="startbar-overlay d-print-none"></div>
 
-    <div class="page-wrapper">
+    <div class="page-wrapper bg-light">
       <!-- Page Content-->
       <div class="page-content">
         <div class="container-fluid">
@@ -254,6 +261,7 @@
     <script ezy:vsrc="/js/responsive.bootstrap4.min.js"></script>
     <script ezy:vsrc="/js/dataTables.buttons.min.js"></script>
     <script ezy:vsrc="/js/buttons.bootstrap4.min.js"></script>
+    <script src="/libs/simple-datatables/umd/simple-datatables.js"></script>
     <!-- bs-custom-file-input -->
     <script ezy:vsrc="/js/bs-custom-file-input.min.js"></script>
     <!-- Moment -->
@@ -1004,6 +1012,14 @@
         }
       });
     </script>
+
+    <!-- Javascript  -->
+    <!-- vendor js -->
+
+    <script src="/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/libs/simplebar/simplebar.min.js"></script>
+    <script src="/js/app.js"></script>
+
     <th:block
       th:if="${finalScriptFiles != null}"
       th:each="finalScriptFile : ${finalScriptFiles}"
@@ -1011,17 +1027,6 @@
       <script ezy:vsrc="${finalScriptFile}"></script>
     </th:block>
     <script layout:fragment="final-scripts" type="text/javascript"></script>
-
-    <!-- Javascript  -->
-    <!-- vendor js -->
-
-    <script src="/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/libs/simplebar/simplebar.min.js"></script>
-
-    <!-- <script src="/libs/apexcharts/apexcharts.min.js"></script> -->
-    <!-- <script src="https://apexcharts.com/samples/assets/stock-prices.js"></script> -->
-    <script src="/js/pages/index.init.js"></script>
-    <script src="/js/app.js"></script>
   </body>
   <!--end body-->
 </html>

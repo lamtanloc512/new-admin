@@ -51,7 +51,7 @@
           th:if="${menu.hasItems()}"
           th:attr="id='menu-' + ${menu.fullName}"
           class="collapse"
-          th:classappend="${currentMenu.startsWith(menu.fullName)} ? show : ''"
+          th:classappend="${currentMenu != null and menu.fullName != null and currentMenu.startsWith(menu.fullName)} ? show : ''"
         >
           <ul class="nav flex-column">
             <li

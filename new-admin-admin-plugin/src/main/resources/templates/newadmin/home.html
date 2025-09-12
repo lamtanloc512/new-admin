@@ -25,17 +25,31 @@
     <div layout:fragment="content" class="row">
       <div th:if="${adminRoles.isAccessible('/users')}" class="col-lg-3 col-6">
         <!-- small box -->
-        <div class="small-box bg-info">
-          <div class="inner">
-            <h3 class="commas-number-string" th:text="${totalUser}">150</h3>
-            <p>[[#{users}]]</p>
+        <div class="card bg-info">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center">
+              <div class="col">
+                <p class="text-dark mb-0 fw-semibold">[[#{users}]]</p>
+                <h3
+                  class="my-1 fs-20 commas-number-string"
+                  th:text="${totalUser}"
+                >
+                  150
+                </h3>
+                <a href="/users" class="mb-0 text-truncate text-bg-dark badge"
+                  >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+                ></a>
+              </div>
+              <div class="col-auto align-self-center">
+                <div
+                  class="flex-shrink-0 bg-info-subtle text-info thumb-md rounded-circle"
+                >
+                  <i class="iconoir-rocket fs-4"></i>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <a href="/users" class="small-box-footer"
-            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
-          ></a>
+          <!--end card-body-->
         </div>
       </div>
       <!-- ./col -->
@@ -44,17 +58,28 @@
         class="col-lg-3 col-6"
       >
         <!-- small box -->
-        <div class="small-box bg-success" id="boxWeb">
-          <div class="inner">
-            <h3 id="boxWebTitle">[[#{running}]]</h3>
-            <p>[[#{web}]]</p>
+        <div class="card bg-success" id="boxWeb">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center">
+              <div class="col">
+                <p class="text-dark mb-0 fw-semibold">[[#{web}]]</p>
+                <h3 id="boxWebTitle" class="my-1 fs-20">[[#{running}]]</h3>
+                <a
+                  href="/dashboard/web"
+                  class="mb-0 text-truncate text-bg-dark badge"
+                  >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+                ></a>
+              </div>
+              <div class="col-auto align-self-center">
+                <div
+                  class="flex-shrink-0 bg-success-subtle text-success thumb-md rounded-circle"
+                >
+                  <i class="iconoir-group fs-4"></i>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="icon">
-            <i class="ion ion-android-globe"></i>
-          </div>
-          <a href="/dashboard/web" class="small-box-footer"
-            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
-          ></a>
+          <!--end card-body-->
         </div>
       </div>
       <!-- ./col -->
@@ -63,17 +88,28 @@
         class="col-lg-3 col-6"
       >
         <!-- small box -->
-        <div class="small-box bg-danger" id="boxSocket">
-          <div class="inner">
-            <h3 id="boxSocketTitle">[[#{running}]]</h3>
-            <p>[[#{socket}]]</p>
+        <div class="card bg-danger">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center">
+              <div class="col">
+                <p class="text-dark mb-0 fw-semibold">[[#{socket}]]</p>
+                <h3 id="boxSocketTitle" class="my-1 fs-20">[[#{running}]]</h3>
+                <a
+                  href="/dashboard/socket"
+                  class="mb-0 text-truncate text-bg-dark badge"
+                  >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+                ></a>
+              </div>
+              <div class="col-auto align-self-center">
+                <div
+                  class="flex-shrink-0 bg-primary-subtle text-primary thumb-md rounded-circle"
+                >
+                  <i class="iconoir-rocket fs-4"></i>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="icon">
-            <i class="fa fa-rocket nav-icon"></i>
-          </div>
-          <a href="/dashboard/socket" class="small-box-footer"
-            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
-          ></a>
+          <!--end card-body-->
         </div>
       </div>
       <!-- ./col -->
@@ -82,33 +118,58 @@
         class="col-lg-3 col-6"
       >
         <!-- small box -->
-        <div class="small-box bg-primary" id="boxAdmin">
-          <div class="inner">
-            <h3 id="boxAdminTitle">[[#{running}]]</h3>
-            <p>[[#{admin}]]</p>
+        <div class="card bg-primary" id="boxAdmin">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center">
+              <div class="col">
+                <p class="text-dark mb-0 fw-semibold">[[#{admin}]]</p>
+                <h3 id="boxAdminTitle" class="my-1 fs-20">[[#{running}]]</h3>
+                <a
+                  href="/dashboard/admin"
+                  class="mb-0 text-truncate text-bg-dark badge"
+                  >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+                ></a>
+              </div>
+              <div class="col-auto align-self-center">
+                <div
+                  class="flex-shrink-0 bg-primary-subtle text-primary thumb-md rounded-circle"
+                >
+                  <i class="iconoir-suitcase fs-4"></i>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="icon">
-            <i class="fa fa-suitcase nav-icon"></i>
-          </div>
-          <a href="/dashboard/admin" class="small-box-footer"
-            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
-          ></a>
+          <!--end card-body-->
         </div>
       </div>
       <!-- ./col -->
       <div th:if="${adminRoles.isAccessible('/admins')}" class="col-lg-3 col-6">
         <!-- small box -->
-        <div class="small-box bg-sky-blue">
-          <div class="inner">
-            <h3 class="commas-number-string" th:text="${totalAdmin}">150</h3>
-            <p>[[#{administrators}]]</p>
+        <div class="card bg-warning">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center">
+              <div class="col">
+                <p class="text-dark mb-0 fw-semibold">[[#{administrators}]]</p>
+                <h3
+                  class="my-1 fs-20 commas-number-string"
+                  th:text="${totalAdmin}"
+                >
+                  150
+                </h3>
+                <a href="/admins" class="mb-0 text-truncate text-bg-dark badge"
+                  >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+                ></a>
+              </div>
+              <div class="col-auto align-self-center">
+                <div
+                  class="flex-shrink-0 bg-warning-subtle text-warning thumb-md rounded-circle"
+                >
+                  <i class="iconoir-user fs-4"></i>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="icon">
-            <i class="fas fa-user-shield"></i>
-          </div>
-          <a href="/admins" class="small-box-footer"
-            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
-          ></a>
+          <!--end card-body-->
         </div>
       </div>
     </div>
