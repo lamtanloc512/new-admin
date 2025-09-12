@@ -221,17 +221,18 @@
           <div>
             <div class="card-body">
               <form id="socketSettingsForm">
-                <div class="form-group">
-                  <label for="websocketUrl">[[#{websocket_url}]]</label>
+                <div class="mb-3">
+                  <label for="websocketUrl" class="form-label"
+                    >[[#{websocket_url}]]</label
+                  >
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
+                    <div
+                      class="invalid-feedback d-none"
                       id="websocketUrlErrorLabel"
-                      for="websocketUrl"
                     >
                       <i class="far fa-times-circle"></i>
                       <span id="websocketUrlError"></span>
-                    </label>
+                    </div>
                     <input
                       type="url"
                       name="websocketUrl"
@@ -242,27 +243,26 @@
                     />
                   </div>
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                   <div>
-                    <label for="socketProperties"
+                    <label for="socketProperties" class="form-label"
                       >[[#{socket_properties}]]</label
                     >
                     <i
-                      class="fas fa-info-circle text-info"
-                      data-toggle="tooltip"
-                      data-placement="top"
+                      class="fas fa-info-circle text-info ms-1"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
                       th:title="#{must_restart_socket_to_apply}"
                     ></i>
                   </div>
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
+                    <div
+                      class="invalid-feedback d-none"
                       id="socketPropertiesErrorLabel"
-                      for="socketProperties"
                     >
                       <i class="far fa-times-circle"></i>
                       <span id="socketPropertiesError"></span>
-                    </label>
+                    </div>
                     <textarea
                       name="socketProperties"
                       id="socketProperties"
@@ -273,50 +273,50 @@
                     ></textarea>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label for="sslCertificatePassword"
-                    >[[#{ssl_configuration}]]</label
-                  >
-                  <div class="form-group row">
-                    <div class="col-md-12 d-flex align-items-center">
+                <div class="mb-3">
+                  <label class="form-label">[[#{ssl_configuration}]]</label>
+                  <div class="mb-2">
+                    <div class="form-check">
                       <input
                         type="checkbox"
                         name="enableWebsocketSsl"
                         id="enableWebsocketSsl"
-                        class="form-check wh-1rem"
+                        class="form-check-input"
                         th:value="${enableWebsocketSsl}"
                         th:checked="${enableWebsocketSsl}"
                       />
-                      <span class="col-form-label ml-1">
+                      <label class="form-check-label" for="enableWebsocketSsl">
                         [[#{enable_websocket_ssl}]]
-                      </span>
+                      </label>
                     </div>
                   </div>
-                  <div class="form-group row">
-                    <div class="col-md-12 d-flex align-items-center">
+                  <div class="mb-2">
+                    <div class="form-check">
                       <input
                         type="checkbox"
                         name="allowSslToReloadAutomatically"
                         id="allowSslToReloadAutomatically"
-                        class="form-check wh-1rem"
+                        class="form-check-input"
                         th:value="${allowSslToReloadAutomatically}"
                         th:checked="${allowSslToReloadAutomatically}"
                       />
-                      <span class="col-form-label ml-1">
+                      <label
+                        class="form-check-label"
+                        for="allowSslToReloadAutomatically"
+                      >
                         [[#{allow_ssl_to_reload_automatically}]]
-                      </span>
+                      </label>
                     </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label
-                    class="col-form-label text-danger d-none"
+                <div class="mb-3">
+                  <div
+                    class="invalid-feedback d-none"
                     id="sslCertificatePasswordErrorLabel"
-                    for="sslCertificatePassword"
                   >
                     <i class="far fa-times-circle"></i>
                     <span id="sslCertificatePasswordError"></span>
-                  </label>
+                  </div>
                   <input
                     type="password"
                     id="sslCertificatePassword"
@@ -326,37 +326,30 @@
                     th:placeholder="#{ssl_certificate_password}"
                   />
                 </div>
-                <div class="form-group">
-                  <label
-                    class="col-form-label text-danger d-none"
+                <div class="mb-3">
+                  <div
+                    class="invalid-feedback d-none"
                     id="sslKeystoreFileErrorLabel"
-                    for="sslKeystoreFile"
                   >
                     <i class="far fa-times-circle"></i>
                     <span id="sslKeystoreFileError"></span>
-                  </label>
-                  <div class="custom-file">
-                    <input
-                      type="file"
-                      name="sslKeystoreFile"
-                      class="custom-file-input"
-                      id="sslKeystoreFile"
-                    />
-                    <label class="custom-file-label" for="sslKeystoreFile"
-                      >[[#{ssl_keystore_file}]]</label
-                    >
                   </div>
+                  <input
+                    type="file"
+                    name="sslKeystoreFile"
+                    class="form-control"
+                    id="sslKeystoreFile"
+                  />
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
+                    <div
+                      class="invalid-feedback d-none"
                       id="sslKeystorePasswordErrorLabel"
-                      for="sslKeystorePassword"
                     >
                       <i class="far fa-times-circle"></i>
                       <span id="sslKeystorePasswordError"></span>
-                    </label>
+                    </div>
                     <input
                       type="password"
                       id="sslKeystorePassword"
@@ -367,25 +360,26 @@
                     />
                   </div>
                 </div>
-                <div class="form-group mb-0">
+                <div class="mb-3">
                   <div>
-                    <label for="socketVmOptions">[[#{vm_options}]]</label>
+                    <label for="socketVmOptions" class="form-label"
+                      >[[#{vm_options}]]</label
+                    >
                     <i
-                      class="fas fa-info-circle text-info"
-                      data-toggle="tooltip"
-                      data-placement="top"
+                      class="fas fa-info-circle text-info ms-1"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
                       th:title="#{must_restart_admin_to_apply}"
                     ></i>
                   </div>
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
+                    <div
+                      class="invalid-feedback d-none"
                       id="socketVmOptionsErrorLabel"
-                      for="socketVmOptions"
                     >
                       <i class="far fa-times-circle"></i>
                       <span id="socketVmOptionsError"></span>
-                    </label>
+                    </div>
                     <textarea
                       name="socketVmOptions"
                       id="socketVmOptions"
@@ -421,21 +415,19 @@
         </div>
       </div>
       <!-- ./information -->
-      <div class="modal fade" id="modal-settings">
+      <div class="modal fade" id="modal-settings" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title" id="settingsModelTitle">
+              <h5 class="modal-title" id="settingsModelTitle">
                 [[#{zone_settings}]]
-              </h4>
+              </h5>
               <button
                 type="button"
-                class="close"
-                data-dismiss="modal"
+                class="btn-close"
+                data-bs-dismiss="modal"
                 aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
+              ></button>
             </div>
             <div class="modal-body">
               <pre id="settingsModelBody"></pre>
@@ -443,46 +435,40 @@
             <div class="modal-footer justify-content-between">
               <button
                 type="button"
-                class="btn btn-default"
-                data-dismiss="modal"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
               >
                 [[#{close}]]
               </button>
             </div>
           </div>
-          <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
       </div>
-      <!-- /.modal -->
-      <div class="modal fade" id="modal-commands">
+
+      <div class="modal fade" id="modal-commands" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h4 class="modal-title" id="commandsModelTitle"></h4>
+              <h5 class="modal-title" id="commandsModelTitle"></h5>
               <button
                 type="button"
-                class="close"
-                data-dismiss="modal"
+                class="btn-close"
+                data-bs-dismiss="modal"
                 aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
+              ></button>
             </div>
             <div class="modal-body" id="commandsModelBody"></div>
             <div class="modal-footer justify-content-between">
               <button
                 type="button"
-                class="btn btn-default"
-                data-dismiss="modal"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
               >
                 [[#{close}]]
               </button>
             </div>
           </div>
-          <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
       </div>
       <!-- /.modal -->
     </div>
@@ -706,7 +692,8 @@
               titlePrefix + ' ' + name + ' ' + ezyadmin.messages.settings.toLowerCase()
           );
           $('#settingsModelBody').html(ezyadmin.syntaxHighlightJson(body));
-          $('#modal-settings').modal('toggle');
+          const settingsModal = new bootstrap.Modal(document.getElementById('modal-settings'));
+          settingsModal.show();
       }
 
       ezyadmin.showZoneList = function() {
@@ -901,7 +888,8 @@
               titlePrefix + ' ' + name + ' ' + ezyadmin.messages.commands.toLowerCase()
           );
           $('#commandsModelBody').html(body);
-          $('#modal-commands').modal('toggle');
+          const commandsModal = new bootstrap.Modal(document.getElementById('modal-commands'));
+          commandsModal.show();
       }
     </script>
     <th:block layout:fragment="post-scripts">

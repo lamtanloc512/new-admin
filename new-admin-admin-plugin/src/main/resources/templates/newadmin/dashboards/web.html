@@ -226,17 +226,13 @@
           <div>
             <div class="card-body">
               <form id="webSettingsForm">
-                <div class="form-group">
-                  <label for="webUrl">[[#{web_url}]]</label>
+                <div class="mb-3">
+                  <label for="webUrl" class="form-label">[[#{web_url}]]</label>
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
-                      id="webUrlErrorLabel"
-                      for="webUrl"
-                    >
+                    <div class="invalid-feedback d-none" id="webUrlErrorLabel">
                       <i class="far fa-times-circle"></i>
                       <span id="webUrlError"></span>
-                    </label>
+                    </div>
                     <input
                       type="url"
                       name="webUrl"
@@ -247,19 +243,18 @@
                     />
                   </div>
                 </div>
-                <div class="form-group" id="webManagementGroup">
-                  <label for="webManagementUrl"
+                <div class="mb-3" id="webManagementGroup">
+                  <label for="webManagementUrl" class="form-label"
                     >[[#{web_management_url}]]</label
                   >
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
+                    <div
+                      class="invalid-feedback d-none"
                       id="webManagementUrlErrorLabel"
-                      for="webManagementUrl"
                     >
                       <i class="far fa-times-circle"></i>
                       <span id="webManagementUrlError"></span>
-                    </label>
+                    </div>
                     <input
                       type="url"
                       name="webManagementUrl"
@@ -270,25 +265,26 @@
                     />
                   </div>
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                   <div>
-                    <label for="webProperties">[[#{web_properties}]]</label>
+                    <label for="webProperties" class="form-label"
+                      >[[#{web_properties}]]</label
+                    >
                     <i
-                      class="fas fa-info-circle text-info"
-                      data-toggle="tooltip"
-                      data-placement="top"
+                      class="fas fa-info-circle text-info ms-1"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
                       th:title="#{must_restart_socket_to_apply}"
                     ></i>
                   </div>
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
+                    <div
+                      class="invalid-feedback d-none"
                       id="webPropertiesErrorLabel"
-                      for="webProperties"
                     >
                       <i class="far fa-times-circle"></i>
                       <span id="webPropertiesError"></span>
-                    </label>
+                    </div>
                     <textarea
                       name="webProperties"
                       id="webProperties"
@@ -299,25 +295,26 @@
                     ></textarea>
                   </div>
                 </div>
-                <div class="form-group mb-0">
+                <div class="mb-3">
                   <div>
-                    <label for="webVmOptions">[[#{vm_options}]]</label>
+                    <label for="webVmOptions" class="form-label"
+                      >[[#{vm_options}]]</label
+                    >
                     <i
-                      class="fas fa-info-circle text-info"
-                      data-toggle="tooltip"
-                      data-placement="top"
+                      class="fas fa-info-circle text-info ms-1"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
                       th:title="#{must_restart_admin_to_apply}"
                     ></i>
                   </div>
                   <div>
-                    <label
-                      class="col-form-label text-danger d-none"
+                    <div
+                      class="invalid-feedback d-none"
                       id="webVmOptionsErrorLabel"
-                      for="webVmOptions"
                     >
                       <i class="far fa-times-circle"></i>
                       <span id="webVmOptionsError"></span>
-                    </label>
+                    </div>
                     <textarea
                       name="webVmOptions"
                       id="webVmOptions"
