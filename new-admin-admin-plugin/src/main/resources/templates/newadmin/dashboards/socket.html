@@ -23,124 +23,189 @@
 >
   <body>
     <div layout:fragment="content" class="row">
-      <div class="col-md-12">
-        <div
-          id="statusBox"
-          class="small-box bg-danger d-flex justify-content-between align-items-center"
-        >
-          <div class="d-flex justify-content-center align-items-center">
-            <h5 id="statusText" class="p-2 font-weight-bold mb-1 mt-1">
-              [[#{running}]]
-            </h5>
-            <h6 id="liveTime" class="p-2 font-weight-bold mb-1 mt-1"></h6>
-          </div>
-          <div class="d-flex justify-content-end align-items-center">
-            <button
-              type="button"
-              id="buttonEnable"
-              class="btn btn-dark mr-2"
-              onclick="ezyadmin.enableServer('socket');"
-              th:if="${adminRoles.isAccessible('/api/v1/enable', 'POST') && !socketEnable}"
-            >
-              [[#{enable}]]
-            </button>
-            <button
-              type="button"
-              id="buttonDisable"
-              class="btn btn-dark mr-2"
-              onclick="ezyadmin.disableServer('socket');"
-              th:if="${adminRoles.isAccessible('/api/v1/disable', 'POST') && socketEnable}"
-            >
-              [[#{disable}]]
-            </button>
-            <button
-              type="button"
-              id="buttonStart"
-              class="btn btn-dark mr-2"
-              onclick="ezyadmin.startServer('socket');"
-              th:if="${adminRoles.isAccessible('/api/v1/start', 'POST')}"
-            >
-              [[#{start}]]
-            </button>
-            <button
-              type="button"
-              id="buttonStop"
-              class="btn btn-info mr-2"
-              onclick="ezyadmin.stopServer('socket');"
-              th:if="${adminRoles.isAccessible('/api/v1/stop', 'POST')}"
-            >
-              [[#{stop}]]
-            </button>
-            <button
-              type="button"
-              id="buttonRestart"
-              class="btn btn-primary mr-2"
-              onclick="ezyadmin.restartServer('socket');"
-              th:if="${adminRoles.isAccessible('/api/v1/restart', 'POST')}"
-            >
-              [[#{restart}]]
-            </button>
+      <div class="col-12">
+        <div id="statusBox" class="card bg-danger">
+          <div class="card-body p-2">
+            <div class="row d-flex justify-content-between align-items-center">
+              <div class="col">
+                <div class="d-flex justify-content-start align-items-center">
+                  <h5 id="statusText" class="mb-1 mt-1 fw-bold">
+                    [[#{running}]]
+                  </h5>
+                  <h6 id="liveTime" class="mb-1 mt-1 fw-bold ms-2"></h6>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div
+                  class="d-flex justify-content-end align-items-center gap-2"
+                >
+                  <button
+                    type="button"
+                    id="buttonEnable"
+                    class="btn btn-dark"
+                    onclick="ezyadmin.enableServer('socket');"
+                    th:if="${adminRoles.isAccessible('/api/v1/enable', 'POST') && !socketEnable}"
+                  >
+                    [[#{enable}]]
+                  </button>
+                  <button
+                    type="button"
+                    id="buttonDisable"
+                    class="btn btn-dark"
+                    onclick="ezyadmin.disableServer('socket');"
+                    th:if="${adminRoles.isAccessible('/api/v1/disable', 'POST') && socketEnable}"
+                  >
+                    [[#{disable}]]
+                  </button>
+                  <button
+                    type="button"
+                    id="buttonStart"
+                    class="btn btn-dark"
+                    onclick="ezyadmin.startServer('socket');"
+                    th:if="${adminRoles.isAccessible('/api/v1/start', 'POST')}"
+                  >
+                    [[#{start}]]
+                  </button>
+                  <button
+                    type="button"
+                    id="buttonStop"
+                    class="btn btn-info"
+                    onclick="ezyadmin.stopServer('socket');"
+                    th:if="${adminRoles.isAccessible('/api/v1/stop', 'POST')}"
+                  >
+                    [[#{stop}]]
+                  </button>
+                  <button
+                    type="button"
+                    id="buttonRestart"
+                    class="btn btn-primary"
+                    onclick="ezyadmin.restartServer('socket');"
+                    th:if="${adminRoles.isAccessible('/api/v1/restart', 'POST')}"
+                  >
+                    [[#{restart}]]
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <!-- ./status -->
-      <div class="col-md-3">
-        <div class="small-box bg-warning">
-          <div class="inner">
-            <h3 id="sessionCount">100</h3>
-            <p>[[#{sessions}]]</p>
+      <div class="col-12">
+        <div class="row">
+          <div class="col-lg-2 col-md-4 col-6">
+            <div class="card bg-warning">
+              <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                  <div class="col">
+                    <p class="text-dark mb-0 fw-semibold">[[#{sessions}]]</p>
+                    <h3 id="sessionCount" class="my-1 fs-20">100</h3>
+                  </div>
+                  <div class="col-auto align-self-center">
+                    <div
+                      class="flex-shrink-0 bg-warning-subtle text-warning thumb-md rounded-circle"
+                    >
+                      <i class="fa fa-handshake fs-4"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-body-->
+            </div>
           </div>
-          <div class="icon">
-            <i class="fa fa-handshake"></i>
+          <div class="col-lg-2 col-md-4 col-6">
+            <div class="card bg-primary">
+              <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                  <div class="col">
+                    <p class="text-dark mb-0 fw-semibold">[[#{ccu}]]</p>
+                    <h3 id="userCount" class="my-1 fs-20">100</h3>
+                  </div>
+                  <div class="col-auto align-self-center">
+                    <div
+                      class="flex-shrink-0 bg-primary-subtle text-primary thumb-md rounded-circle"
+                    >
+                      <i class="fa fa-users fs-4"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-body-->
+            </div>
           </div>
-        </div>
-        <div class="small-box bg-primary">
-          <div class="inner">
-            <h3 id="userCount">100</h3>
-            <p>[[#{ccu}]]</p>
+          <div
+            class="col-lg-2 col-md-4 col-6"
+            th:if="${adminRoles.isAccessible('/management/memory-usage')}"
+          >
+            <div class="card bg-info">
+              <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                  <div class="col">
+                    <p class="text-dark mb-0 fw-semibold">
+                      [[#{memory_usage}]]
+                    </p>
+                    <h3 id="memoryUsage" class="my-1 fs-20">30MB</h3>
+                  </div>
+                  <div class="col-auto align-self-center">
+                    <div
+                      class="flex-shrink-0 bg-info-subtle text-info thumb-md rounded-circle"
+                    >
+                      <i class="ion ion-ios-barcode fs-4"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-body-->
+            </div>
           </div>
-          <div class="icon">
-            <i class="fa fa-users"></i>
+          <div
+            class="col-lg-2 col-md-4 col-6"
+            th:if="${adminRoles.isAccessible('/management/cpu-usage')}"
+          >
+            <div class="card bg-success">
+              <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                  <div class="col">
+                    <p class="text-dark mb-0 fw-semibold">[[#{cpu_usage}]]</p>
+                    <h3 class="my-1 fs-20">
+                      <span id="cpuUsage">10</span
+                      ><sup class="top-0" style="font-size: 20px">%</sup>
+                    </h3>
+                  </div>
+                  <div class="col-auto align-self-center">
+                    <div
+                      class="flex-shrink-0 bg-success-subtle text-success thumb-md rounded-circle"
+                    >
+                      <i class="fa fa-microchip fs-4"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-body-->
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div
-          class="small-box bg-info"
-          th:if="${adminRoles.isAccessible('/management/memory-usage')}"
-        >
-          <div class="inner">
-            <h3 id="memoryUsage">30MB</h3>
-            <p>[[#{memory_usage}]]</p>
-          </div>
-          <div class="icon">
-            <i class="ion ion-ios-barcode"></i>
-          </div>
-        </div>
-        <div
-          class="small-box bg-success"
-          th:if="${adminRoles.isAccessible('/management/cpu-usage')}"
-        >
-          <div class="inner">
-            <h3>
-              <span id="cpuUsage">10</span><sup style="font-size: 20px">%</sup>
-            </h3>
-            <p>[[#{cpu_usage}]]</p>
-          </div>
-          <div class="icon">
-            <i class="fa fa-microchip"></i>
-          </div>
-        </div>
-        <div
-          class="small-box bg-sky-blue"
-          th:if="${adminRoles.isAccessible('/management/thread-count')}"
-        >
-          <div class="inner">
-            <h3 id="threadCount">10</h3>
-            <p>[[#{threads}]]</p>
-          </div>
-          <div class="icon">
-            <i class="ion ion-ios-flower"></i>
+          <div
+            class="col-lg-2 col-md-4 col-6"
+            th:if="${adminRoles.isAccessible('/management/thread-count')}"
+          >
+            <div class="card bg-warning">
+              <div class="card-body">
+                <div class="row d-flex justify-content-center">
+                  <div class="col">
+                    <p class="text-dark mb-0 fw-semibold">[[#{threads}]]</p>
+                    <h3 id="threadCount" class="my-1 fs-20">10</h3>
+                  </div>
+                  <div class="col-auto align-self-center">
+                    <div
+                      class="flex-shrink-0 bg-warning-subtle text-warning thumb-md rounded-circle"
+                    >
+                      <i class="ion ion-ios-flower fs-4"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-body-->
+            </div>
           </div>
         </div>
       </div>
@@ -346,6 +411,8 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="col-md-6">
         <div class="card card-info" th:if="${adminRoles.specialAdmin}">
           <div class="card-header">
             <h3 class="card-title">[[#{zone_list}]]</h3>

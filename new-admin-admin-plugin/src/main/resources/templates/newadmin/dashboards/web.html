@@ -23,47 +23,54 @@
 >
   <body>
     <div layout:fragment="content" class="row">
-      <div class="col-12 my-1">
-        <div
-          id="statusBox"
-          class="rounded small-box bg-success d-flex justify-content-between align-items-center py-1 px-2"
-        >
-          <div class="d-flex justify-content-center align-items-center">
-            <h5 id="statusText" class="p-2 font-weight-bold mb-1 mt-1">
-              [[#{unknown}]]
-            </h5>
-            <h6 id="liveTime" class="p-2 font-weight-bold mb-1 mt-1"></h6>
-          </div>
-          <div class="d-flex justify-content-end align-items-center gap-2">
-            <button
-              id="buttonStart"
-              class="btn btn-dark mr-2"
-              onclick="ezyadmin.startServer('web');"
-              th:if="${adminRoles.isAccessible('/api/v1/start', 'POST')}"
-            >
-              [[#{start}]]
-            </button>
-            <button
-              id="buttonStop"
-              class="btn btn-danger mr-2"
-              onclick="ezyadmin.stopServer('web');"
-              th:if="${adminRoles.isAccessible('/api/v1/stop', 'POST')}"
-            >
-              [[#{stop}]]
-            </button>
-            <button
-              id="buttonRestart"
-              class="btn btn-primary mr-2"
-              onclick="ezyadmin.restartServer('web');"
-              th:if="${adminRoles.isAccessible('/api/v1/restart', 'POST')}"
-            >
-              [[#{restart}]]
-            </button>
+      <div class="col-12">
+        <div id="statusBox" class="card bg-success">
+          <div class="card-body p-2">
+            <div class="row d-flex justify-content-between align-items-center">
+              <div class="col">
+                <div class="d-flex justify-content-start align-items-center">
+                  <h5 id="statusText" class="mb-1 mt-1 fw-bold">
+                    [[#{unknown}]]
+                  </h5>
+                  <h6 id="liveTime" class="mb-1 mt-1 fw-bold ms-2"></h6>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div
+                  class="d-flex justify-content-end align-items-center gap-2"
+                >
+                  <button
+                    id="buttonStart"
+                    class="btn btn-dark"
+                    onclick="ezyadmin.startServer('web');"
+                    th:if="${adminRoles.isAccessible('/api/v1/start', 'POST')}"
+                  >
+                    [[#{start}]]
+                  </button>
+                  <button
+                    id="buttonStop"
+                    class="btn btn-danger"
+                    onclick="ezyadmin.stopServer('web');"
+                    th:if="${adminRoles.isAccessible('/api/v1/stop', 'POST')}"
+                  >
+                    [[#{stop}]]
+                  </button>
+                  <button
+                    id="buttonRestart"
+                    class="btn btn-primary"
+                    onclick="ezyadmin.restartServer('web');"
+                    th:if="${adminRoles.isAccessible('/api/v1/restart', 'POST')}"
+                  >
+                    [[#{restart}]]
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <!-- ./col -->
-      <div class="col-12 my-1">
+      <div class="col-12">
         <div class="row">
           <div class="col-lg-2 col-md-4 col-6">
             <div class="card bg-warning">
@@ -343,7 +350,7 @@
           <div class="card-header">
             <h3 class="card-title">[[#{api_list}]]</h3>
           </div>
-          <div class="card-body table-responsive p-0">
+          <div class="card-body table-responsive">
             <table
               id="apiList"
               class="table table-bordered table-hover"
