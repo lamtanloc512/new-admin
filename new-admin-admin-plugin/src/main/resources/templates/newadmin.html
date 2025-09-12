@@ -228,6 +228,19 @@
       <!-- end page content -->
     </div>
 
+    <div id="loadingScreen" class="screen-loading d-none">
+      <i class="fas fa-3x fa-sync fa-spin"></i>
+    </div>
+
+    <th:block th:replace="~{newadmin/media/modal :: content}" />
+    <th:block th:replace="~{newadmin/modals/file-permission :: content}" />
+    <th:block th:replace="~{newadmin/fragments/alert :: content}" />
+
+    <th:block layout:fragment="modals"></th:block>
+
+    <div class="scroll-to-top-button" id="scrollToTopButton">
+      <i class="fas fa-arrow-up"></i>
+    </div>
     <!-- jQuery -->
     <script ezy:vsrc="/js/jquery.min.js"></script>
     <!-- jQuery UI 1.11.4 -->

@@ -22,15 +22,15 @@
       <li
         th:each="menu : ${menus}"
         th:if="${menu.isVisible() && adminRoles.isAccessible(menu.uri)}"
-        th:class="${menu.hasItems() ? 'nav-item has-treeview' : 'nav-item'}"
-        th:classappend="${currentOpen == menu.fullName} ? 'menu-open' : ''"
+        class="nav-item"
       >
         <a
           class="nav-link"
           data-bs-toggle="collapse"
+          th:attr="data-bs-target='#menu-' + ${menu.fullName}"
           role="button"
           aria-expanded="false"
-          th:att="aria-controls=${menu.fullName}"
+          aria-controls="false"
           th:href="${menu.uri}"
           th:classappend="${currentMenu == menu.fullName} ? active : ''"
         >
@@ -40,19 +40,18 @@
             class="menu-icon"
             th:classappend="${menu.icon}"
           ></i>
-          <span th:inline="text"
-            >[[#{${menu.name}}]]
-            <span
-              class="badge badge-info right commas-number-string"
-              th:if="${menuBadges.containsKey(menu.fullName)}"
-              th:text="${menuBadges.get(menu.fullName)}"
-            />
-          </span>
+          <span th:inline="text">[[#{${menu.name}}]] </span>
+          <span
+            class="badge badge-info right commas-number-string"
+            th:if="${menuBadges.containsKey(menu.fullName)}"
+            th:text="${menuBadges.get(menu.fullName)}"
+          />
         </a>
         <div
           th:if="${menu.hasItems()}"
-          th:att="id=${menu.fullName}"
+          th:attr="id='menu-' + ${menu.fullName}"
           class="collapse"
+          th:classappend="${currentMenu.startsWith(menu.fullName)} ? show : ''"
         >
           <ul class="nav flex-column">
             <li
@@ -67,17 +66,17 @@
               >
                 <i
                   th:if="${menuItem.icon == null}"
-                  class="nav-icon far fa-circle"
+                  class="menu-icon far fa-circle"
                 ></i>
                 <i
                   th:if="${menuItem.icon != null}"
-                  class="nav-icon"
+                  class="menu-icon"
                   th:classappend="${menuItem.icon}"
                 ></i>
                 <span>
                   [[#{${menuItem.name}}]]
                   <span
-                    class="badge badge-info right commas-number-string"
+                    class="badge rounded text-success bg-success-subtle ms-1"
                     th:if="${menuItemBadges.containsKey(menuItem.fullName)}"
                     th:text="${menuItemBadges.get(menuItem.fullName)}"
                   />

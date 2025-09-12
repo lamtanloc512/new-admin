@@ -71,7 +71,7 @@
               >
                 <a
                   class="nav-link"
-                  href="#sidebarDashboards"
+                  data-bs-target="#sidebarDashboards"
                   data-bs-toggle="collapse"
                   role="button"
                   aria-expanded="false"
@@ -80,7 +80,11 @@
                   <i class="iconoir-report-columns menu-icon"></i>
                   <span>[[#{dashboard.title}]]</span>
                 </a>
-                <div class="collapse" id="sidebarDashboards">
+                <div
+                  class="collapse"
+                  id="sidebarDashboards"
+                  th:classappend="${currentMenu.startsWith('dashboard')} ? show : ''"
+                >
                   <ul class="nav flex-column">
                     <li
                       class="nav-item"
@@ -90,8 +94,10 @@
                         th:classappend="${currentMenu == 'dashboard.web'} ? active : ''"
                         href="/dashboard/web"
                         class="nav-link"
-                        >[[#{web}]]</a
                       >
+                        <i class="menu-icon fab fa-firefox nav-icon"></i>
+                        <span>[[#{web}]]</span>
+                      </a>
                     </li>
                     <li
                       class="nav-item"
@@ -101,8 +107,10 @@
                         th:classappend="${currentMenu == 'dashboard.socket'} ? active : ''"
                         href="/dashboard/socket"
                         class="nav-link"
-                        >[[#{socket}]]</a
                       >
+                        <i class="menu-icon fa fa-rocket nav-icon"></i>
+                        <span>[[#{socket}]]</span>
+                      </a>
                     </li>
                     <li
                       class="nav-item"
@@ -110,9 +118,11 @@
                     >
                       <a
                         th:classappend="${currentMenu == 'dashboard.admin'} ? active : ''"
-                        href="/dashboard/web"
+                        href="/dashboard/admin"
                         class="nav-link"
-                        >[[#{admin}]]</a
+                      >
+                        <i class="menu-icon fa fa-suitcase nav-icon"></i>
+                        <span>[[#{admin}]]</span></a
                       >
                     </li>
                   </ul>
@@ -143,27 +153,27 @@
                   th:with="componentsTitle=#{components.title}"
                   th:text="${#strings.toUpperCase(componentsTitle)}"
                   th:if="${adminRoles.isAccessibleAny({'/plugins', '/themes', '/socket-apps'})}"
-                  >Components</span
-                >
+                ></span>
               </li>
 
-              <li
-                class="nav-item"
-                th:classappend="${currentOpen == 'plugins'} ? 'menu-open' : ''"
-                th:if="${adminRoles.isAccessible('/plugins')}"
-              >
+              <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="#sidebarPlugin"
+                  data-bs-target="#sidebarPlugin"
                   data-bs-toggle="collapse"
                   role="button"
                   aria-expanded="false"
                   aria-controls="sidebarPlugin"
+                  th:if="${adminRoles.isAccessible('/plugins')}"
                 >
                   <i class="iconoir-report-columns menu-icon"></i>
                   <span>[[#{plugins}]]</span>
                 </a>
-                <div class="collapse" id="sidebarPlugin">
+                <div
+                  class="collapse"
+                  id="sidebarPlugin"
+                  th:classappend="${currentMenu.startsWith('plugins')} ? show : ''"
+                >
                   <ul class="nav flex-column">
                     <li
                       class="nav-item"
@@ -178,7 +188,7 @@
                           [[#{web}]]
 
                           <span
-                            class="badge text-bg-info"
+                            class="badge rounded text-success bg-success-subtle ms-1"
                             th:text="${totalWebPlugin}"
                           />
                         </span>
@@ -197,7 +207,7 @@
                         <span>
                           [[#{socket}]]
                           <span
-                            class="badge text-bg-info"
+                            class="badge rounded text-success bg-success-subtle ms-1"
                             th:text="${totalSocketPlugin}"
                           />
                         </span>
@@ -216,7 +226,7 @@
                         <span>
                           [[#{admin}]]
                           <span
-                            class="badge text-bg-info"
+                            class="badge rounded text-success bg-success-subtle ms-1"
                             th:text="${totalAdminPlugin}"
                           />
                         </span>
@@ -238,7 +248,10 @@
                   <i class="menu-icon fa fa-window-restore"></i>
                   <span>
                     [[#{themes}]]
-                    <span class="badge text-bg-info" th:text="${totalTheme}" />
+                    <span
+                      class="badge rounded text-success bg-success-subtle ms-1"
+                      th:text="${totalTheme}"
+                    />
                   </span>
                 </a>
               </li>
@@ -256,7 +269,7 @@
                   <span>
                     [[#{socket_apps}]]
                     <span
-                      class="badge text-bg-info"
+                      class="badge rounded text-success bg-success-subtle ms-1"
                       th:text="${totalSocketApp}"
                     />
                   </span>
@@ -282,10 +295,10 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="#sidebarAdmin"
+                  data-bs-target="#sidebarAdmin"
                   data-bs-toggle="collapse"
                   role="button"
-                  th:attr="aria-expanded=${currentOpen == 'admins'} ? true : false"
+                  aria-expanded="false"
                   aria-controls="sidebarAdmin"
                   th:if="${adminRoles.isAccessible('/admins')}"
                   th:classappend="${currentMenu == 'admins'} ? active : ''"
@@ -293,44 +306,44 @@
                   <i class="menu-icon fa fa-user-circle"></i>
                   <span>[[#{admins}]]</span>
                 </a>
-                <div class="collapse" id="sidebarAdmin">
+                <div
+                  class="collapse"
+                  id="sidebarAdmin"
+                  th:classappend="${currentMenu.startsWith('admins')} ? show : ''"
+                >
                   <ul class="nav flex-column">
                     <li
                       class="nav-item"
-                      th:if="${adminRoles.isAccessible('/users')}"
+                      th:if="${adminRoles.isAccessible('/admins')}"
                     >
                       <a
-                        href="/users"
+                        href="/admins"
                         class="nav-link"
-                        th:classappend="${currentMenu == 'users.list'} ? active : ''"
+                        th:classappend="${currentMenu == 'admins.list'} ? active : ''"
                       >
-                        <i class="fa fa-list menu-icon"></i>
-                        <span>
-                          [[#{list}]]
-                          <span
-                            class="badge text-bg-info"
-                            th:text="${totalUser}"
-                          />
-                        </span>
+                        <i class="menu-icon fa fa-list menu-icon"></i>
+                        <span> [[#{list}]] </span>
+                        <span
+                          class="badge rounded text-success bg-success-subtle ms-1"
+                          th:text="${totalUser}"
+                        />
                       </a>
                     </li>
                     <li
                       class="nav-item"
-                      th:if="${adminRoles.isAccessible('/users/roles')}"
+                      th:if="${adminRoles.isAccessible('/admins/roles')}"
                     >
                       <a
-                        href="/users/roles"
+                        href="/admins/roles"
                         class="nav-link"
-                        th:classappend="${currentMenu == 'users.roles'} ? active : ''"
+                        th:classappend="${currentMenu == 'admins.roles'} ? active : ''"
                       >
-                        <i class="fas fa-users-cog menu-icon"></i>
-                        <span>
-                          [[#{roles}]]
-                          <span
-                            class="badge text-bg-info"
-                            th:text="${totalUserRoles}"
-                          />
-                        </span>
+                        <i class="menu-icon fas fa-users-cog menu-icon"></i>
+                        <span> [[#{roles}]] </span>
+                        <span
+                          class="badge rounded text-success bg-success-subtle ms-1"
+                          th:text="${totalAdminRoles}"
+                        />
                       </a>
                     </li>
 
@@ -343,7 +356,7 @@
                         class="nav-link"
                         th:classappend="${currentMenu == 'admins.add'} ? active : ''"
                       >
-                        <i class="fa fa-plus-circle menu-icon"></i>
+                        <i class="menu-icon fa fa-plus-circle menu-icon"></i>
                         <span>[[#{add_new}]]</span>
                       </a>
                     </li>
@@ -356,7 +369,7 @@
                         class="nav-link"
                         th:classappend="${currentMenu == 'admins.profile'} ? active : ''"
                       >
-                        <i class="fa fa-user menu-icon"></i>
+                        <i class="menu-icon fa fa-user menu-icon"></i>
                         <span>[[#{profile}]]</span>
                       </a>
                     </li>
@@ -384,10 +397,10 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="#sidebarUsers"
+                  data-bs-target="#sidebarUsers"
                   data-bs-toggle="collapse"
                   role="button"
-                  th:attr="aria-expanded=${currentOpen == 'users'} ? true : false"
+                  aria-expanded="false"
                   aria-controls="sidebarUsers"
                   th:if="${adminRoles.isAccessible('/users')}"
                   th:classappend="${currentMenu == 'users'} ? active : ''"
@@ -396,7 +409,11 @@
                   <span>[[#{users}]]</span>
                 </a>
 
-                <div class="collapse" id="sidebarUsers">
+                <div
+                  class="collapse"
+                  id="sidebarUsers"
+                  th:classappend="${currentMenu.startsWith('users')} ? show : ''"
+                >
                   <ul class="nav flex-column">
                     <li
                       class="nav-item"
@@ -456,10 +473,10 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href="#sidebarSettings"
+                  data-bs-target="#sidebarSettings"
                   data-bs-toggle="collapse"
                   role="button"
-                  th:attr="aria-expanded=${currentOpen == 'settings'} ? true : false"
+                  aria-expanded="false"
                   aria-controls="sidebarSettings"
                   th:if="${adminRoles.isAccessible('/settings')}"
                   th:classappend="${currentMenu == 'settings'} ? active : ''"
@@ -468,7 +485,11 @@
                   <span>[[#{settings}]]</span>
                 </a>
 
-                <div class="collapse" id="sidebarSettings">
+                <div
+                  class="collapse"
+                  id="sidebarSettings"
+                  th:classappend="${currentMenu.startsWith('settings')} ? show : ''"
+                >
                   <ul class="nav flex-column">
                     <li
                       class="nav-item"
@@ -479,7 +500,7 @@
                         class="nav-link"
                         th:classappend="${currentMenu == 'settings.regular'} ? active : ''"
                       >
-                        <i class="fas fa-cogs nav-icon"></i>
+                        <i class="menu-icon fas fa-cogs nav-icon"></i>
                         <span> [[#{regular}]] </span>
                       </a>
                     </li>
@@ -492,7 +513,7 @@
                         class="nav-link"
                         th:classappend="${currentMenu == 'settings.website'} ? active : ''"
                       >
-                        <i class="fab fa-firefox nav-icon"></i>
+                        <i class="menu-icon fab fa-firefox nav-icon"></i>
                         <span> [[#{website}]] </span>
                       </a>
                     </li>
@@ -502,7 +523,7 @@
                         class="nav-link"
                         th:classappend="${currentMenu == 'settings.list'} ? active : ''"
                       >
-                        <i class="fa fa-list nav-icon"></i>
+                        <i class="menu-icon fa fa-list nav-icon"></i>
                         <span>[[#{list}]]</span>
                         <span
                           class="badge rounded text-success bg-success-subtle ms-1"
@@ -520,7 +541,7 @@
                         class="nav-link"
                         th:classappend="${currentMenu == 'settings.encryption'} ? active : ''"
                       >
-                        <i class="fas fa-key nav-icon"></i>
+                        <i class="menu-icon fas fa-key nav-icon"></i>
                         <span>[[#{encryption}]]</span>
                       </a>
                     </li>
