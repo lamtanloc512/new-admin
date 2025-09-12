@@ -1,0 +1,605 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-lg-10 col-md-12">
+        <form id="editRegularSettingsForm">
+            <div class="form-group row">
+                <label for="ezyplatformNodeName" class="col-md-4 col-form-label">
+                    [[#{node_name}]]
+                </label>
+                <div class="col-md-5">
+                    <input type="text" name="ezyplatformNodeName" id="ezyplatformNodeName"
+                           class="form-control" th:placeholder="#{node_name}"
+                           onkeydown="ezyadmin.onKeyDownToEditRegularSettings();"
+                           th:value="${ezyplatformNodeName}">
+                </div>
+                <label id="ezyplatformNodeNameErrorLabel" class="col-md-3 col-form-label text-danger d-none" for="ezyplatformNodeName">
+                    <i class="far fa-times-circle"></i> <span id="ezyplatformNodeNameError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="defaultAdminLanguage" class="col-md-4 col-form-label">
+                    [[#{default_admin_language}]]
+                </label>
+                <div class="col-md-2 d-flex align-items-center">
+                    <select class="form-select form-control" name="defaultAdminLanguage" id="defaultAdminLanguage">
+                        <option value="">[[#{default}]]</option>
+                        <option th:each="adminLanguage : ${adminLanguages}"
+                                th:value="${adminLanguage.code}"
+                                th:selected="${adminLanguage.code == adminDefaultLanguageCode}">
+                            [[${adminLanguage.name}]]
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+            <div class="form-group row">
+                <label for="allowSearchUserByLikeOperator" class="col-md-4 col-form-label">
+                    [[#{allow_search_user_by_like_operator}]]
+                </label>
+                <div class="col-md-8 d-flex align-items-center">
+                    <input type="checkbox" name="allowSearchUserByLikeOperator" id="allowSearchUserByLikeOperator" class="form-check wh-1rem"
+                           th:value="${allowSearchUserByLikeOperator}"
+                           th:checked="${allowSearchUserByLikeOperator}">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="allowSendStatisticsData" class="col-md-4 col-form-label">
+                    [[#{allow_send_statistics_data}]]
+                </label>
+                <div class="col-md-8 d-flex align-items-center">
+                    <input type="checkbox" name="allowSendStatisticsData" id="allowSendStatisticsData" class="form-check wh-1rem"
+                           th:value="${regularSettings.allowSendStatisticsData}"
+                           th:checked="${regularSettings.allowSendStatisticsData}">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="newPlatformMailScheduleType" class="col-md-4 col-form-label">
+                    [[#{new_platform_mail_schedule_type}]]
+                </label>
+                <div class="col-md-2 d-flex align-items-center">
+                    <select class="form-select form-control" name="newPlatformMailScheduleType" id="newPlatformMailScheduleType"
+                            th:value="${newPlatformMailScheduleType.toString()}">
+                        <option value="DAYS" th:selected="${newPlatformMailScheduleType.toString() == 'DAYS'}">
+                            1 [[#{day}]]
+                        </option>
+                        <option value="WEEKS" th:selected="${newPlatformMailScheduleType.toString() == 'WEEKS'}">
+                            1 [[#{week}]]
+                        </option>
+                        <option value="MONTHS" th:selected="${newPlatformMailScheduleType.toString() == 'MONTHS'}">
+                            1 [[#{month}]]
+                        </option>
+                        <option value="NEVER" th:selected="${newPlatformMailScheduleType.toString() == 'NEVER'}">
+                            [[#{never}]]
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+            <div class="form-group row">
+                <label for="numberOfMediaPerPage" class="col-md-4 col-form-label">
+                    [[#{number_of_media_per_page}]]
+                </label>
+                <div class="col-md-4">
+                    <input type="number" name="numberOfMediaPerPage" id="numberOfMediaPerPage"
+                           class="form-control" th:placeholder="#{number_of_media_per_page}"
+                           onkeydown="ezyadmin.onKeyDownToEditRegularSettings();"
+                           th:value="${numberOfMediaPerPage}">
+                </div>
+                <label id="numberOfMediaPerPageErrorLabel" class="col-md-4 col-form-label text-danger d-none" for="numberOfMediaPerPage">
+                    <i class="far fa-times-circle"></i> <span id="numberOfMediaPerPageError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-2 mb-2">
+                    <button th:if="${adminRoles.isAccessible('/api/v1/settings/regular', 'PUT')}"
+                            type="button" class="btn btn-primary btn-block" onclick="ezyadmin.editRegularSettings();">
+                        [[#{save}]]
+                    </button>
+                </div>
+                <div class="col-md-6"></div>
+                <!-- /.col -->
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-2 col-md-0"></div>
+    <div class="col-12">
+        <hr class="mb-4" />
+    </div>
+    <div class="col-12">
+        <h3>[[#{admin_login}]]</h3>
+    </div>
+    <div class="col-lg-10 col-md-12 mt-3">
+        <form id="editAdminLoginSettingsForm">
+            <div class="form-group row">
+                <label for="maxLoginFailures" class="col-md-4 col-sm-12 col-form-label">
+                    [[#{max_login_failures}]]
+                </label>
+                <div class="col-lg-6 col-md-4">
+                    <input type="number" name="maxLoginFailures" id="maxLoginFailures"
+                           class="form-control" th:placeholder="#{max_login_failures}"
+                           onkeydown="ezyadmin.onKeyDownToEditAdminLoginSettings();"
+                           th:value="${adminLoginSettings.maxLoginFailures}">
+                </div>
+                <label id="maxLoginFailuresErrorLabel" class="col-lg-2 col-md-4 col-form-label text-danger d-none" for="maxLoginFailures">
+                    <i class="far fa-times-circle"></i> <span id="maxLoginFailuresError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="loginFailureBlockDuration" class="col-md-4 col-sm-12 col-form-label">
+                    [[#{login_failure_block_duration}]]
+                </label>
+                <div class="col-lg-6 col-md-4">
+                    <input type="number" name="loginFailureBlockDuration" id="loginFailureBlockDuration"
+                           class="form-control" th:placeholder="#{duration_in_minutes}"
+                           onkeydown="ezyadmin.onKeyDownToEditAdminLoginSettings();"
+                           th:value="${adminLoginSettings.loginFailureBlockDuration}">
+                </div>
+                <label id="loginFailureBlockDurationErrorLabel" class="col-lg-2 col-md-4 col-form-label text-danger d-none" for="loginFailureBlockDuration">
+                    <i class="far fa-times-circle"></i> <span id="loginFailureBlockDurationError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-2 mb-2">
+                    <button th:if="${adminRoles.isAccessible('/api/v1/settings/admin-login', 'PUT')}"
+                            type="button" class="btn btn-primary btn-block" onclick="ezyadmin.editAdminLoginSettings();">
+                        [[#{save}]]
+                    </button>
+                </div>
+                <div class="col-md-6"></div>
+                <!-- /.col -->
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-2 col-md-0"></div>
+    <div class="col-12">
+        <hr class="mb-4" />
+    </div>
+    <div class="col-12">
+        <h3>[[#{admin_access_token}]]</h3>
+    </div>
+    <div class="col-lg-10 col-md-12 mt-3">
+        <form id="changeEncryptionKeyForm">
+            <div class="form-group row">
+                <label for="adminTokenExpiredTimeInDay" class="col-md-4 col-form-label">
+                    [[#{token_expiration_time}]]
+                </label>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="number" name="tokenExpiredTimeInDay" id="adminTokenExpiredTimeInDay"
+                               class="form-control" th:placeholder="#{token_expiration_time}"
+                               oninput="ezyadmin.onKeyDownToEditAdminTokenExpirationTimeSetting(this);"
+                               th:value="${adminTokenExpiredTimeInDay}">
+                        <span class="text-nowrap">[[#{day_s}]]</span>
+                    </div>
+                </div>
+                <label id="adminTokenExpiredTimeInDayErrorLabel" class="col-md-4 col-form-label text-danger d-none" for="adminTokenExpiredTimeInDay">
+                    <i class="far fa-times-circle"></i> <span id="adminTokenExpiredTimeInDayError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="currentEncryptionKey" class="col-md-4 col-form-label">
+                    [[#{current_encryption_key}]]
+                </label>
+                <div class="col-md-6 d-flex">
+                    <input type="text" name="currentEncryptionKey" id="currentEncryptionKey" class="form-control"
+                           value="************" disabled>
+                    <button type="button" class="btn btn-info ml-1 white-space-nowrap"
+                            id="showEncryptionKeyButton"
+                            onclick="ezyadmin.showEncryptionKey();">
+                        [[#{show}]]
+                    </button>
+                    <button type="button" class="btn btn-secondary ml-1 white-space-nowrap d-none"
+                            id="hideEncryptionKeyButton"
+                            onclick="ezyadmin.hideEncryptionKey();">
+                        [[#{hide}]]
+                    </button>
+                    <button type="button" class="btn btn-primary ml-1 white-space-nowrap"
+                            id="changeEncryptionKeyButton"
+                            onclick="ezyadmin.showChangeEncryptionKeyComponents();">
+                        [[#{change}]]
+                    </button>
+                </div>
+                <div class="col-md-2 d-flex"></div>
+            </div>
+            <div class="d-none" id="changeEncryptionKeyComponents">
+                <div class="form-group row">
+                    <label for="newEncryptionKey" class="col-md-4 col-form-label">
+                        [[#{new_encryption_key}]] (<span class="text-danger">*</span>)</label>
+                    <div class="col-md-6">
+                        <input type="text" name="newEncryptionKey" id="newEncryptionKey"
+                               class="form-control" th:placeholder="#{new_encryption_key}">
+                    </div>
+                    <label id="newEncryptionKeyErrorLabel" class="col-md-2 col-form-label text-danger d-none" for="newEncryptionKey">
+                        <i class="far fa-times-circle"></i> <span id="newEncryptionKeyError">[[#{invalid}]]</span>
+                    </label>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-4 col-form-label">
+                    </label>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <button type="button" id="randomEncryptionKeyButton" class="btn btn-outline-primary pt-1 pb-1"
+                                    onclick="ezyadmin.onRandomEncryptionKeyClick();">
+                                [[#{random}]]
+                            </button>
+                            <span class="ml-2" id="randomEncryptionKey"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-8">
+                        <button type="button" class="btn btn-primary pl-4 pr-4" onclick="ezyadmin.changeEncryptionKey();">
+                            [[#{submit}]]
+                        </button>
+                        <button type="button" class="btn btn-secondary pl-4 pr-4" onclick="ezyadmin.cancelChangeEncryptionKey();">
+                            [[#{cancel}]]
+                        </button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="adminSsoAllowedOrigins" class="col-md-4 col-form-label">
+                    [[#{domains_allowed_to_share_access_token}]]
+                </label>
+                <div class="col-md-6">
+                    <textarea name="tokenExpiredTimeInDay" id="adminSsoAllowedOrigins" rows="5"
+                              class="form-control" th:placeholder="#{domains_allowed_to_share_access_token}"
+                              th:value="${adminSsoAllowedOrigins}">[[${adminSsoAllowedOriginsText}]]</textarea>
+                    <span>[[#{domains_allowed_to_share_access_token_guide}]]</span>
+                </div>
+                <label id="adminSsoAllowedOriginsErrorLabel" class="col-md-2 col-form-label text-danger d-none" for="adminSsoAllowedOrigins">
+                    <i class="far fa-times-circle"></i> <span id="adminSsoAllowedOriginsError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-2">
+                    <button th:if="${adminRoles.isAccessible('/api/v1/settings/admin-sso-allowed-origins', 'PUT')}"
+                            type="button" class="btn btn-primary btn-block" onclick="ezyadmin.saveAdminSsoAllowOriginsSettings();">
+                        [[#{save}]]
+                    </button>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-2 col-md-0"></div>
+    <div class="col-12">
+        <hr class="mb-4" />
+    </div>
+    <div class="col-12">
+        <h3>[[#{datetime_format}]]</h3>
+    </div>
+    <div class="col-md-10 col-sm-12">
+        <form id="dateTimeFormatSettingsForm">
+            <div class="form-group row">
+                <label for="dateFormat" class="col-md-4 col-form-label">[[#{date_format}]]</label>
+                <div class="col-md-6">
+                    <input type="text" name="dateFormat" id="dateFormat"
+                           class="form-control" th:placeholder="#{date_format}"
+                           onkeydown="ezyadmin.onKeyDownToSaveDateTimeFormatSettings();"
+                           th:value="${dateFormat}">
+                </div>
+                <label id="dateFormatErrorLabel" class="col-md-2 col-form-label text-danger d-none" for="dateFormat">
+                    <i class="far fa-times-circle"></i> <span id="dateFormatError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="timeFormat" class="col-md-4 col-form-label">[[#{time_format}]]</label>
+                <div class="col-md-6">
+                    <input type="text" name="timeFormat" id="timeFormat"
+                           class="form-control" th:placeholder="#{time_format}"
+                           onkeydown="ezyadmin.onKeyDownToSaveDateTimeFormatSettings();"
+                           th:value="${timeFormat}">
+                </div>
+                <label id="timeFormatErrorLabel" class="col-md-2 col-form-label text-danger d-none" for="timeFormat">
+                    <i class="far fa-times-circle"></i> <span id="timeFormatError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="dateTimeFormat" class="col-md-4 col-form-label">[[#{datetime_format}]]</label>
+                <div class="col-md-6">
+                    <input type="text" name="dateTimeFormat" id="dateTimeFormat"
+                           class="form-control" th:placeholder="#{datetime_format}"
+                           onkeydown="ezyadmin.onKeyDownToSaveDateTimeFormatSettings();"
+                           th:value="${dateTimeFormat}">
+                </div>
+                <label id="dateTimeFormatErrorLabel" class="col-md-2 col-form-label text-danger d-none" for="dateTimeFormat">
+                    <i class="far fa-times-circle"></i> <span id="dateTimeFormatError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="dateMinuteFormat" class="col-md-4 col-form-label">[[#{date_minute_format}]]</label>
+                <div class="col-md-6">
+                    <input type="text" name="dateMinuteFormat" id="dateMinuteFormat"
+                           class="form-control" th:placeholder="#{date_minute_format}"
+                           onkeydown="ezyadmin.onKeyDownToSaveDateTimeFormatSettings();"
+                           th:value="${dateMinuteFormat}">
+                </div>
+                <label id="dateMinuteFormatErrorLabel" class="col-md-2 col-form-label text-danger d-none" for="dateMinuteFormat">
+                    <i class="far fa-times-circle"></i> <span id="dateMinuteFormatError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-2">
+                    <button th:if="${adminRoles.isAccessible('/api/v1/settings/website', 'PUT')}"
+                            type="button" class="btn btn-primary btn-block" onclick="ezyadmin.saveDateTimeFormatSettings();">
+                        [[#{save}]]
+                    </button>
+                </div>
+                <div class="col-md-6"></div>
+                <!-- /.col -->
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2"></div>
+    <th:block th:if="${allowReloadAppender}">
+        <div class="col-12">
+            <hr class="mb-4" />
+        </div>
+        <div class="col-12">
+            <h3>[[#{data_appenders}]]</h3>
+        </div>
+        <div class="col-lg-10 col-md-12 mt-3">
+            <div th:each="dataAppenderName,iterator : ${dataAppenderNames}" class="row mb-3">
+                <div class="col-md-4 col-8">
+                    <span class="text-break">[[${iterator.index + 1}]].[[${dataAppenderName}]]</span>
+                </div>
+                <div class="col-md-8 col-4">
+                    <button type="button" class="btn btn-warning"
+                            th:attr="onclick=|ezyadmin.reloadDataAppender('${dataAppenderName}')|">
+                        [[#{reload}]]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</div>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.messages.reload_successfully = /*[[#{reload_successfully}]]*/;
+ezyadmin.messages.save_successfully = /*[[#{save_successfully}]]*/;
+ezyadmin.messages.save_admin_login_settings_successfully = /*[[#{save_admin_login_settings_successfully}]]*/;
+ezyadmin.messages.save_regular_settings_successfully = /*[[#{save_regular_settings_successfully}]]*/;
+/*]]>*/
+// =================== regular settings ================
+ezyadmin.onKeyDownToEditRegularSettings = function() {
+    if(event.key === 'Enter') {
+    	ezyadmin.editRegularSettings();
+    }
+}
+
+ezyadmin.editRegularSettings = function() {
+    var formData = ezyadmin.formDataToObject('editRegularSettingsForm');
+    formData.allowSearchUserByLikeOperator = $('#allowSearchUserByLikeOperator').prop('checked');
+    formData.allowSendStatisticsData = $('#allowSendStatisticsData').prop('checked');
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/regular',
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
+        success: function () {
+            ezyadmin.shortToast(
+                'bg-success',
+                ezyadmin.messages.save_regular_settings_successfully
+            );
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors(formData, data);
+        }
+    });
+}
+
+// =================== admin login settings ================
+ezyadmin.onKeyDownToEditAdminLoginSettings = function() {
+    if(event.key === 'Enter') {
+    	ezyadmin.editAdminLoginSettings();
+    }
+}
+
+ezyadmin.editAdminLoginSettings = function() {
+    var formData = ezyadmin.formDataToObject('editAdminLoginSettingsForm');
+    ezyadmin.hideFormErrors(formData);
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/admin-login',
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
+        success: function () {
+            ezyadmin.shortToast(
+                'bg-success',
+                ezyadmin.messages.save_admin_login_settings_successfully
+            );
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors(formData, data);
+        }
+    });
+}
+
+// ========== access token time =============
+ezyadmin.onKeyDownToEditAdminTokenExpirationTimeSetting = function(e) {
+    var value = $(e).val();
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/admin-access-token-expiration-time',
+        data: JSON.stringify({
+            tokenExpiredTimeInDay: value
+        }),
+        contentType: 'application/json',
+        success: function () {
+            // do nothing
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors(formData, data);
+        }
+    });
+}
+
+// ========== random key =============
+ezyadmin.showChangeEncryptionKeyComponents = function() {
+    $('#changeEncryptionKeyButton').addClass('d-none');
+    $('#changeEncryptionKeyComponents').removeClass('d-none');
+}
+
+ezyadmin.onRandomEncryptionKeyClick = function() {
+	$.ajax({
+        type: 'POST',
+        url: '/api/v1/settings/random-aes-key',
+        success: function (data) {
+            $('#newEncryptionKey').val(data.encryptionKey);
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors(formData, data);
+        }
+    });
+}
+
+ezyadmin.cancelChangeEncryptionKey = function() {
+    $('#changeEncryptionKeyButton').removeClass('d-none');
+    $('#changeEncryptionKeyComponents').addClass('d-none');
+}
+
+// ========== show/hide encryption key ===============
+ezyadmin.showEncryptionKey = function() {
+    $.ajax({
+        url: '/api/v1/settings/admin-access-token-encryption-key',
+        type: 'GET',
+        dataType: 'json',
+    })
+    .done(function(data) {
+		$('#currentEncryptionKey').val(data.encryptionKey);
+		$('#showEncryptionKeyButton').addClass('d-none');
+		$('#hideEncryptionKeyButton').removeClass('d-none');
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.hideEncryptionKey = function() {
+    $('#currentEncryptionKey').val('************');
+    $('#showEncryptionKeyButton').removeClass('d-none');
+    $('#hideEncryptionKeyButton').addClass('d-none');
+}
+
+// ========== change encryption key =============
+ezyadmin.changeEncryptionKey = function() {
+    var formData = {
+        newEncryptionKey: $('#newEncryptionKey').val()
+    };
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/admin-access-token-encryption-key',
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
+        success: function () {
+            location.reload();
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors(formData, data);
+        }
+    });
+}
+
+// ========== admin sso allow origins =============
+ezyadmin.saveAdminSsoAllowOriginsSettings = function() {
+    var adminSsoAllowedOrigins = $('#adminSsoAllowedOrigins').val();
+    var strs = adminSsoAllowedOrigins.split('\n');
+    var origins = {};
+    strs.forEach((str) => {
+        if (str.trim()) {
+            var pair = str.split(':');
+            origins[pair[0]] = pair.length > 1 ? pair[1] : pair[0];
+        }
+    });
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/admin-sso-allowed-origins',
+        data: JSON.stringify(origins),
+        contentType: 'application/json',
+        success: function () {
+            ezyadmin.shortToast(
+                'bg-success',
+                ezyadmin.messages.save_successfully
+            );
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors({}, data);
+        }
+    });
+}
+
+// ========== datetime format setting =============
+ezyadmin.onKeyDownToSaveDateTimeFormatSettings = function() {
+    if(event.key === 'Enter') {
+    	ezyadmin.saveDateTimeFormatSettings();
+    }
+}
+ezyadmin.saveDateTimeFormatSettings = function() {
+    var formData = ezyadmin.formDataToObject('dateTimeFormatSettingsForm');
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/admin-datetime-formats',
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
+        success: function () {
+            ezyadmin.shortToast(
+                'bg-success',
+                ezyadmin.messages.save_successfully
+            );
+            location.reload();
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors(formData, data);
+        }
+    });
+}
+
+// ========== reload data appender =============
+ezyadmin.reloadDataAppender = function(dataAppenderName) {
+    $.ajax({
+        type: 'POST',
+        url: '/api/v1/settings/data-appenders/' + dataAppenderName + '/reload',
+        success: function () {
+            ezyadmin.shortToast(
+                'bg-success',
+                ezyadmin.messages.reload_successfully
+            );
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors({}, data);
+        }
+    });
+}
+</script>
+</body>
+</html>

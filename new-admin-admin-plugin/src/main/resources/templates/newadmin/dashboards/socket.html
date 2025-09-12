@@ -1,0 +1,681 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-md-12">
+        <div id="statusBox"
+             class="small-box bg-danger d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-center align-items-center">
+                <h5 id="statusText" class="p-2 font-weight-bold mb-1 mt-1">[[#{running}]]</h5>
+                <h6 id="liveTime" class="p-2 font-weight-bold mb-1 mt-1"></h6>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <button type="button" id="buttonEnable" class="btn btn-dark mr-2" onclick="ezyadmin.enableServer('socket');"
+                        th:if="${adminRoles.isAccessible('/api/v1/enable', 'POST') && !socketEnable}">[[#{enable}]]</button>
+                <button type="button" id="buttonDisable" class="btn btn-dark mr-2" onclick="ezyadmin.disableServer('socket');"
+                        th:if="${adminRoles.isAccessible('/api/v1/disable', 'POST') && socketEnable}">[[#{disable}]]</button>
+                <button type="button" id="buttonStart" class="btn btn-dark mr-2" onclick="ezyadmin.startServer('socket');"
+                        th:if="${adminRoles.isAccessible('/api/v1/start', 'POST')}">[[#{start}]]</button>
+                <button type="button" id="buttonStop" class="btn btn-info mr-2" onclick="ezyadmin.stopServer('socket');"
+                        th:if="${adminRoles.isAccessible('/api/v1/stop', 'POST')}">[[#{stop}]]</button>
+                <button type="button" id="buttonRestart" class="btn btn-primary mr-2" onclick="ezyadmin.restartServer('socket');"
+                        th:if="${adminRoles.isAccessible('/api/v1/restart', 'POST')}">[[#{restart}]]</button>
+            </div>
+        </div>
+    </div>
+    <!-- ./status -->
+    <div class="col-md-3">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3 id="sessionCount">100</h3>
+                <p>[[#{sessions}]]</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-handshake"></i>
+            </div>
+        </div>
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3 id="userCount">100</h3>
+                <p>[[#{ccu}]]</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-users"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="small-box bg-info" th:if="${adminRoles.isAccessible('/management/memory-usage')}">
+            <div class="inner">
+                <h3 id="memoryUsage">30MB</h3>
+                <p>[[#{memory_usage}]]</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-barcode"></i>
+            </div>
+        </div>
+        <div class="small-box bg-success" th:if="${adminRoles.isAccessible('/management/cpu-usage')}">
+            <div class="inner">
+                <h3><span id="cpuUsage">10</span><sup style="font-size: 20px">%</sup></h3>
+                <p>[[#{cpu_usage}]]</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-microchip"></i>
+            </div>
+        </div>
+        <div class="small-box bg-sky-blue" th:if="${adminRoles.isAccessible('/management/thread-count')}">
+            <div class="inner">
+                <h3 id="threadCount">10</h3>
+                <p>[[#{threads}]]</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-flower"></i>
+            </div>
+        </div>
+    </div>
+    <!-- ./metrics -->
+    <div class="col-md-6">
+        <div class="card card-primary"
+             th:if="${adminRoles.isAccessible('/api/v1/settings/set-socket-properties', 'PUT')}">
+            <div class="card-header">
+                <h3 class="card-title">[[#{settings}]]</h3>
+            </div>
+            <div>
+                <div class="card-body">
+                    <form id="socketSettingsForm">
+                        <div class="form-group">
+                            <label for="websocketUrl">[[#{websocket_url}]]</label>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="websocketUrlErrorLabel" for="websocketUrl">
+                                    <i class="far fa-times-circle"></i> <span id="websocketUrlError"></span>
+                                </label>
+                                <input type="url" name="websocketUrl" id="websocketUrl"
+                                       class="form-control" th:placeholder="#{enter_websocket_url}"
+                                       th:value="${websocketUrl}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <label for="socketProperties">[[#{socket_properties}]]</label>
+                                <i class="fas fa-info-circle text-info"
+                                   data-toggle="tooltip" data-placement="top"
+                                   th:title="#{must_restart_socket_to_apply}"></i>
+                            </div>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="socketPropertiesErrorLabel" for="socketProperties">
+                                    <i class="far fa-times-circle"></i> <span id="socketPropertiesError"></span>
+                                </label>
+                                <textarea name="socketProperties" id="socketProperties" class="form-control"
+                                          rows="5" th:placeholder="#{socket_properties}"
+                                          th:text="${socketProperties}"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sslCertificatePassword">[[#{ssl_configuration}]]</label>
+                            <div class="form-group row">
+                                <div class="col-md-12 d-flex align-items-center">
+                                    <input type="checkbox" name="enableWebsocketSsl" id="enableWebsocketSsl" class="form-check wh-1rem"
+                                           th:value="${enableWebsocketSsl}"
+                                           th:checked="${enableWebsocketSsl}">
+                                    <span class="col-form-label ml-1">
+                                        [[#{enable_websocket_ssl}]]
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-12 d-flex align-items-center">
+                                    <input type="checkbox" name="allowSslToReloadAutomatically" id="allowSslToReloadAutomatically" class="form-check wh-1rem"
+                                           th:value="${allowSslToReloadAutomatically}"
+                                           th:checked="${allowSslToReloadAutomatically}">
+                                    <span class="col-form-label ml-1">
+                                        [[#{allow_ssl_to_reload_automatically}]]
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-form-label text-danger d-none" id="sslCertificatePasswordErrorLabel" for="sslCertificatePassword">
+                                <i class="far fa-times-circle"></i> <span id="sslCertificatePasswordError"></span>
+                            </label>
+                            <input type="password" id="sslCertificatePassword"
+                                   name="sslCertificatePassword" value="******"
+                                   class="form-control" th:placeholder="#{ssl_certificate_password}">
+                        </div>
+                        <div class="form-group">
+                            <label class="col-form-label text-danger d-none" id="sslKeystoreFileErrorLabel" for="sslKeystoreFile">
+                                <i class="far fa-times-circle"></i> <span id="sslKeystoreFileError"></span>
+                            </label>
+                            <div class="custom-file">
+                                <input type="file" name="sslKeystoreFile" class="custom-file-input" id="sslKeystoreFile">
+                                <label class="custom-file-label" for="sslKeystoreFile">[[#{ssl_keystore_file}]]</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="sslKeystorePasswordErrorLabel" for="sslKeystorePassword">
+                                    <i class="far fa-times-circle"></i> <span id="sslKeystorePasswordError"></span>
+                                </label>
+                                <input type="password" id="sslKeystorePassword"
+                                       name="sslKeystorePassword" value="******"
+                                       class="form-control" th:placeholder="#{ssl_keystore_password}">
+                            </div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <div>
+                                <label for="socketVmOptions">[[#{vm_options}]]</label>
+                                <i class="fas fa-info-circle text-info"
+                                   data-toggle="tooltip" data-placement="top"
+                                   th:title="#{must_restart_admin_to_apply}"></i>
+                            </div>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="socketVmOptionsErrorLabel" for="socketVmOptions">
+                                    <i class="far fa-times-circle"></i> <span id="socketVmOptionsError"></span>
+                                </label>
+                                <textarea name="socketVmOptions" id="socketVmOptions" class="form-control"
+                                          rows="5" th:placeholder="#{example} + ': MAX_HEAP_SIZE=256m'"
+                                          th:text="${socketVmOptions}"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                    <button type="button" class="btn btn-primary" onclick="ezyadmin.updateSocketSettings();">[[#{submit}]]</button>
+                </div>
+            </div>
+        </div>
+        <div class="card card-info" th:if="${adminRoles.specialAdmin}">
+            <div class="card-header">
+                <h3 class="card-title">[[#{zone_list}]]</h3>
+            </div>
+            <div id="zoneList">
+            </div>
+        </div>
+    </div>
+    <!-- ./information -->
+    <div class="modal fade" id="modal-settings">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="settingsModelTitle">[[#{zone_settings}]]</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <pre id="settingsModelBody"></pre>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">[[#{close}]]</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade" id="modal-commands">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="commandsModelTitle"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="commandsModelBody"></div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">[[#{close}]]</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.messages.view_settings = /*[[#{view_settings}]]*/;
+ezyadmin.messages.commands = /*[[#{commands}]]*/;
+ezyadmin.messages.set_socket_properties_successfully = /*[[#{set_socket_properties_successfully}]]*/;
+ezyadmin.messages.set_socket_properties_failed = /*[[#{set_socket_properties_failed}]]*/;
+ezyadmin.messages.set_websocket_url_successfully = /*[[#{set_websocket_url_successfully}]]*/;
+ezyadmin.messages.set_websocket_url_failed = /*[[#{set_websocket_url_failed}]]*/;
+ezyadmin.messages.set_ssl_configuration_successfully = /*[[#{set_ssl_configuration_successfully}]]*/;
+ezyadmin.messages.set_ssl_configuration_failed = /*[[#{set_ssl_configuration_failed}]]*/;
+ezyadmin.messages.set_socket_vm_options_successfully = /*[[#{set_socket_vm_options_successfully}]]*/;
+ezyadmin.messages.set_socket_vm_options_failed = /*[[#{set_socket_vm_options_failed}]]*/;
+/*]]>*/
+
+$('#buttonStart').hide();
+
+// ============== socket ================
+ezyadmin.socketMonitorPluginName = "socket-monitor"
+ezyadmin.socketMonitor = ezyadmin.socket.setupPlugin(ezyadmin.socketMonitorPluginName);
+
+ezyadmin.socketMonitor.on('liveTime', (data) => {
+    ezyadmin.liveTime = data.liveTime;
+    $('#liveTime').text(ezyadmin.durationToString(ezyadmin.liveTime));
+    clearInterval(ezyadmin.liveTimeInterval);
+    ezyadmin.liveTimeInterval = setInterval(function() {
+        $('#liveTime').text(ezyadmin.durationToString(++ezyadmin.liveTime));
+    }, 1000);
+});
+
+ezyadmin.socketMonitor.on('settings', (data) => {
+    ezyadmin.settings = data;
+    ezyadmin.showZoneList();
+});
+
+ezyadmin.socketMonitor.on('serverCommands', (data) => {
+    ezyadmin.commands = data;
+});
+
+ezyadmin.socketMonitor.on('concurrentSessions', (data) => {
+    $('#sessionCount').text(data.count);
+});
+
+ezyadmin.socketMonitor.on('concurrentUsers', (data) => {
+    $('#userCount').text(data.count);
+});
+
+ezyadmin.socketMonitor.on('memoryUsage', (data) => {
+    $('#memoryUsage').text(ezyadmin.toCapacityString(data.usedMemory));
+});
+
+ezyadmin.socketMonitor.on('cpuUsage', (data) => {
+    $('#cpuUsage').text(Math.round(data.processCpuLoad * 1000.0)/10.0);
+});
+
+ezyadmin.socketMonitor.on('threadCount', (data) => {
+    $('#threadCount').text(data.threadCount);
+});
+
+ezyadmin.socketMonitor.onAccessed(() => {
+    $('#statusText').text(ezyadmin.messages.running);
+    $('#statusBox').addClass('bg-danger').removeClass('bg-secondary');
+    $('#buttonEnable').hide();
+    $('#buttonDisable').hide();
+    $('#buttonStart').hide();
+    $('#buttonStop').show();
+    if (!ezyadmin.liveTime) {
+        ezyadmin.socketMonitor.send('liveTime');
+        ezyadmin.socketMonitor.send('settings');
+        ezyadmin.socketMonitor.send('serverCommands');
+    }
+    clearInterval(ezyadmin.metricsInterval);
+    ezyadmin.metricsInterval = setInterval(function() {
+        ezyadmin.socketMonitor.send('concurrentSessions');
+        ezyadmin.socketMonitor.send('concurrentUsers');
+        ezyadmin.socketMonitor.send('cpuUsage');
+        ezyadmin.socketMonitor.send('memoryUsage');
+        ezyadmin.socketMonitor.send('threadCount');
+    }, 1000);
+    ezyadmin.hideLoadingScreen();
+});
+
+ezyadmin.socket.onConnectionFailed(() => {
+    ezyadmin.clearDashboardStateAndIntervals();
+});
+
+ezyadmin.socket.onDisconnected(() => {
+    ezyadmin.clearDashboardStateAndIntervals();
+});
+
+ezyadmin.clearDashboardStateAndIntervals = function() {
+    ezyadmin.liveTime = 0;
+    clearInterval(ezyadmin.liveTimeInterval);
+    clearInterval(ezyadmin.metricsInterval);
+    $('#statusText').text("Off");
+    $('#statusBox').addClass('bg-secondary').removeClass('bg-danger');
+    $('#buttonStart').show();
+    $('#buttonStop').hide();
+    $('#button' + (ezyadmin.socketEnable ? 'Disable' : 'Enable')).show();
+}
+
+ezyadmin.socket.onAuthenticated(() => {
+    ezyadmin.socket.accessPlugin(ezyadmin.socketMonitorPluginName);
+});
+
+if (!ezyadmin.socketEnable) {
+    ezyadmin.clearDashboardStateAndIntervals();
+}
+// ======================= settings =================
+ezyadmin.updateSocketSettings = function() {
+    var formAllData = ezyadmin.formDataToObject('socketSettingsForm');
+    ezyadmin.hideFormErrors(formAllData);
+    ezyadmin.setWebsocketUrl(formAllData);
+    ezyadmin.setTargetProperties('socket', formAllData);
+    ezyadmin.setSslConfiguration(formAllData);
+}
+
+ezyadmin.setWebsocketUrl = function(formAllData) {
+    var formData = {
+        websocketUrl: formAllData.websocketUrl
+    };
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/set-websocket-url',
+        contentType: 'application/json',
+        data: JSON.stringify(formData)
+    }).done(function() {
+        ezyadmin.shortToast('bg-success', ezyadmin.messages.set_websocket_url_successfully);
+        ezyadmin.websocketUrl = formData.websocketUrl;
+    }).fail(function(data) {
+        ezyadmin.shortToast('bg-danger', ezyadmin.messages.set_websocket_url_failed);
+        ezyadmin.processUpdateApiErrors(formData, data);
+    });
+}
+
+ezyadmin.setSslConfiguration = function(formAllData) {
+    var formData = new FormData();
+    formData.append('enableWebsocketSsl', $('#enableWebsocketSsl').prop('checked'));
+    formData.append('allowSslToReloadAutomatically', $('#allowSslToReloadAutomatically').prop('checked'));
+    formData.append('sslCertificatePassword', formAllData.sslCertificatePassword);
+    formData.append('sslKeystoreFile', formAllData.sslKeystoreFile);
+    formData.append('sslKeystorePassword', formAllData.sslKeystorePassword);
+    $.ajax({
+        type: "PUT",
+        enctype: "multipart/form-data",
+        url: "/api/v1/settings/set-socket-ssl-configuration",
+        data: formData,
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 60000
+    }).done(function() {
+        $.ajax({
+            url: '/api/v1/settings/socket-properties',
+            type: 'GET'
+        })
+        .done(function(data) {
+            $('#socketProperties').text(data);
+        })
+        .fail(function(e) {
+            ezyadmin.processGetApiErrors(e);
+        });
+        ezyadmin.shortToast('bg-success', ezyadmin.messages.set_ssl_configuration_successfully);
+    }).fail(function(data) {
+        ezyadmin.shortToast('bg-danger', ezyadmin.messages.set_ssl_configuration_failed);
+        ezyadmin.processUpdateApiErrors(formData, data);
+    });
+}
+
+// ======================= show zone list ===========
+ezyadmin.showZoneSettingsModel = function(name) {
+    ezyadmin.showSettingsModel('zone', name, name);
+}
+
+ezyadmin.showAppSettingsModel = function(zoneName, name) {
+    ezyadmin.showSettingsModel('app', zoneName, name);
+}
+
+ezyadmin.showPluginSettingsModel = function(zoneName, name) {
+    ezyadmin.showSettingsModel('plugin', zoneName, name);
+}
+
+ezyadmin.showSettingsModel = function(type, zoneName, name) {
+    var titlePrefix;
+    var body;
+    if (type === 'zone') {
+        titlePrefix = 'Zone';
+        ezyadmin.settings.zones.zones.forEach((it) => {
+            if (it.name === zoneName) {
+                body = it;
+            }
+        });
+    }
+    else {
+        var zone;
+        ezyadmin.settings.zones.zones.forEach((it) => {
+            if (it.name === zoneName) {
+                zone = it;
+            }
+        });
+        if (type === 'app') {
+            titlePrefix = "Application";
+            zone.applications.apps.forEach((it) => {
+                if (it.name === name) {
+                    body = it;
+                }
+            });
+        }
+        else {
+            titlePrefix = 'Plugin';
+            zone.plugins.plugins.forEach((it) => {
+                if (it.name === name) {
+                    body = it;
+                }
+            });
+        }
+    }
+    $('#settingsModelTitle').text(
+        titlePrefix + ' ' + name + ' ' + ezyadmin.messages.settings.toLowerCase()
+    );
+    $('#settingsModelBody').html(ezyadmin.syntaxHighlightJson(body));
+    $('#modal-settings').modal('toggle');
+}
+
+ezyadmin.showZoneList = function() {
+    $('#zoneList').html(ezyadmin.buildZoneListHtml());
+}
+
+ezyadmin.buildZoneListHtml = function() {
+    var html = '';
+    ezyadmin.settings.zones.zones.forEach((zone) => {
+        html += ezyadmin.buildZoneHtml(zone);
+    });
+    return html;
+}
+
+ezyadmin.buildZoneHtml = function(zone) {
+    var html = `
+        <table class="table table-hover mb-0">
+            <tbody>
+                <tr data-widget="expandable-table" aria-expanded="false">
+                    <td>
+                        <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                        ${zone.name}
+                    </td>
+                </tr>
+                <tr class="expandable-body d-none">
+                    <td>
+                        <div class="p-0" style="display: none;">
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <button class="btn btn-link" onclick="ezyadmin.showZoneSettingsModel('${zone.name}')">
+                                                ${ezyadmin.messages.view_settings}
+                                            </button>
+                                        </td>
+                                    </tr>
+    `;
+
+    if (zone.applications.size) {
+        html += `
+            <tr data-widget="expandable-table" aria-expanded="false">
+                <td>
+                    <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                    Applications
+                </td>
+            </tr>
+            <tr class="expandable-body d-none">
+                <td>
+                    <div class="p-0" style="display: none;">
+                        <table class="table table-hover">
+                            <tbody>
+        `;
+        zone.applications.apps.forEach(app => {
+            html += `
+                <tr>
+                    <td>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>${app.name}</span>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-link" onclick="ezyadmin.showAppSettingsModel('${zone.name}', '${app.name}')">
+                                    ${ezyadmin.messages.settings}
+                                </button>
+                                <button class="btn btn-link" onclick="ezyadmin.showAppCommandsModel('${zone.name}', '${app.name}')">
+                                    ${ezyadmin.messages.commands}
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    if (zone.plugins.size) {
+        html += `
+            <tr data-widget="expandable-table" aria-expanded="false">
+                <td>
+                    <button type="button" class="btn p-0">
+                        <i class="expandable-table-caret fas fa-caret-right fa-fw"></i>
+                    </button>
+                    Plugins
+                </td>
+            </tr>
+        `;
+        zone.plugins.plugins.forEach(plugin => {
+            html += `
+                <tr class="expandable-body d-none">
+                    <td>
+                        <div class="p-0" style="display: none;">
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>${plugin.name}</span>
+                                                <div class="d-flex justify-content-end">
+                                                    <button class="btn btn-link" onclick="ezyadmin.showPluginSettingsModel('${zone.name}', '${plugin.name}')">
+                                                        ${ezyadmin.messages.settings}
+                                                    </button>
+                                                    <button class="btn btn-link" onclick="ezyadmin.showPluginCommandsModel('${zone.name}', '${plugin.name}')">
+                                                        ${ezyadmin.messages.commands}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+    return html;
+}
+
+// ================= commands ===================
+ezyadmin.showAppCommandsModel = function(zoneName, name) {
+    ezyadmin.showCommandsModel('app', zoneName, name);
+}
+
+ezyadmin.showPluginCommandsModel = function(zoneName, name) {
+    ezyadmin.showCommandsModel('plugin', zoneName, name);
+}
+
+ezyadmin.showCommandsModel = function(type, zoneName, name) {
+    var titlePrefix;
+    var moduleCommands;
+    var zone;
+    ezyadmin.commands.zoneCommandsList.forEach((it) => {
+        if (it.zone === zoneName) {
+            zone = it;
+        }
+    });
+    if (type === 'app') {
+        titlePrefix = "Application";
+        zone.appCommandsList.forEach((it) => {
+            if (it.module === name) {
+                moduleCommands = it.commands || [];
+            }
+        });
+    }
+    else {
+        titlePrefix = 'Plugin';
+        zone.pluginCommandsList.forEach((it) => {
+            if (it.module === name) {
+                moduleCommands = it.commands || [];
+            }
+        });
+    }
+    var body = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Command</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    moduleCommands.forEach((command, index) => {
+        body += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${command}</td>
+                </tr>
+        `;
+    });
+    body += `
+            </tbody>
+        </table>
+    `;
+    $('#commandsModelTitle').text(
+        titlePrefix + ' ' + name + ' ' + ezyadmin.messages.commands.toLowerCase()
+    );
+    $('#commandsModelBody').html(body);
+    $('#modal-commands').modal('toggle');
+}
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{dashboards/scripts :: scripts}" />
+</th:block>
+</body>
+</html>

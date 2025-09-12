@@ -1,0 +1,57 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-md-12 mb-4 d-flex flex-column">
+        <h4 th:text="${letter.title}">You received an email from admin</h4>
+        <div>
+            <span>[[#{from}]]</span>:
+            <th:block th:if="${fromAdmin != null}">
+                <a th:href="${'/admins/' + fromAdmin.username}">[[${fromAdmin.getName()}]]</a>
+                &lt;
+                <a th:href="${'mailto:' + fromAdmin.email}">
+                [[${fromAdmin.email}]]
+                </a>
+                &gt;
+            </th:block>
+            <th:block th:if="${fromUser != null}">
+                <a th:href="${'/users/' + fromUser.username}">[[${fromUser.getName()}]]</a>
+                &lt;
+                <a th:href="${'mailto:' + fromUser.email}">
+                    [[${fromUser.email}]]
+                </a>
+                &gt;
+            </th:block>
+        </div>
+        <div>
+            <span>[[#{received_at}]]:</span>
+            <span class="date-time-string" th:text="${letter.sentAt}"></span>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <p th:utext="${letter.content}">You plugin has already submitted successfully</p>
+    </div>
+</div>
+</body>
+</html>

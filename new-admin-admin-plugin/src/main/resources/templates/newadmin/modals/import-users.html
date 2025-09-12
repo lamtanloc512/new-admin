@@ -1,0 +1,204 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="content">
+    <div class="modal fade pt-4rem" role="dialog" id="import-users-modal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">[[#{import_users}]]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="form-group">
+                            <label for="importUsersFile" class="btn btn-primary">
+                                [[#{choose_csv_file}]]
+                                <input type="file" id="importUsersFile" accept=".csv" class="d-none"
+                                       onchange="ezyadmin.onImportUsersFileChanged(this);"/>
+                            </label>
+                            <span id="importUsersFileName" class="ml-2"></span>
+                        </div>
+                        <div class="mb-2">[[#{import_users_from_file_notes}]]</div>
+                        <div class="table-responsive max-height-30vn-scroll" id="importUsersPreview">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th class="text-nowrap">[[#{username}]]</th>
+                                        <th class="text-nowrap">[[#{display_name}]]</th>
+                                        <th class="text-nowrap">[[#{email}]]</th>
+                                        <th class="text-nowrap">[[#{phone}]]</th>
+                                        <th class="text-nowrap">[[#{password}]]</th>
+                                        <th class="text-nowrap">[[#{website}]]</th>
+                                        <th class="text-nowrap">[[#{roles}]]</th>
+                                        <th class="text-nowrap">[[#{address}]]</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="importUserListBody">
+                                    <tr>
+                                        <td>1</td>
+                                        <td>student_a</td>
+                                        <td class="text-nowrap">Student A</td>
+                                        <td>studenta@example.com</td>
+                                        <td>123456789</td>
+                                        <td>password123</td>
+                                        <td>http://ezyplatform.com</td>
+                                        <td>teacher|student</td>
+                                        <td class="text-nowrap">48 To Huu, Trung Van, Nam Tu Liem, Ha Noi</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>student_b</td>
+                                        <td class="text-nowrap">Student B</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>student_c</td>
+                                        <td class="text-nowrap">Student C</td>
+                                        <td></td>
+                                        <td>123456789</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        [[#{close}]]
+                    </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                            onclick="ezyadmin.importUsersFromFile();">
+                        [[#{submit}]]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+<script th:fragment="scripts">
+ezyadmin.showImportUsersModel = function() {
+	$('#import-users-modal').modal('show');
+}
+
+ezyadmin.hideImportUsersModel = function() {
+	$('#import-users-modal').modal('hide');
+}
+
+ezyadmin.onImportUsersFileChanged = function(input) {
+    ezyadmin.showLoadingScreen();
+    ezyadmin.onCsvFileChanged(input, (file, rows) => {
+        $('#importUsersFileName').text(file.name);
+        ezyadmin.usersFromFileToImport = ezyadmin
+            .extractUsersFromCsvRows(rows);
+        $('#importUserListBody').html(
+            ezyadmin.buildImportUserListBodyHtml(
+                ezyadmin.usersFromFileToImport
+            )
+        );
+        ezyadmin.hideLoadingScreen();
+    });
+}
+
+ezyadmin.extractUsersFromCsvRows = function(rows) {
+    var users = [];
+    rows.forEach((cells) => {
+        var rolesStr = cells.length > 7 ? cells[7].trim() : '';
+        var rolesStrs = rolesStr.split('|');
+        var roles = [];
+        rolesStrs.forEach((item) => {
+            roles.push(item.trim());
+        });
+        users.push({
+            username: cells.length > 1 ? cells[1].trim() : null,
+            displayName: cells.length > 2 ? cells[2].trim() : null,
+            email: cells.length > 3 ? cells[3].trim() : null,
+            phone: cells.length > 4 ? cells[4].trim() : null,
+            password: cells.length > 5 ? cells[5].trim() : null,
+            website: cells.length > 6 ? cells[6].trim() : null,
+            roleNames: roles,
+            address: cells.length > 8 ? cells[8].trim() : null
+        });
+    });
+    return users;
+}
+
+ezyadmin.buildImportUserListBodyHtml = function(users) {
+    var html = '';
+    users.forEach((user, index) => {
+        html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td class="text-nowrap">${user.username || ''}</td>
+                <td class="text-nowrap">${user.displayName || ''}</td>
+                <td class="text-nowrap">${user.email || ''}</td>
+                <td class="text-nowrap">${user.phone || ''}</td>
+                <td class="text-nowrap">${user.password || ''}</td>
+                <td class="text-nowrap">${user.website || ''}</td>
+                <td class="text-nowrap">${user.roleNames.join('|')}</td>
+                <td class="text-nowrap">${user.address || ''}</td>
+            </tr>
+        `;
+    });
+    return html;
+}
+
+ezyadmin.importUsersFromFile = function() {
+    if (!ezyadmin.usersFromFileToImport
+        || !ezyadmin.usersFromFileToImport.length
+    ) {
+        return;
+    }
+    ezyadmin.showLoadingScreen();
+    $.ajax({
+        type: 'POST',
+        url: '/api/v1/users/add-many',
+        contentType: 'application/json',
+        data: JSON.stringify({users: ezyadmin.usersFromFileToImport}),
+        success: function (responseData) {
+            ezyadmin.hideLoadingScreen();
+            if (ezyadmin.onUsersImportedFromFile) {
+                ezyadmin.onUsersImportedFromFile();
+            } else if (ezyadmin.fetchUserList) {
+                ezyadmin.fetchUserList();
+            } else {
+                location.reload();
+            }
+        },
+        error: function (e) {
+            ezyadmin.processUpdateApiErrors({}, e);
+            ezyadmin.hideLoadingScreen();
+        }
+    });
+}
+</script>
+</body>
+</html>

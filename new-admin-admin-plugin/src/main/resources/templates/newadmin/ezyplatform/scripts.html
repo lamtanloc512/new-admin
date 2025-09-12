@@ -1,0 +1,76 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<body>
+<script th:fragment="scripts">
+// ============= install platform =========
+ezyadmin.prepareToInstallEzyPlatform = function() {
+	ezyadmin.doEzyPlatformAction(
+	    'prepare-to-install'
+    );
+}
+
+ezyadmin.installEzyPlatform = function() {
+	ezyadmin.doEzyPlatformAction('install');
+}
+
+ezyadmin.doEzyPlatformAction = function(action) {
+	ezyadmin.showLoadingScreen();
+    $.ajax({
+        type: 'POST',
+        url: '/api/v1/platform/' + action,
+        success: function () {
+        	if (action == 'download') {
+            	location.reload();
+            } else if(action == 'prepare-to-install') {
+                $('#prepareToInstallButton').remove();
+                ezyadmin.hideLoadingScreen();
+            } else {
+            	setTimeout(ezyadmin.ping, 6000);
+            }
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors({}, data);
+            ezyadmin.hideLoadingScreen();
+        }
+    });
+}
+
+ezyadmin.lostPingCount = 0;
+ezyadmin.ping = function() {
+	$.ajax({
+        url: '/management/health-check',
+        type: 'GET'
+    })
+    .done(function(moduleTypes) {
+    	location.reload();
+    })
+    .fail(function(e) {
+    	++ ezyadmin.lostPingCount;
+    	if (ezyadmin.lostPingCount <= 60) {
+    		setTimeout(ezyadmin.ping, 1000);
+    	} else {
+    		ezyadmin.hideLoadingScreen();
+    	}
+    });
+}
+</script>
+</body>
+</html>

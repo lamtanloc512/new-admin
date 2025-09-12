@@ -1,0 +1,674 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-12">
+        <div id="statusBox"
+             class="small-box bg-primary d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-center align-items-center">
+                <h5 id="statusText" class="p-2 font-weight-bold mb-1 mt-1">[[#{unknown}]]</h5>
+                <h6 id="liveTime" class="p-2 font-weight-bold mb-1 mt-1"
+                    th:if="${adminRoles.isAccessible('/management/live-time')}"></h6>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <button id="buttonStart" class="btn btn-dark mr-2" onclick="ezyadmin.startServer('admin');"
+                        th:if="${adminRoles.isAccessible('/api/v1/start', 'POST')}">[[#{start}]]</button>
+                <button id="buttonStop" class="btn btn-danger mr-2" onclick="ezyadmin.stopServer('admin');"
+                        th:if="${adminRoles.isAccessible('/api/v1/stop', 'POST')}">[[#{stop}]]</button>
+                <button id="buttonRestart" class="btn btn-info mr-2" onclick="ezyadmin.restartServer('admin');"
+                        th:if="${adminRoles.isAccessible('/api/v1/restart', 'POST')}">[[#{restart}]]</button>
+            </div>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-6" th:if="${adminRoles.isAccessible('/management/memory-usage')}">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3 id="memoryUsage">30MB</h3>
+                        <p>[[#{memory_usage}]]</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-ios-barcode"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" th:if="${adminRoles.isAccessible('/management/cpu-usage')}">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3><span id="cpuUsage">10</span><sup style="font-size: 20px">%</sup></h3>
+                        <p>[[#{cpu_usage}]]</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-microchip"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" th:if="${adminRoles.isAccessible('/management/thread-count')}">
+                <div class="small-box bg-sky-blue">
+                    <div class="inner">
+                        <h3 id="threadCount">10</h3>
+                        <p>[[#{threads}]]</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-ios-flower"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" th:if="${adminRoles.isAccessible('/management/disk-space')}">
+                <div class="small-box bg-secondary">
+                    <div class="inner">
+                        <h3 id="freeDiskSpace">100GB</h3>
+                        <p>[[#{free_disk_space}]]</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card card-secondary"
+             th:if="${adminRoles.isAccessible('/api/v1/admins')}">
+            <div class="card-header">
+                <h3 class="card-title">[[#{admin_list}]]</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th class="pl-2p5">#</th>
+                        <th>[[#{username}]]</th>
+                        <th>[[#{email}]]</th>
+                        <th class="text-center">[[#{status}]]</th>
+                        <th class="text-center">[[#{created_at}]]</th>
+                    </tr>
+                    </thead>
+                    <tbody id="adminListBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer clearfix">
+                <span>
+                    <span id="adminCountText">1</span>
+                    [[${#strings.toLowerCase(#messages.msg('of'))}]]
+                    <span id="totalAdminText">0</span>
+                    [[${#strings.toLowerCase(#messages.msg('admins'))}]]
+                </span>
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="firstPageButtonAdmin">
+                            <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="prevPageButtonAdmin">[[#{prev}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="nextPageButtonAdmin">[[#{next}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="lastPageButtonAdmin">
+                            <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-primary"
+             th:if="${adminRoles.isAccessible('/api/v1/settings/set-admin-properties', 'PUT')}">
+            <div class="card-header">
+                <h3 class="card-title">[[#{settings}]]</h3>
+            </div>
+            <div>
+                <div class="card-body">
+                    <form id="adminSettingsForm">
+                        <div class="form-group" id="adminUrlGroup">
+                            <label for="adminUrl">[[#{admin_url}]]</label>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="adminUrlErrorLabel" for="adminUrl">
+                                    <i class="far fa-times-circle"></i> <span id="adminUrlError"></span>
+                                </label>
+                                <div class="d-flex align-items-center">
+                                    <input type="url" name="adminUrl" id="adminUrl" class="form-control"
+                                           th:value="${adminUrl}" th:placeholder="#{enter_admin_url}">
+                                    <button type="button" class="btn btn-primary white-space-nowrap"
+                                            onclick="ezyadmin.setCurrentAdminUrl()">
+                                        [[#{current}]]
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <label for="adminProperties">[[#{admin_properties}]]</label>
+                                <i class="fas fa-info-circle text-info"
+                                   data-toggle="tooltip" data-placement="top"
+                                   th:title="#{must_restart_admin_to_apply}"></i>
+                            </div>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="adminPropertiesErrorLabel" for="adminProperties">
+                                    <i class="far fa-times-circle"></i> <span id="adminPropertiesError"></span>
+                                </label>
+                                <textarea name="adminProperties" id="adminProperties" class="form-control"
+                                          rows="5" th:placeholder="#{admin_properties}"
+                                          th:text="${adminProperties}"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <div>
+                                <label for="adminVmOptions">[[#{vm_options}]]</label>
+                                <i class="fas fa-info-circle text-info"
+                                   data-toggle="tooltip" data-placement="top"
+                                   th:title="#{must_restart_admin_to_apply}"></i>
+                            </div>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="adminVmOptionsErrorLabel" for="adminVmOptions">
+                                    <i class="far fa-times-circle"></i> <span id="adminVmOptionsError"></span>
+                                </label>
+                                <textarea name="adminVmOptions" id="adminVmOptions" class="form-control"
+                                          rows="5" th:placeholder="#{example} + ': MAX_HEAP_SIZE=256m'"
+                                          th:text="${adminVmOptions}"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                    <button type="button" class="btn btn-primary" onclick="ezyadmin.updateAdminSettings();">[[#{submit}]]</button>
+                </div>
+            </div>
+        </div>
+        <div class="card card-info mb-0"
+             th:if="${adminRoles.isAccessible('/management/apis')}">
+            <div class="card-header">
+                <h3 class="card-title">[[#{api_list}]]</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table id="apiList" class="table table-bordered table-hover"
+                       th:if="${adminRoles.isAccessible('/management/apis')}">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>[[#{uri}]]</th>
+                        <th class="text-center">[[#{method}]]</th>
+                        <th>[[#{module}]]</th>
+                        <th>[[#{from}]]</th>
+                        <th class="text-center">[[#{authenticated}]]</th>
+                        <th class="text-center">[[#{management}]]</th>
+                    </tr>
+                    </thead>
+                    <tbody id="apiListBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mb-3"></div>
+</div>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.accessibleUris['/api/v1/admins'] = /*[[${adminRoles.isAccessible('/api/v1/admins')}]]*/;
+ezyadmin.accessibleUris['/api/v1/modules'] = /*[[${adminRoles.isAccessible('/api/v1/modules')}]]*/;
+ezyadmin.accessibleUris['/management/apis'] = /*[[${adminRoles.isAccessible('/management/apis')}]]*/;
+ezyadmin.accessibleUris['/management/cpu-usage'] = /*[[${adminRoles.isAccessible('/management/cpu-usage')}]]*/;
+ezyadmin.accessibleUris['/management/live-time'] = /*[[${adminRoles.isAccessible('/management/live-time')}]]*/;
+ezyadmin.accessibleUris['/management/memory-usage'] = /*[[${adminRoles.isAccessible('/management/memory-usage')}]]*/;
+ezyadmin.accessibleUris['/management/thread-count'] = /*[[${adminRoles.isAccessible('/management/thread-count')}]]*/;
+ezyadmin.accessibleUris['/management/disk-space'] = /*[[${adminRoles.isAccessible('/management/disk-space')}]]*/;
+ezyadmin.messages.activated = /*[[#{activated}]]*/;
+ezyadmin.messages.archived = /*[[#{archived}]]*/;
+ezyadmin.messages.blocked = /*[[#{blocked}]]*/;
+ezyadmin.messages.inactivated = /*[[#{inactivated}]]*/;
+ezyadmin.messages.core = /*[[#{core}]]*/;
+ezyadmin.messages.no_permission = /*[[#{no_permission}]]*/;
+ezyadmin.messages.true = /*[[#{true}]]*/;
+ezyadmin.messages.false = /*[[#{false}]]*/;
+ezyadmin.messages.set_admin_properties_successfully = /*[[#{set_admin_properties_successfully}]]*/;
+ezyadmin.messages.set_admin_properties_failed = /*[[#{set_admin_properties_failed}]]*/;
+ezyadmin.messages.set_admin_url_successfully = /*[[#{set_admin_url_successfully}]]*/;
+ezyadmin.messages.set_admin_url_failed = /*[[#{set_admin_url_failed}]]*/;
+ezyadmin.messages.set_admin_vm_options_successfully = /*[[#{set_admin_vm_options_successfully}]]*/;
+ezyadmin.messages.set_admin_vm_options_failed = /*[[#{set_admin_vm_options_failed}]]*/;
+/*]]>*/
+
+$('#buttonStart').hide();
+
+ezyadmin.liveTime = 0;
+ezyadmin.statusBoxColorClass = 'bg-primary';
+
+ezyadmin.fetchLiveTime = function() {
+    $.ajax({
+        url: '/management/live-time',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        ezyadmin.liveTime = data;
+        $('#liveTime').text(ezyadmin.durationToString(ezyadmin.liveTime));
+        clearInterval(ezyadmin.liveTimeInterval);
+        ezyadmin.liveTimeInterval = setInterval(function() {
+            $('#liveTime').text(ezyadmin.durationToString(++ezyadmin.liveTime));
+        }, 1000);
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.fetchCpuUsage = function() {
+    $.ajax({
+        url: '/management/cpu-usage',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#cpuUsage').text(Math.round(data.processCpuLoad * 1000.0)/10.0);
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchCpuUsageInterval = function() {
+    clearInterval(ezyadmin.fetchCpuUsageInterval);
+    ezyadmin.fetchCpuUsageInterval = setInterval(ezyadmin.fetchCpuUsage, 1000);
+}
+
+ezyadmin.fetchMemoryUsage = function() {
+    $.ajax({
+        url: '/management/memory-usage',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#memoryUsage').text(ezyadmin.toCapacityString(data.usedMemory));
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchMemoryUsageInterval = function() {
+    clearInterval(ezyadmin.fetchMemoryUsageInterval);
+    ezyadmin.fetchMemoryUsageInterval = setInterval(ezyadmin.fetchMemoryUsage, 1000);
+}
+
+ezyadmin.fetchThreadCount = function() {
+    $.ajax({
+        url: '/management/thread-count',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#threadCount').text(data.threadCount);
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchThreadCountInterval = function() {
+    clearInterval(ezyadmin.fetchThreadCountInterval);
+    ezyadmin.fetchThreadCountInterval = setInterval(ezyadmin.fetchThreadCount, 1000);
+}
+
+ezyadmin.fetchFreeDiskSpace = function() {
+    $.ajax({
+        url: '/management/disk-space',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#freeDiskSpace').text(ezyadmin.toCapacityString(data.freeSpace));
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchFreeDiskSpaceInterval = function() {
+    clearInterval(ezyadmin.fetchFreeDiskSpaceInterval);
+    ezyadmin.fetchFreeDiskSpace();
+    ezyadmin.fetchFreeDiskSpaceInterval = setInterval(ezyadmin.fetchFreeDiskSpace, 5 * 60 * 1000);
+}
+
+ezyadmin.fetchAdminApiList = function() {
+    $.ajax({
+        url: '/management/apis',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        ezyadmin.apiList = data;
+        ezyadmin.renderApiListTable();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.fetchModuleMap = function() {
+    $.ajax({
+        url: '/api/v1/modules?target=admin',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        ezyadmin.moduleMap = data;
+        ezyadmin.renderApiListTable();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.ping = function() {
+    $.ajax({
+        url: '/management/health-check',
+        type: 'GET'
+    })
+    .done(function(data) {
+        $('#statusText').text(ezyadmin.messages.running);
+        $('#statusBox').addClass(ezyadmin.statusBoxColorClass).removeClass('bg-secondary');
+        $('#buttonStart').hide();
+        $('#buttonStop').show();
+        if (!ezyadmin.liveTime) {
+            if (ezyadmin.accessibleUris['/management/live-time']) {
+                ezyadmin.fetchLiveTime();
+            }
+            if (ezyadmin.accessibleUris['/management/cpu-usage']) {
+                ezyadmin.startFetchCpuUsageInterval();
+            }
+            if (ezyadmin.accessibleUris['/management/memory-usage']) {
+                ezyadmin.startFetchMemoryUsageInterval();
+            }
+            if (ezyadmin.accessibleUris['/management/thread-count']) {
+                ezyadmin.startFetchThreadCountInterval();
+            }
+            if (ezyadmin.accessibleUris['/management/disk-space']) {
+                ezyadmin.startFetchFreeDiskSpaceInterval();
+            }
+            if (ezyadmin.accessibleUris['/api/v1/modules']) {
+                ezyadmin.fetchModuleMap();
+            } else {
+                ezyadmin.moduleMap = 403;
+            }
+            if (ezyadmin.accessibleUris['/api/v1/admins']) {
+                ezyadmin.fetchAdminList();
+            }
+            if (ezyadmin.accessibleUris['/management/apis']) {
+                ezyadmin.fetchAdminApiList();
+            }
+        }
+        ezyadmin.hideLoadingScreen();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+        ezyadmin.clearDashboardStateAndIntervals();
+    });
+}
+
+ezyadmin.clearDashboardStateAndIntervals = function() {
+    ezyadmin.liveTime = 0;
+    clearInterval(ezyadmin.liveTimeInterval);
+    clearInterval(ezyadmin.fetchCpuUsageInterval);
+    clearInterval(ezyadmin.fetchMemoryUsageInterval);
+    clearInterval(ezyadmin.fetchThreadCountInterval);
+    $('#statusText').text("No Connection");
+    $('#liveTime').text('');
+    $('#statusBox').addClass('bg-secondary').removeClass(ezyadmin.statusBoxColorClass);
+    $('#buttonStart').show();
+    $('#buttonStop').hide();
+}
+
+ezyadmin.startPingInterval = function() {
+    ezyadmin.ping();
+    ezyadmin.pingInterval = setInterval(ezyadmin.ping, 3000);
+}
+
+ezyadmin.stopPing = function() {
+    clearInterval(ezyadmin.pingInterval);
+    ezyadmin.clearDashboardStateAndIntervals();
+}
+
+ezyadmin.startPingInterval();
+
+// ======================= settings =================
+ezyadmin.setCurrentAdminUrl = function() {
+    $('#adminUrl').val(location.origin);
+}
+ezyadmin.updateAdminSettings = function() {
+    var formAllData = ezyadmin.formDataToObject('adminSettingsForm');
+    ezyadmin.hideFormErrors(formAllData);
+    ezyadmin.setAdminUrl(() => {
+        ezyadmin.setTargetProperties('admin', formAllData);
+    });
+}
+
+ezyadmin.setAdminUrl = function(callback) {
+    var adminUrl = $('#adminUrl').val() || location.origin;
+    var formData = { adminUrl:  adminUrl };
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/set-admin-url',
+        contentType: 'application/json',
+        data: JSON.stringify(formData)
+    }).done(function() {
+        ezyadmin.shortToast('bg-success', ezyadmin.messages.set_admin_url_successfully);
+        callback();
+    }).fail(function(data) {
+        ezyadmin.shortToast('bg-danger', ezyadmin.messages.set_admin_url_failed);
+        ezyadmin.processUpdateApiErrors(formData, data);
+    });
+}
+
+// ================= api list ==================
+ezyadmin.apiListTableRendered = false;
+ezyadmin.renderApiListTable = function() {
+    if (!ezyadmin.apiList || !ezyadmin.moduleMap || ezyadmin.apiListTableRendered) {
+        return;
+    }
+    ezyadmin.apiListTableRendered = true;
+    var html = ezyadmin.buildApiListBodyHtml();
+    $('#apiListBody').html(html);
+    ezyadmin.createDataTable('apiList', 12, false);
+}
+
+ezyadmin.buildApiListBodyHtml = function() {
+    var html = '';
+    ezyadmin.apiList.forEach((api, index) => {
+        var modules = ezyadmin.getModulesOfApi(api);
+        var moduleNames = '';
+        var moduleTypes = '';
+        modules.forEach((module, mi) => {
+            if (mi == 0) {
+                moduleNames += '<span class="text-success">';
+                moduleTypes += '<span class="text-success">';
+            }
+            else {
+                moduleNames += ', <span class="text-danger">';
+                moduleTypes += ', <span class="text-danger">';
+            }
+            moduleNames += module.name + '</span>';
+            moduleTypes += ezyadmin.getModuleTypeShortName(module.type) + '</span>';
+        });
+        html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td class="text-break">${api.uri}</td>
+                <td class="text-center">${api.method}</td>
+                <td>${moduleNames}</td>
+                <td>${moduleTypes}</td>
+                <td class="text-center">${ezyadmin.messages[api.authenticated]}</td>
+                <td class="text-center">${ezyadmin.messages[api.management]}</td>
+            </tr>`;
+        });
+    return html;
+}
+
+ezyadmin.getModulesOfApi = function(api) {
+    var answer = [];
+    api.handlers.forEach((handler) => {
+        if (handler.packet === 'com.tvd12.ezyhttp.server.management') {
+            answer.push({
+                name: ezyadmin.messages.core,
+                type: ezyadmin.messages.core
+            });
+            return;
+        }
+        if (ezyadmin.moduleMap == 403) {
+            answer.push({
+                name: ezyadmin.messages.no_permission,
+                type: ezyadmin.messages.no_permission
+            });
+            return;
+        }
+        Object.keys(ezyadmin.moduleMap).forEach((moduleType) => {
+            ezyadmin.moduleMap[moduleType].forEach((module) => {
+                if (handler.packet.startsWith(module.packageName)) {
+                    answer.push({
+                        name: module.name,
+                        type: moduleType
+                    });
+                } else if (api.resource) {
+                    var modulePath = 'web/' + ezyadmin.moduleContainerFolders[moduleType] + '/' + module.name;
+                    if (api.resourcePath.includes(modulePath)) {
+                        answer.push({
+                            name: module.name,
+                            type: moduleType
+                        });
+                    }
+                }
+            });
+        });
+    });
+    if (answer.length == 0) {
+        answer.push({
+            name: ezyadmin.messages.core,
+            type: ezyadmin.messages.core
+        });
+    }
+    return answer;
+}
+
+// ========== admin pagination =============
+$('#firstPageButtonAdmin').click(() => {
+    ezyadmin.fetchAdminList('first');
+});
+$('#lastPageButtonAdmin').click(() => {
+    ezyadmin.fetchAdminList('last');
+});
+$('#nextPageButtonAdmin').click(() => {
+    ezyadmin.fetchAdminList('next');
+});
+$('#prevPageButtonAdmin').click(() => {
+    ezyadmin.fetchAdminList('prev');
+});
+
+// ========== admin list =============
+ezyadmin.fetchAdminList = function(action) {
+    var queryString = '';
+    if (ezyadmin.adminSearchKeyword) {
+        queryString += '&keyword=' + ezyadmin.adminSearchKeyword;
+    }
+    if (ezyadmin.adminSearchStatus) {
+        queryString += '&adminStatus=' + ezyadmin.adminSearchStatus;
+    }
+    if (action == 'current') {
+        if (ezyadmin.lastAdminQueryString) {
+            queryString = ezyadmin.lastAdminQueryString;
+        }
+    } else if (action == 'next') {
+        if (ezyadmin.lastAdminPageToken.next) {
+            queryString += '&nextPageToken=' + ezyadmin.lastAdminPageToken.next;
+        } else {
+            return;
+        }
+    } else if (action == 'prev') {
+        if (ezyadmin.lastAdminPageToken.prev) {
+            queryString += '&prevPageToken=' + ezyadmin.lastAdminPageToken.prev;
+        } else {
+            return;
+        }
+    } else if (action == 'last') {
+        queryString += '&lastPage=true';
+    }
+    $.ajax({
+        type: 'GET',
+        url: '/api/v1/admins?limit=12' + queryString,
+        contentType: 'application/json',
+        success: function (data) {
+            $('#adminCountText').text(data.count);
+            $('#totalAdminText').text(data.total);
+            ezyadmin.lastAdminQueryString = queryString;
+            ezyadmin.lastAdminPageToken = data.pageToken;
+            $('#adminListBody').html(ezyadmin.buildAdminListBodyHtml(data.items));
+            if (data.continuation.hasNext) {
+                $('#nextPageButtonAdmin').removeClass('text-secondary');
+            } else {
+                $('#nextPageButtonAdmin').addClass('text-secondary');
+            }
+            if (data.continuation.hasPrevious) {
+                $('#prevPageButtonAdmin').removeClass('text-secondary');
+            } else {
+                $('#prevPageButtonAdmin').addClass('text-secondary');
+            }
+        },
+        error: function (data) {
+            ezyadmin.processGetApiErrors(data);
+        }
+    });
+}
+
+ezyadmin.buildAdminListBodyHtml = function(adminList) {
+    var html = '';
+    adminList.forEach((admin) => {
+        var statusColor = ezyadmin.getTextColorByStatus(admin.status);
+        html += `
+            <tr>
+                <td class="pl-2p5">${admin.id}</td>
+                <td>${admin.username}</td>
+                <td class="text-wrap">${admin.email || ''}</td>
+                <td class="text-center ${statusColor}">${ezyadmin.getI18nMessage(admin.status.toLowerCase())}</td>
+                <td class="text-center">${ezyadmin.formatTimeStamp(admin.createdAt)}</td>
+            </tr>`;
+    });
+    return html;
+}
+
+$(document).ready(() => {
+    if (ezyadmin.accessibleUris['/api/v1/admins']) {
+        ezyadmin.fetchAdminList();
+    }
+});
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{dashboards/scripts :: scripts}" />
+</th:block>
+</body>
+</html>

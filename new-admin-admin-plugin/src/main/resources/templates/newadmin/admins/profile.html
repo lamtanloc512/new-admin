@@ -1,0 +1,404 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-3 d-flex align-items-center">
+        <label>[[#{avatar}]]:</label>
+    </div>
+    <div class="col-9">
+        <div class="image-button wh-72px mb-3">
+            <img id="adminAvatarImage" class="rounded-circle object-fit-cover" width="72" height="72"
+                 th:classappend="${adminAvatarImage != null ? '' : 'd-none'}"
+                 th:if="${selectedAdmin.id == adminId || adminRoles.isAccessible('/api/v1/media/{name}')}"
+                 th:src="${adminAvatarImage != null ? (selectedAdmin.id == adminId ? adminAvatarImage.getMeUrlOrDefault('') : adminAvatarImage.getUrlOrDefault('')) : '#'}">
+            <div id="adminAvatarImageTmp" class="text-uppercase rounded-circle avatar-tmp wh-72px"
+                 th:classappend="${adminAvatarImage != null ? (selectedAdmin.id == adminId ? 'd-none' : (adminRoles.isAccessible('/api/v1/media/{name}') ? 'd-none' : '')) : ''}">
+                [[${selectedAdmin.name.charAt(0)}]]
+            </div>
+            <button type="button" id="editAvatarButton" class="rounded-circle" onclick="ezyadmin.selectAdminAvatarImage();"
+                    th:if="${selectedAdmin.id == adminId}">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+        </div>
+    </div>
+    <div class="col-3 d-flex align-items-center">
+        <label>[[#{cover_image}]]:</label>
+    </div>
+    <div class="col-9">
+        <div class="image-button mb-3 w-192" id="mainAdminCoverImageContainer"
+            th:classappend="${adminCoverImage != null ? '' : 'd-none'}">
+            <img id="adminCoverImage" class="object-fit-cover mw-100" width="192" height="128"
+                 th:classappend="${adminCoverImage != null ? '' : 'd-none'}"
+                 th:if="${selectedAdmin.id == adminId || adminRoles.isAccessible('/api/v1/media/{name}')}"
+                 th:src="${adminCoverImage != null ? (selectedAdmin.id == adminId ? adminCoverImage.getMeUrlOrDefault('') : adminCoverImage.getUrlOrDefault('')) : '#'}">
+            <button type="button" id="editCoverImageButton" onclick="ezyadmin.selectAdminCoverImage();"
+                    th:if="${selectedAdmin.id == adminId}">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+        </div>
+        <button type="button" id="addAdminCoverImageButton" class="btn btn-link pl-0"
+                th:classappend="${adminCoverImage != null ? 'd-none' : ''}"
+                th:if="${selectedAdmin.id == adminId}"
+                onclick="ezyadmin.selectAdminCoverImage();">
+            [[#{add}]]
+            <i class="fas fa-plus-square"></i>
+        </button>
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{id}]]:</label></div>
+    <div class="col-md-9 col-8">[[${selectedAdmin.id}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{uuid}]]:</label></div>
+    <div class="col-md-9 col-8">[[${selectedAdmin.uuid}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{username}]]:</label></div>
+    <div class="col-md-9 col-8">[[${selectedAdmin.username}]]</div>
+    <div class="col-md-3 col-4 d-none change-password"><label>[[#{password}]]:</label></div>
+    <div class="col-md-2 col-6 d-none change-password">
+        <button type="button" class="btn btn-outline-primary form-control"
+                onclick="ezyadmin.showChangePasswordModal();">[[#{change}]]</button>
+    </div>
+    <div class="col-md-7 col-2 d-none change-password"></div>
+    <div class="col-md-3 col-4"><label>[[#{display_name}]]:</label></div>
+    <div class="col-md-9 col-8">[[${selectedAdmin.displayName}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{email}]]:</label></div>
+    <div class="col-md-9 col-8">
+        <a th:href="${'mailto:' + selectedAdmin.email}">
+            [[${selectedAdmin.email}]]
+        </a>
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{phone}]]:</label></div>
+    <div class="col-md-9 col-8">
+        <a th:href="${'tel:' + selectedAdmin.phone}">
+            [[${selectedAdmin.phone}]]
+        </a>
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{website}]]:</label></div>
+    <div class="col-md-9 col-8">
+        <a th:href="${selectedAdmin.url}">[[${selectedAdmin.url}]]</a>
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{allow_access_to_all_media}]]:</label></div>
+    <div class="col-md-9 col-8">
+        <input type="checkbox" onclick="ezyadmin.onAllowAccessAllMediaChanged(this);"
+               th:checked="${(selectedAdmin.id == adminId && adminRoles.superAdmin) || allowAccessAllMedia}"
+               th:disabled="${(selectedAdmin.id == adminId && adminRoles.superAdmin) || !adminRoles.isAccessible('/api/v1/admins/{username}/allow-access-all-media', 'PUT')}">
+    </div>
+    <div class="col-12" id="adminDetailsProfilePlaceholder"></div>
+    <div class="col-md-3 col-4"><label>[[#{status}]]:</label></div>
+    <div class="col-md-9 col-8 status-text" th:attr="status=|${selectedAdmin.status}|">
+        [[#{${selectedAdmin.status.toString().toLowerCase()}}]]
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{created_at}]]:</label></div>
+    <div class="col-md-9 col-8 date-time-string">[[${selectedAdmin.createdAt}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{updated_at}]]:</label></div>
+    <div class="col-md-9 col-8 date-time-string">[[${selectedAdmin.updatedAt}]]</div>
+    <div class="col-12" id="adminProfilePlaceholder"></div>
+    <div class="col-12"><label>[[#{role_list}]]:</label></div>
+    <div class="col-md-3 col-4"></div>
+    <div class="col-md-9 col-8">
+        <button class="btn btn-danger mb-2 d-none" id="profileLogout" onclick="ezyadmin.logout();">
+            [[#{logout}]] <i class="nav-icon fas fa-sign-out-alt"></i>
+        </button>
+    </div>
+    <div class="col-lg-8 col-md-12">
+        <table id="roleList" class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>[[#{role_name}]]</th>
+                <th>[[#{added_at}]]</th>
+                <th>[[#{actions}]]</th>
+            </tr>
+            </thead>
+            <tbody id="roleListBody">
+            <tr th:each="adminRoleName,iterator : ${adminRoleNames}">
+                <td>[[${iterator.index + 1}]]</td>
+                <td>
+                    <a th:href="${'/admins/roles/' + adminRoleName.name}">
+                        [[${adminRoleName.displayName}]]
+                    </a>
+                </td>
+                <td class="date-time-string">[[${adminRoleName.createdAt}]]</td>
+                <td>
+                    <a class="btn"
+                       th:if="${adminRoles.isAccessible('/admins/roles/{roleName}')}"
+                       th:href="${'/admins/roles/' + adminRoleName.name}">
+                        <i class="fas fa-eye text-primary"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-12">
+        <hr class="mb-4" />
+    </div>
+    <div class="col-12" th:if="${adminRoles.isAccessible('/api/v1/admins/{adminId}/activities')}">
+        <h3>[[#{activity_history}]]</h3>
+    </div>
+    <div class="col-lg-2"></div>
+    <div class="col-lg-3 col-md-4 page-search">
+        <label for="adminActivitySearchKeyword" class="text-nowrap">[[#{search}]]: </label>
+        <input type="search" class="form-control" th:placeholder="#{keyword}" id="adminActivitySearchKeyword"
+               oninput="ezyadmin.onKeydownToSearchAdminActivity();"
+               onkeydown="ezyadmin.onKeydownToSearchAdminActivity();">
+    </div>
+    <div class="col-lg-3 col-md-3 page-search">
+        <label for="adminActivitySearchHttpMethod" class="text-nowrap">[[#{method}]]: </label>
+        <select class="form-control form-select" id="adminActivitySearchHttpMethod"
+                onchange="ezyadmin.onAdminActivitySearchHttpMethodChanged();">
+            <option value="">[[#{all}]]</option>
+            <option th:each="httpMethod : ${httpMethods}"
+                    th:value="${httpMethod}">
+                [[${httpMethod}]]
+            </option>
+        </select>
+    </div>
+    <div class="col-lg-4 col-md-5 page-search">
+        <label for="adminActivitySearchTimeRangePicker" class="text-nowrap">[[#{time_range}]]: </label>
+        <input type="text" class="form-control"
+               id="adminActivitySearchTimeRangePicker"/>
+    </div>
+    <div class="col-12" th:if="${adminRoles.isAccessible('/api/v1/admins/{adminId}/activities')}">
+        <div class="card">
+            <div class="card-body table-responsive p-0">
+                <table class="table table-bordered table-hover text-nowrap">
+                    <thead>
+                    <tr>
+                        <th>[[#{time}]]</th>
+                        <th>[[#{action}]]</th>
+                        <th>[[#{uri}]]</th>
+                        <th>[[#{type}]]</th>
+                        <th>[[#{feature}]]</th>
+                        <th>[[#{parameters}]]</th>
+                    </tr>
+                    </thead>
+                    <tbody id="adminActivityListBody">
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer clearfix">
+                <span><span id="adminActivityCountText">1</span>
+                    [[${#strings.toLowerCase(#messages.msg('of'))}]]
+                    <span id="totalAdminActivityText" th:text="${totalAdminActivity}">100</span>
+                    [[${#strings.toLowerCase(#messages.msg('activities'))}]]
+                </span>
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li class="page-item">
+                        <button class="page-link" id="firstPageButton">
+                            <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button class="page-link" id="prevPageButton">[[#{prev}]]</button>
+                    </li>
+                    <li class="page-item">
+                        <button class="page-link" id="nextPageButton">[[#{next}]]</button>
+                    </li>
+                    <li class="page-item">
+                        <button class="page-link" id="lastPageButton">
+                            <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.card-footer -->
+        </div>
+    </div>
+</div>
+<th:block layout:fragment="modals">
+<th:block th:replace="~{modals/change-password :: content}" />
+</th:block>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.adminIsMe = /*[[${selectedAdmin.id == adminId}]]*/;
+ezyadmin.selectedAdminId = /*[[${selectedAdmin.id}]]*/ '';
+ezyadmin.selectedAdminUsername = /*[[${selectedAdmin.username}]]*/ '';
+ezyadmin.accessibleUris['/api/v1/admins/{adminId}/activities'] = /*[[${adminRoles.isAccessible('/api/v1/admins/{adminId}/activities')}]]*/;
+/*]]>*/
+
+// ========== admin init =============
+ezyadmin.onEditButtonClick = function() {
+    var url = ezyadmin.adminIsMe
+        ? '/admins/me/edit'
+        : '/admins/' + ezyadmin.selectedAdminUsername + '/edit';
+    window.location = url + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+}
+
+ezyadmin.changePasswordApi = {
+    url: ezyadmin.adminIsMe
+        ? '/api/v1/admins/me/update-password'
+        : '/api/v1/admins/' + ezyadmin.selectedAdminUsername + '/update-password'
+};
+
+ezyadmin.createDataTable('roleList', 12);
+
+// ========== admin update ==========================
+ezyadmin.onAllowAccessAllMediaChanged = function(e) {
+    var allow = $(e).prop('checked');
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/admins/' + ezyadmin.selectedAdminUsername + '/allow-access-all-media',
+        contentType: 'application/json',
+        data: JSON.stringify({allow: allow}),
+        success: function () {
+            // do nothing
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors({}, data);
+        }
+    });
+}
+
+// ========== admin activity =============
+ezyadmin.onKeydownToSearchAdminActivity = function() {
+    ezyadmin.adminActivitySearchKeyword = $('#adminActivitySearchKeyword').val();
+    if(event.key === 'Enter' || !ezyadmin.adminActivitySearchKeyword) {
+        ezyadmin.fetchAdminActivityList();
+    }
+}
+
+ezyadmin.onAdminActivitySearchHttpMethodChanged = function() {
+    ezyadmin.adminActivitySearchHttpMethod = $('#adminActivitySearchHttpMethod').val();
+    ezyadmin.fetchAdminActivityList();
+}
+
+$(document).ready(() => {
+    ezyadmin.createDateRangePicker(
+        '#adminActivitySearchTimeRangePicker',
+        {},
+        function(start, end, label) {
+            ezyadmin.adminActivitySearchCreatedAtStartInclusive = start.unix() * 1000;
+            ezyadmin.adminActivitySearchCreatedAtEndInclusive = end.unix() * 1000;
+            ezyadmin.fetchAdminActivityList();
+        }
+    );
+    $('#adminActivitySearchTimeRangePicker').on('cancel.daterangepicker', function (ev, picker) {
+        ezyadmin.adminActivitySearchCreatedAtStartInclusive = 0;
+        ezyadmin.adminActivitySearchCreatedAtEndInclusive = 0;
+        ezyadmin.fetchAdminActivityList();
+    });
+});
+
+// ========== admin activity pagination =============
+$('#firstPageButton').click(() => {
+    ezyadmin.fetchAdminActivityList('first');
+});
+$('#lastPageButton').click(() => {
+    ezyadmin.fetchAdminActivityList('last');
+});
+$('#nextPageButton').click(() => {
+    ezyadmin.fetchAdminActivityList('next');
+});
+$('#prevPageButton').click(() => {
+    ezyadmin.fetchAdminActivityList('prev');
+});
+
+// ========== admin activity list =============
+ezyadmin.fetchAdminActivityList = function(action) {
+    var queryString = '';
+    if (ezyadmin.adminActivitySearchKeyword) {
+        queryString += '&keyword=' + ezyadmin.adminActivitySearchKeyword;
+    }
+    if (ezyadmin.adminActivitySearchHttpMethod) {
+        queryString += '&method=' + ezyadmin.adminActivitySearchHttpMethod;
+    }
+    if (ezyadmin.adminActivitySearchCreatedAtStartInclusive) {
+        queryString += '&createdAtStartInclusive=' + ezyadmin.adminActivitySearchCreatedAtStartInclusive;
+    }
+    if (ezyadmin.adminActivitySearchCreatedAtEndInclusive) {
+        queryString += '&createdAtEndInclusive=' + ezyadmin.adminActivitySearchCreatedAtEndInclusive;
+    }
+    if (action == 'next') {
+        if (ezyadmin.lastAdminActivityPageToken.next) {
+            queryString += '&nextPageToken=' + ezyadmin.lastAdminActivityPageToken.next;
+        } else {
+            return;
+        }
+    } else if (action == 'prev') {
+        if (ezyadmin.lastAdminActivityPageToken.prev) {
+            queryString += '&prevPageToken=' + ezyadmin.lastAdminActivityPageToken.prev;
+        } else {
+            return;
+        }
+    } else if (action == 'last') {
+        queryString += '&lastPage=true';
+    }
+    var requestUri = ezyadmin.adminIsMe
+        ? '/api/v1/admins/me/activities'
+        : '/api/v1/admins/' + ezyadmin.selectedAdminId + '/activities';
+    $.ajax({
+        url: requestUri + '?limit=12' + queryString,
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#adminActivityCountText').text(data.count);
+        $('#totalAdminActivityText').text(data.total);
+        ezyadmin.lastAdminActivityPageToken = data.pageToken;
+        $('#adminActivityListBody').html(ezyadmin.buildAdminActivityListBodyHtml(data.items));
+        if (data.continuation.hasNext) {
+            $('#nextPageButton').removeClass('text-secondary');
+        } else {
+            $('#nextPageButton').addClass('text-secondary');
+        }
+        if (data.continuation.hasPrevious) {
+            $('#prevPageButton').removeClass('text-secondary');
+        } else {
+            $('#prevPageButton').addClass('text-secondary');
+        }
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.buildAdminActivityListBodyHtml = function(adminActivities) {
+    var html = '';
+    adminActivities.forEach((adminActivity) => {
+        html += ezyadmin.buildAdminActivityListItemHtml(adminActivity);
+    });
+    return html;
+}
+ezyadmin.buildAdminActivityListItemHtml = function(adminActivity) {
+    var statusColor = ezyadmin.getTextColorByStatus(adminActivity.status);
+    var html = `
+        <tr>
+            <td>${ezyadmin.formatTimeStamp(adminActivity.createdAt)}</td>
+            <td>${adminActivity.method}</td>
+            <td>${adminActivity.uri}</td>
+            <td>${adminActivity.uriType}</td>
+            <td>${adminActivity.feature || ''}</td>
+            <td class="text-wrap line-break-anywhere">${adminActivity.parameters || ''}</td>
+        </tr>
+        `;
+    return html;
+}
+ezyadmin.fetchAdminActivityList();
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{admins/scripts :: avatar}" />
+<script th:replace="~{modals/change-password :: scripts}" />
+<script th:replace="~{fragments/date-range-picker :: scripts}" />
+</th:block>
+</body>
+</html>

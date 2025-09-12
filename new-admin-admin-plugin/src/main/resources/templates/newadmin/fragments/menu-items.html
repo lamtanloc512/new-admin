@@ -17,41 +17,76 @@
 <!DOCTYPE html>
 
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
-<th:block th:fragment="menu-items">
-	<li th:each="menu : ${menus}"
-		th:if="${menu.isVisible() && adminRoles.isAccessible(menu.uri)}"
-		th:class="${menu.hasItems() ? 'nav-item has-treeview' : 'nav-item'}"
-		th:classappend="${currentOpen == menu.fullName} ? 'menu-open' : ''">
-		<a th:href="${menu.uri}" class="nav-link"
-		   th:classappend="${currentMenu == menu.fullName} ? active : ''">
-			<i th:if="${menu.icon == null}" class="nav-icon fas fa-circle"></i>
-			<i th:if="${menu.icon != null}" class="nav-icon" th:classappend="${menu.icon}"></i>
-			<p th:inline="text">
-				[[#{${menu.name}}]]
-				<span class="badge badge-info right commas-number-string"
-					  th:if="${menuBadges.containsKey(menu.fullName)}"
-					  th:text="${menuBadges.get(menu.fullName)}" />
-				<i th:if="${menu.hasItems()}" class="fas fa-angle-left right"></i>
-			</p>
-		</a>
-		<ul th:if="${menu.hasItems()}" class="nav nav-treeview">
-			<li th:each="menuItem : ${menu.visibleItems}" class="nav-item"
-				th:if="${adminRoles.isAccessible(menuItem.uri)}">
-				<a th:href="${menuItem.uri}" class="nav-link"
-				   th:classappend="${currentMenu == menuItem.fullName} ? active : ''">
-					<i th:if="${menuItem.icon == null}" class="nav-icon far fa-circle"></i>
-					<i th:if="${menuItem.icon != null}" class="nav-icon" th:classappend="${menuItem.icon}"></i>
-					<p>
-						[[#{${menuItem.name}}]]
-						<span class="badge badge-info right commas-number-string"
-							  th:if="${menuItemBadges.containsKey(menuItem.fullName)}"
-							  th:text="${menuItemBadges.get(menuItem.fullName)}" />
-					</p>
-				</a>
-			</li>
-		</ul>
-	</li>
-</th:block>
-</body>
+  <body>
+    <th:block th:fragment="menu-items">
+      <li
+        th:each="menu : ${menus}"
+        th:if="${menu.isVisible() && adminRoles.isAccessible(menu.uri)}"
+        th:class="${menu.hasItems() ? 'nav-item has-treeview' : 'nav-item'}"
+        th:classappend="${currentOpen == menu.fullName} ? 'menu-open' : ''"
+      >
+        <a
+          class="nav-link"
+          data-bs-toggle="collapse"
+          role="button"
+          aria-expanded="false"
+          th:att="aria-controls=${menu.fullName}"
+          th:href="${menu.uri}"
+          th:classappend="${currentMenu == menu.fullName} ? active : ''"
+        >
+          <i th:if="${menu.icon == null}" class="iconoir-circle menu-icon"></i>
+          <i
+            th:if="${menu.icon != null}"
+            class="menu-icon"
+            th:classappend="${menu.icon}"
+          ></i>
+          <span th:inline="text"
+            >[[#{${menu.name}}]]
+            <span
+              class="badge badge-info right commas-number-string"
+              th:if="${menuBadges.containsKey(menu.fullName)}"
+              th:text="${menuBadges.get(menu.fullName)}"
+            />
+          </span>
+        </a>
+        <div
+          th:if="${menu.hasItems()}"
+          th:att="id=${menu.fullName}"
+          class="collapse"
+        >
+          <ul class="nav flex-column">
+            <li
+              class="nav-item"
+              th:each="menuItem : ${menu.visibleItems}"
+              th:if="${adminRoles.isAccessible(menuItem.uri)}"
+            >
+              <a
+                th:href="${menuItem.uri}"
+                class="nav-link"
+                th:classappend="${currentMenu == menuItem.fullName} ? active : ''"
+              >
+                <i
+                  th:if="${menuItem.icon == null}"
+                  class="nav-icon far fa-circle"
+                ></i>
+                <i
+                  th:if="${menuItem.icon != null}"
+                  class="nav-icon"
+                  th:classappend="${menuItem.icon}"
+                ></i>
+                <span>
+                  [[#{${menuItem.name}}]]
+                  <span
+                    class="badge badge-info right commas-number-string"
+                    th:if="${menuItemBadges.containsKey(menuItem.fullName)}"
+                    th:text="${menuItemBadges.get(menuItem.fullName)}"
+                  />
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </th:block>
+  </body>
 </html>

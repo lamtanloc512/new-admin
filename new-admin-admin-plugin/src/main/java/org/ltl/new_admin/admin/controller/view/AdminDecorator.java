@@ -11,8 +11,6 @@ public class AdminDecorator implements ViewDecorator {
   @Override
   public void decorate(HttpServletRequest request, View view) {
     String template = view.getTemplate();
-    if (!template.equals("default-menus")) {
-      view.setTemplate("newadmin/" + template);
-    }
+    view.setTemplate("newadmin/" + template);
   }
 }

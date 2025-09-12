@@ -1,0 +1,232 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+<head>
+    <style>
+        @media (max-width: 575.98px) {
+            .copy-reset-password-link {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-md-10 col-sm-12">
+        <form class="form-horizontal" id="editUserForm">
+            <div class="form-group row">
+                <label for="username" class="col-sm-3 col-form-label">[[#{username}]]</label>
+                <div class="col-sm-9">
+                    <span id="username" th:text="${editUser.username}"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3 d-flex align-items-center">
+                    <label>[[#{avatar}]]:</label>
+                </div>
+                <div class="col-9">
+                    <div class="image-button wh-72px mb-3">
+                        <img id="userAvatarImage" class="rounded-circle object-fit-cover" width="72" height="72"
+                             th:classappend="${userAvatarImage != null ? '' : 'd-none'}"
+                             th:if="${adminRoles.isAccessible('/api/v1/media/{name}')}"
+                             th:src="${userAvatarImage != null ? userAvatarImage.getUrlOrDefault('') : '#'}">
+                        <div id="userAvatarImageTmp" class="text-uppercase rounded-circle avatar-tmp wh-72px"
+                             th:classappend="${userAvatarImage != null && adminRoles.isAccessible('/api/v1/media/{name}') ? 'd-none' : ''}">
+                            [[${editUser.name.charAt(0)}]]
+                        </div>
+                        <button type="button" id="editAvatarButton" class="rounded-circle"
+                                onclick="ezyadmin.selectUserAvatarImage();"
+                                th:if="${adminRoles.isAccessible('/api/v1/users/{username}/update-avatar', 'PUT')}">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3 d-flex align-items-center">
+                    <label>[[#{cover_image}]]:</label>
+                </div>
+                <div class="col-9">
+                    <div class="image-button mb-3 w-192" id="mainUserCoverImageContainer"
+                         th:classappend="${userCoverImage != null ? '' : 'd-none'}"
+                         th:if="${adminRoles.isAccessible('/api/v1/media/{name}')}">
+                        <img id="userCoverImage" class="object-fit-cover mw-100" width="192" height="128"
+                             th:classappend="${userCoverImage != null ? '' : 'd-none'}"
+                             th:src="${userCoverImage != null ? userCoverImage.getUrlOrDefault('') : '#'}">
+                        <button type="button" id="editCoverImageButton"
+                                onclick="ezyadmin.selectUserCoverImage();"
+                                th:if="${adminRoles.isAccessible('/api/v1/users/{username}/update-cover-image', 'PUT')}">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                    </div>
+                    <button type="button" id="addUserCoverImageButton" class="btn btn-link pl-0"
+                            th:classappend="${userCoverImage != null ? 'd-none' : ''}"
+                            th:if="${adminRoles.isAccessible('/api/v1/users/{username}/update-cover-image', 'PUT')}"
+                            onclick="ezyadmin.selectUserCoverImage();">
+                        [[#{add}]]
+                        <i class="fas fa-plus-square"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="username" class="col-sm-3 col-form-label">[[#{email}]] (<span class="text-danger">*</span>)</label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="email" name="email" th:value="${editUser.email}" id="email"
+                           class="form-control" th:placeholder="#{email}">
+                </div>
+                <label id="emailErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="email">
+                    <i class="far fa-times-circle"></i> <span id="emailError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="displayName" class="col-sm-3 col-form-label">[[#{display_name}]]</label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="displayName" th:value="${editUser.displayName}" id="displayName"
+                           class="form-control" th:placeholder="#{display_name}">
+                </div>
+                <label id="displayNameErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="displayName">
+                    <i class="far fa-times-circle"></i> <span id="displayNameError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="phone" class="col-sm-3 col-form-label">[[#{phone}]]</label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="phone" th:value="${editUser.phone}" id="phone"
+                           class="form-control" th:placeholder="#{phone}">
+                </div>
+                <label id="phoneErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="phone">
+                    <i class="far fa-times-circle"></i> <span id="phoneError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="website" class="col-sm-3 col-form-label">[[#{website}]]</label>
+                <div class="col-lg-7 col-md-6">
+                    <input type="text" name="website" th:value="${editUser.url}" id="website"
+                           class="form-control" th:placeholder="#{website}">
+                </div>
+                <label id="websiteErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="website">
+                    <i class="far fa-times-circle"></i> <span id="websiteNameError">[[#{invalid}]]</span>
+                </label>
+            </div>
+            <div class="form-group row">
+                <label for="username" class="col-sm-3 col-form-label">[[#{password}]]</label>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-outline-primary form-control"
+                        onclick="ezyadmin.showChangePasswordModal();">[[#{change}]]</button>
+                </div>
+                <div class="col-sm-6"></div>
+            </div>
+            <th:block th:replace="~{fragments/additional :: content}" />
+            <div id="editUserPropertiesPlaceHolder"></div>
+            <div class="form-group row">
+                <label for="roleIds" class="col-sm-3 col-form-label">
+                    [[#{roles}]]
+                </label>
+                <div class="col-sm-4">
+                    <select name="roleIds" id="roleIds" multiple="multiple" class="form-control">
+                        <option th:each="role,iterator : ${roles}"
+                                th:selected="${editUserRoles.contains(role)}"
+                                th:value="${role.id}" th:text="${(iterator.index + 1) + '. ' + role.displayName}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary btn-block mt-md-0 mt-3" data-toggle="modal" data-target="#add-new-role-modal">
+                        [[#{add_new_role}]]
+                    </button>
+                </div>
+                <label id="roleIdsErrorLabel" class="col-lg-2 col-md-3 col-form-label text-danger d-none" for="roleIds">
+                    <i class="far fa-times-circle"></i> [[#{required}]]
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-0"></div>
+                <div class="col-md-4 col-sm-6">
+                    <button type="button" class="btn btn-primary btn-block" onclick="ezyadmin.updateUser();">
+                        [[#{submit}]]
+                    </button>
+                </div>
+                <div class="col-md-5 col-sm-0"></div>
+                <!-- /.col -->
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2 col-sm-0"></div>
+    <div class="col-12" id="editUserPlaceHolder"></div>
+    <div class="col-12 mb-3"></div>
+</div>
+<th:block layout:fragment="modals">
+<th:block th:replace="~{modals/change-password :: content}" />
+<th:block th:replace="~{modals/add-new-role :: content}" />
+</th:block>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.currentParentURL = /*[[${currentParentURL}]]*/ '';
+ezyadmin.previousScreen = /*[[${previousScreen}]]*/ '';
+ezyadmin.previousQueryString = /*[[${previousQueryString}]]*/ '';
+ezyadmin.editUserId = /*[[${editUser.id}]]*/ '';
+ezyadmin.editUserUsername = /*[[${editUser.username}]]*/ '';
+/*]]>*/
+
+// ========== edit admin =============
+ezyadmin.updateUser = function() {
+     ezyadmin.addOrEditUser('edit');
+}
+
+// ==================== reset password ============
+ezyadmin.changePasswordApi = {
+    url: '/api/v1/users/' + ezyadmin.editUserUsername + '/update-password'
+};
+
+ezyadmin.onCopyResetPasswordLinkClick = function()  {
+    $.ajax({
+        type: "POST",
+        url: '/api/v1/users/' + ezyadmin.editUserUsername + '/generate-forgot-password-uri',
+        success: function (data) {
+            navigator.clipboard.writeText(ezyadmin.webUrl + data);
+            ezyadmin.shortToast(
+                'bg-success',
+                ezyadmin.messages.copied
+            );
+        },
+        error: function (e) {
+            ezyadmin.processUpdateApiErrors({}, e);
+        }
+    });
+}
+
+// ==================== add new role ============
+ezyadmin.addNewRoleApi = {
+    url: '/api/v1/user/role-names/add'
+};
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{admins/scripts :: avatar}" />
+<script th:replace="~{modals/change-password :: scripts}" />
+<script th:replace="~{users/scripts :: avatar}" />
+<script th:replace="~{users/scripts :: add-edit}" />
+<script th:replace="~{modals/add-new-role :: scripts}" />
+<script th:replace="~{fragments/date-range-picker :: scripts}" />
+<th:block th:replace="~{fragments/additional :: scripts}" />
+</th:block>
+</body>
+</html>

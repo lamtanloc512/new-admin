@@ -1,0 +1,654 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-md-2 col-4"><label>[[#{name}]]:</label></div>
+    <div class="col-md-10 col-8" th:text="${role.name}"></div>
+    <div class="col-md-2 col-4"><label>[[#{display_name}]]:</label></div>
+    <div class="col-md-10 col-8" th:text="${role.displayName}"></div>
+    <div class="col-md-2 col-4"><label>[[#{priority}]]:</label></div>
+    <div class="col-md-10 col-8" th:text="${role.priority}"></div>
+    <div class="col-md-2 col-4"><label>[[#{updated_at}]]:</label></div>
+    <div class="col-md-10 col-8 date-time-string" th:text="${role.createdAt}"></div>
+    <div class="col-md-2 col-4"><label>[[#{last_updated}]]:</label></div>
+    <div class="col-md-10 col-8 date-time-string" th:text="${role.updatedAt}"></div>
+
+    <div class="col-12" th:if="${adminRoles.isAccessible('/api/v1/user/roles/{roleName}/members')}">
+        <hr class="mt-3 mb-3"/>
+    </div>
+    <div class="col-12" th:if="${adminRoles.isAccessible('/api/v1/user/roles/{roleName}/members')}">
+        <span class="d-flex align-items-center">
+            <h3>[[#{members}]]</h3>
+            <button type="button" class="btn btn-outline-primary pt-1 pb-1 ml-2 mb-3"
+                    onclick="ezyadmin.showSearchUserModal();">
+                [[#{add}]] <i class="fas fa-plus-circle"></i>
+            </button>
+        </span>
+        <div class="row">
+            <div class="col-lg-9 col-md-7 col-0"></div>
+            <div class="col-lg-3 col-md-5 col-12 page-search">
+                <label for="memberSearchKeyword" class="white-space-nowrap d-md-block d-none">
+                    [[#{search}]]:
+                </label>
+                <input type="search" class="form-control" th:value="${memberSearchKeyword}"
+                       th:placeholder="#{keyword}" id="memberSearchKeyword"
+                       oninput="ezyadmin.onKeydownToSearchMember();"
+                       onkeydown="ezyadmin.onKeydownToSearchMember();">
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-bordered table-hover text-nowrap align-middle-cells">
+                            <thead>
+                            <tr>
+                                <th class="text-center pl-2p5">[[#{id}]]</th>
+                                <th>[[#{username}]]</th>
+                                <th>[[#{display_name}]]</th>
+                                <th class="text-center">[[#{granted_at}]]</th>
+                                <th class="text-center">[[#{actions}]]</th>
+                            </tr>
+                            </thead>
+                            <tbody id="memberListBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer clearfix">
+                        <span>
+                            <span id="memberCountText">0</span>
+                            [[${#strings.toLowerCase(#messages.msg('of'))}]]
+                            <span id="totalMemberText">0</span>
+                            [[${#strings.toLowerCase(#messages.msg('members'))}]]
+                        </span>
+                        <ul class="pagination pagination-sm m-0 float-right">
+                            <li class="page-item">
+                                <a class="page-link cursor-pointer" id="firstPageButton">
+                                    <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link cursor-pointer" id="prevPageButton">[[#{prev}]]</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link cursor-pointer" id="nextPageButton">[[#{next}]]</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link cursor-pointer" id="lastPageButton">
+                                    <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- /.card-footer -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12" th:if="${adminRoles.isAccessibleAll({'/api/v1/user/features', '/api/v1/user/roles/{roleId}/features'})}">
+        <hr class="mt-3 mb-3"/>
+    </div>
+    <div class="col-12" th:if="${adminRoles.isAccessibleAll({'/api/v1/user/features', '/api/v1/user/roles/{roleId}/features'})}">
+        <span class="d-flex align-items-center">
+            <h3>[[#{features}]]</h3>
+            <button th:if="${role.name != 'super_admin' && role.name != 'devops'}"
+                    type="button" class="btn btn-link" onclick="ezyadmin.selectAllUserFeatures();">
+                <i class="fas fa-check-double"></i> [[#{select_all}]]
+            </button>
+            <button th:if="${role.name != 'super_admin' && role.name != 'devops'}"
+                    type="button" class="btn btn-link text-info" onclick="ezyadmin.unselectAllUserFeatures();">
+                <i class="fas fa-broom"></i> [[#{unselect_all}]]
+            </button>
+        </span>
+        <table class="features-table">
+            <thead>
+            <tr class="border-bottom">
+                <td class="text-center">#</td>
+                <td>[[#{feature}]]</td>
+                <td>[[#{uri}]]</td>
+                <td>[[#{method}]]</td>
+            </tr>
+            </thead>
+            <tbody id="featureListBody">
+            </tbody>
+        </table>
+        <div th:if="${role.name != 'super_admin' && role.name != 'devops' && adminRoles.isAccessible('/api/v1/admin/roles/{roleId}/features/save', 'POST')}"
+             class="row mt-2">
+            <div class="col-xl-8 col-lg-9 col-md-12">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary ml-5 mr-1" onclick="ezyadmin.saveUserRoleFeatures();">
+                        [[#{save_features}]]
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="location.reload();">[[#{cancel}]]</button>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-3 col-md-0"></div>
+        </div>
+    </div>
+    <div class="col-12 mb-3"></div>
+</div>
+<th:block layout:fragment="modals">
+<th:block th:replace="~{modals/edit-role :: content}" />
+<th:block th:replace="~{modals/search-user :: content}" />
+</th:block>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.currentRoleId = /*[[${role.id}]]*/ '';
+ezyadmin.currentRoleName = /*[[${role.name}]]*/ '';
+ezyadmin.accessibleUris['/users/{username}'] = /*[[${adminRoles.isAccessible('/users/{username}')}]]*/;
+ezyadmin.accessibleUris['/api/v1/user/features'] = /*[[${adminRoles.isAccessible('/api/v1/user/features')}]]*/;
+ezyadmin.accessibleUris['/api/v1/user/roles/{roleId}/features'] = /*[[${adminRoles.isAccessible('/api/v1/user/roles/{roleId}/features')}]]*/;
+ezyadmin.accessibleUris['/api/v1/user/roles/{roleName}/members'] = /*[[${adminRoles.isAccessible('/api/v1/user/roles/{roleName}/members')}]]*/;
+ezyadmin.accessibleUris['/api/v1/user/roles/{roleId}/{userId}'] = /*[[${adminRoles.isAccessible('/api/v1/user/roles/{roleId}/{userId}', 'DELETE')}]]*/;
+ezyadmin.messages.save_successfully = /*[[#{save_successfully}]]*/;
+ezyadmin.messages.user_has_already_added = /*[[#{user_has_already_added}]]*/;
+/*]]>*/
+
+// ========== role details init =============
+ezyadmin.onEditButtonClick = function() {
+    ezyadmin.showEditRoleModal();
+}
+
+// ==================== edit new role ============
+ezyadmin.editRoleApi = {
+    url: '/api/v1/user/role-names/' + ezyadmin.currentRoleId,
+    onSuccess: function() {
+        window.location = '/users/roles/' + ezyadmin.updatedRoleName
+            + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+    }
+};
+
+// ========== add member =============
+ezyadmin.onSearchUserModalCloseWithUserData = function(userData) {
+    var requestData = {
+        roleId: ezyadmin.currentRoleId,
+        userId: userData.userId
+    };
+    $.ajax({
+        type: 'POST',
+        url: '/api/v1/user/roles/add',
+        data: requestData,
+        success: function () {
+        	ezyadmin.fetchMemberList('current');
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors({}, data);
+            ezyadmin.shortToast(
+                'bg-danger',
+                ezyadmin.messages.user_has_already_added
+            );
+        }
+    });
+}
+
+// ========== delete member =============
+ezyadmin.deleteUserRole = function(userId) {
+    $.ajax({
+        type: 'DELETE',
+        url: '/api/v1/user/roles/' + ezyadmin.currentRoleId + '/' + userId,
+        success: function () {
+        	ezyadmin.fetchMemberList('current');
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors({}, data);
+        }
+    });
+}
+
+// ========== member search =============
+ezyadmin.onKeydownToSearchMember = function() {
+    ezyadmin.memberSearchKeyword = $('#memberSearchKeyword').val();
+    if(event.key === 'Enter' || !ezyadmin.memberSearchKeyword) {
+        ezyadmin.fetchMemberList();
+    }
+}
+
+// ========== member pagination =============
+$('#firstPageButton').click(() => {
+    ezyadmin.fetchMemberList('first');
+});
+$('#lastPageButton').click(() => {
+    ezyadmin.fetchMemberList('last');
+});
+$('#nextPageButton').click(() => {
+    ezyadmin.fetchMemberList('next');
+});
+$('#prevPageButton').click(() => {
+    ezyadmin.fetchMemberList('prev');
+});
+
+// ========== member list =============
+ezyadmin.fetchMemberList = function(action) {
+    var queryString = '';
+    if (ezyadmin.memberSearchKeyword) {
+        queryString += '&keyword=' + ezyadmin.memberSearchKeyword;
+    }
+    if (action == 'current') {
+        if (ezyadmin.lastMemberQueryString) {
+            queryString = ezyadmin.lastMemberQueryString;
+        }
+    } else if (action == 'next') {
+        if (ezyadmin.lastMemberPageToken.next) {
+            queryString += '&nextPageToken=' + ezyadmin.lastMemberPageToken.next;
+        } else {
+            return;
+        }
+    } else if (action == 'prev') {
+        if (ezyadmin.lastMemberPageToken.prev) {
+            queryString += '&prevPageToken=' + ezyadmin.lastMemberPageToken.prev;
+        } else {
+            return;
+        }
+    } else if (action == 'last') {
+        queryString += '&lastPage=true';
+    }
+    $.ajax({
+        url: '/api/v1/user/roles/' + ezyadmin.currentRoleName + '/members?limit=7' + queryString,
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        $('#memberCountText').text(data.count);
+        $('#totalMemberText').text(ezyadmin.formatNumberWithCommas(data.total));
+        ezyadmin.lastMemberQueryString = queryString;
+        ezyadmin.lastMemberPageToken = data.pageToken;
+        $('#memberListBody').html(ezyadmin.buildMemberListBodyHtml(data.items));
+        if (data.continuation.hasNext) {
+            $('#nextPageButton').removeClass('text-secondary');
+        } else {
+            $('#nextPageButton').addClass('text-secondary');
+        }
+        if (data.continuation.hasPrevious) {
+            $('#prevPageButton').removeClass('text-secondary');
+        } else {
+            $('#prevPageButton').addClass('text-secondary');
+        }
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.buildMemberListBodyHtml = function(members) {
+    var html = '';
+    members.forEach((member) => {
+        html += ezyadmin.buildMemberListItemHtml(member);
+    });
+    return html;
+}
+
+ezyadmin.buildMemberListItemHtml = function(member) {
+    var user = member.memberName;
+    var html = `
+        <tr>
+            <td class="text-center pl-2p5">${user.userId}</td>
+            <td>${user.username}</td>
+            <td>
+                <a href="/users/${user.username}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                    ${user.name}
+                </a>
+            </td>
+            <td class="text-center">${ezyadmin.formatTimeStamp(member.roleGrantedAt)}</td>
+            <td class="text-center">
+        `;
+        if (ezyadmin.accessibleUris['/users/{username}']) {
+            html += `
+                <a class="btn btn-link" href="/users/${user.username}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                    <i class="fas fa-eye text-primary"></i>
+                </a>
+            `;
+        }
+        if (ezyadmin.accessibleUris['/api/v1/user/roles/{roleId}/{userId}']) {
+            html += `
+                <button class="btn pl-1" onclick="ezyadmin.deleteUserRole(${user.userId});">
+                    <i class="fas fa-user-times text-danger"></i>
+                </button>
+            `;
+        }
+        html += `
+            </td>
+        </tr>
+        `;
+	return html;
+}
+
+if (ezyadmin.accessibleUris['/api/v1/user/roles/{roleName}/members']) {
+    ezyadmin.fetchMemberList();
+}
+
+// ========== feature list =============
+ezyadmin.fetchCurrentUserRoleFeatures = function() {
+    $.ajax({
+        url: '/api/v1/user/roles/' + ezyadmin.currentRoleId + '/features',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data, status) {
+        ezyadmin.currentUserRoleFeatures = data;
+        ezyadmin.fetchFeatureList();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+ezyadmin.fetchFeatureList = function() {
+    $.ajax({
+        url: '/api/v1/user/features',
+        type: 'GET',
+        dataType: 'json',
+    })
+    .done(function(data, status) {
+        ezyadmin.userFeatureList = Object.keys(data);
+        ezyadmin.userFeatureList.sort();
+        ezyadmin.renderFeatureListTable(data);
+        ezyadmin.fillCurrentSelectedFeatureMap();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.renderFeatureListTable = function(urisByFeatureMap) {
+    var html = ezyadmin.buildFeatureListBodyHtml(urisByFeatureMap);
+    $('#featureListBody').html(html);
+}
+
+ezyadmin.buildFeatureListBodyHtml = function(urisByFeatureMap) {
+    var html = '';
+    var index = 0;
+    ezyadmin.userFeatureList.forEach(feature => {
+        html += ezyadmin.buildFeatureListItemHtml(
+            index ++,
+            feature,
+            urisByFeatureMap[feature]
+        );
+    });
+    return html;
+}
+
+ezyadmin.sortedUrisByFeature = {};
+ezyadmin.methodsUriMapByFeature = {};
+ezyadmin.buildFeatureListItemHtml = function(
+    index,
+    feature,
+    methodsByUris
+) {
+    var uris = [];
+    var existingUris = {};
+    Object.keys(methodsByUris).forEach(uri => {
+        var actualUri = uri;
+        if (uri.length > 1 && uri.endsWith('/')) {
+            actualUri = uri.slice(0, uri.length - 1);
+        }
+        if (existingUris[actualUri]) {
+            return;
+        }
+        uris.push(actualUri);
+        existingUris[actualUri] = true;
+    });
+    if (uris.length == 0) {
+        return;
+    }
+    uris.sort();
+    ezyadmin.sortedUrisByFeature[feature] = uris;
+    ezyadmin.methodsUriMapByFeature[feature] = {};
+    var rowspans = uris.length;
+    var firstUri = uris[0];
+    var otherUris = uris.length > 1 ? uris.slice(1) : [];
+    var html = `
+        <tr class="border-bottom">
+            <td rowspan="${rowspans}" class="align-top">${index + 1}</td>
+            <td rowspan="${rowspans}" class="align-top">
+                <div class="feature-checkbox">
+                    <input type="checkbox" id="user-feature-${index}" onclick="ezyadmin.onUserFeatureSelectionChange(this);"}>
+                    <span>${ezyadmin.toHeadingString(feature)}</span>
+                </div>
+            </td>
+            <td>
+                <div class="feature-checkbox">
+                    <input type="checkbox" id="user-feature-${index}-0" onclick="ezyadmin.onUserFeatureSelectionChange(this);"}>
+                    <span>${firstUri}</span>
+                </div>
+            </td>
+            <td>
+                <ul>
+        `;
+        ezyadmin.methodsUriMapByFeature[feature][firstUri] = methodsByUris[firstUri];
+        methodsByUris[firstUri].forEach((method, methodIndex) => {
+            html += `
+                <li class="feature-checkbox">
+                    <input type="checkbox" id="user-feature-${index}-0-${methodIndex}" onclick="ezyadmin.onUserFeatureSelectionChange(this);"}>
+                    <span>${method}</span>
+                </li>
+            `;
+        });
+        html += `
+                </ul>
+            </td>
+        </tr>
+        `;
+        otherUris.forEach((uri, uriIndex) => {
+            html += `
+            <tr class="border-bottom">
+                <td>
+                    <div class="feature-checkbox">
+                        <input type="checkbox" id="user-feature-${index}-${uriIndex + 1}" onclick="ezyadmin.onUserFeatureSelectionChange(this);"}>
+                        <span>${uri}</span>
+                    </div>
+                </td>
+                <td>
+                    <ul>
+            `;
+            ezyadmin.methodsUriMapByFeature[feature][uri] = methodsByUris[uri];
+            methodsByUris[uri].forEach((method, methodIndex) => {
+                html += `
+                    <li class="feature-checkbox">
+                        <input type="checkbox" id="user-feature-${index}-${uriIndex + 1}-${methodIndex}" onclick="ezyadmin.onUserFeatureSelectionChange(this);"}>
+                        <span>${method}</span>
+                    </li>
+                `;
+            });
+            html += `
+                    </ul>
+                </td>
+            </tr>
+            `;
+        });
+    return html;
+}
+
+ezyadmin.fillCurrentSelectedFeatureMap = function() {
+    ezyadmin.userFeatureList.forEach((feature, featureIndex) => {
+        if (!ezyadmin.currentUserRoleFeatures[feature]) {
+            return;
+        }
+        var uris = ezyadmin.sortedUrisByFeature[feature];
+        uris.forEach((uri, uriIndex) => {
+            if (!ezyadmin.currentUserRoleFeatures[feature][uri]) {
+                return;
+            }
+            var methods = ezyadmin.methodsUriMapByFeature[feature][uri];
+            methods.forEach((method, methodIndex) => {
+                if (!ezyadmin.currentUserRoleFeatures[feature][uri].includes(method)) {
+                    return;
+                }
+                $('#user-feature-' +
+                    featureIndex + '-' +
+                    uriIndex + '-' +
+                    methodIndex
+                ).prop('checked', true);
+
+                $('#user-feature-' + featureIndex + '-' + uriIndex)
+                    .prop('checked', true);
+
+                $('#user-feature-' + featureIndex).prop('checked', true);
+            });
+        });
+    });
+}
+if (ezyadmin.accessibleUris['/api/v1/user/features']
+    && ezyadmin.accessibleUris['/api/v1/user/roles/{roleId}/features']
+) {
+    ezyadmin.fetchCurrentUserRoleFeatures();
+}
+
+// ========== update feature list =============
+ezyadmin.selectAllUserFeatures = function() {
+    ezyadmin.selectOrUnselectAllUserFeatures(true);
+}
+
+ezyadmin.unselectAllUserFeatures = function() {
+    ezyadmin.selectOrUnselectAllUserFeatures(false);
+}
+
+ezyadmin.selectOrUnselectAllUserFeatures = function(select) {
+    ezyadmin.userFeatureList.forEach((feature, featureIndex) => {
+        ezyadmin.selectOrUnselectUserFeature(feature, featureIndex, select);
+    });
+}
+
+ezyadmin.selectOrUnselectUserFeature = function(feature, featureIndex, select) {
+    var uris = ezyadmin.sortedUrisByFeature[feature];
+    uris.forEach((uri, uriIndex) => {
+        ezyadmin.selectOrUnselectUserFeatureUri(
+            feature,
+            featureIndex,
+            uri,
+            uriIndex,
+            select
+        );
+    });
+}
+
+ezyadmin.selectOrUnselectUserFeatureUri = function(
+    feature,
+    featureIndex,
+    uri,
+    uriIndex,
+    select
+) {
+    $('#user-feature-' + featureIndex).prop('checked', select);
+    var methods = ezyadmin.methodsUriMapByFeature[feature][uri];
+    $('#user-feature-' + featureIndex + '-' + uriIndex)
+        .prop('checked', select);
+    methods.forEach((method, methodIndex) => {
+        $('#user-feature-' + featureIndex + '-' + uriIndex + '-' + methodIndex)
+            .prop('checked', select);
+    });
+}
+
+ezyadmin.onUserFeatureSelectionChange = function(e) {
+    var element = $(e)[0];
+    var id = element.id;
+    var select = element.checked;
+    var indexesStr = id.substring('user-feature-'.length);
+    var indexes = indexesStr.split('-');
+    if (ezyadmin.updatingFeatureSelections) {
+        return;
+    }
+    ezyadmin.updatingFeatureSelections = true;
+    if (indexes.length == 3) {
+        $('#user-feature-' + indexes[0])
+            .prop('checked', select);
+        $('#user-feature-' + indexes[0] + '-' + indexes[1])
+            .prop('checked', select);
+    } else if (indexes.length == 2) {
+        var feature = ezyadmin.userFeatureList[indexes[0]];
+        var uris = ezyadmin.sortedUrisByFeature[feature];
+        var uri = uris[indexes[1]];
+        ezyadmin.selectOrUnselectUserFeatureUri(
+            feature,
+            indexes[0],
+            uri,
+            indexes[1],
+            select
+        );
+    } else if (indexes.length == 1) {
+        var feature = ezyadmin.userFeatureList[indexes[0]];
+        ezyadmin.selectOrUnselectUserFeature(
+            feature,
+            indexes[0],
+            select
+        );
+    }
+    ezyadmin.updatingFeatureSelections = false;
+}
+
+ezyadmin.saveUserRoleFeatures = function() {
+    var requestData = {
+        methodsUriMapByFeature: ezyadmin.getSelectedFeatureMap()
+    };
+    $.ajax({
+        type: 'POST',
+        url: '/api/v1/user/roles/' + ezyadmin.currentRoleId + '/features/save',
+        data: JSON.stringify(requestData),
+        contentType: 'application/json',
+        success: function () {
+            ezyadmin.fetchCurrentUserRoleFeatures();
+            ezyadmin.shortToast(
+                'bg-success',
+                ezyadmin.messages.save_successfully
+            );
+        },
+        error: function (data, e) {
+            ezyadmin.processUpdateApiErrors({}, data);
+        }
+    });
+}
+
+ezyadmin.getSelectedFeatureMap = function() {
+    var selectedUriMethodMapByFeature = {};
+    ezyadmin.userFeatureList.forEach((feature, featureIndex) => {
+        var selectedUriMethodMap = {};
+        var uris = ezyadmin.sortedUrisByFeature[feature];
+        uris.forEach((uri, uriIndex) => {
+            var selectedMethods = [];
+            var methods = ezyadmin.methodsUriMapByFeature[feature][uri];
+            methods.forEach((method, methodIndex) => {
+                var checked = $(
+                    '#user-feature-' +
+                    featureIndex + '-' +
+                    uriIndex + '-' +
+                    methodIndex
+                ).prop('checked');
+                if (checked) {
+                    selectedMethods.push(method);
+                }
+            });
+            if (selectedMethods.length) {
+                selectedUriMethodMap[uri] = selectedMethods;
+            }
+        });
+        if (Object.keys(selectedUriMethodMap).length) {
+            selectedUriMethodMapByFeature[feature] = selectedUriMethodMap;
+        }
+    });
+    return selectedUriMethodMapByFeature;
+}
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{modals/edit-role :: scripts}" />
+<script th:replace="~{modals/search-user :: scripts}" />
+</th:block>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content" class="modal fade pt-5rem" id="search-admin-modal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="d-flex align-items-center">
+					<h4 class="modal-title">[[#{search_admin}]]</h4>
+					<i class="fas fa-info-circle text-info ml-1"
+					   data-toggle="tooltip" data-placement="top"
+					   th:title="#{search_in_username_display_name_email_and_phone}"></i>
+				</div>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<label for="searchAdminKeyword" class="col-sm-2 col-form-label">[[#{keyword}]]</label>
+					<div class="col-sm-10">
+						<label id="searchAdminKeywordErrorLabel" class="col-form-label text-danger d-none" for="searchAdminKeyword">
+							<i class="far fa-times-circle"></i> <span id="searchAdminKeywordError">[[#{not_found}]]</span>
+						</label>
+						<input type="search" name="searchAdminKeyword" id="searchAdminKeyword"
+							   class="form-control" th:placeholder="#{keyword}"
+							   onkeyup="ezyadmin.onKeyUpToSearchAdmin();"
+						       autocomplete="off" inputmode="text">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer justify-content-between">
+				<button type="button" class="btn btn-default" data-dismiss="modal">[[#{cancel}]]</button>
+				<button type="button" class="btn btn-primary"
+						onclick="ezyadmin.onSearchAdminFinishClick();">
+					<th:block th:if="${finishButton != null}">
+						[[${finishButton}]]
+					</th:block>
+					<th:block th:if="${finishButton == null}">
+						[[#{done}]]
+					</th:block>
+				</button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+</body>
+<script th:fragment="scripts">
+// =========== add new role script ========
+ezyadmin.showSearchAdminModal = function() {
+	var keyword = $('#searchAdminKeyword').val('');
+	$('#searchAdminKeywordErrorLabel').addClass('d-none');
+	$('#roleDisplayNameErrorLabel').addClass('d-none');
+	$('#search-admin-modal').modal('show');
+}
+
+ezyadmin.hideSearchAdminModal = function() {
+	$('#search-admin-modal').modal('hide');
+}
+
+$('#search-admin-modal').on('shown.bs.modal', function () {
+    $('#searchAdminKeyword').focus();
+});
+
+ezyadmin.onKeyUpToSearchAdmin = function() {
+	if(event.key === 'Enter') {
+		ezyadmin.onSearchAdminFinishClick();
+	} else {
+    	ezyadmin.suggestAdminList();
+    }
+}
+
+ezyadmin.suggestAdminList = function(fromSearchButton) {
+    var keyword = $('#searchAdminKeyword').val();
+    if (!keyword.length || keyword.endsWith('>')) {
+    	return;
+    }
+    var baseUrl = ezyadmin.suggestAdminsUrl || '/api/v1/admins/simple-search';
+    var url = baseUrl + (baseUrl.indexOf('?') < 0 ? '?' : '&') + 'keyword=' + keyword;
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: function (data) {
+			if (data.length) {
+				$('#searchAdminKeywordErrorLabel').addClass('d-none');
+			} else {
+				$('#searchAdminKeywordErrorLabel').removeClass('d-none');
+        	}
+        	ezyadmin.suggestedAdminByUsername = {};
+			data.forEach(item => {
+				ezyadmin.suggestedAdminByUsername[item.username] = item;
+			});
+        	if (fromSearchButton) {
+        		$('#searchAdminKeyword').val(
+        			data[0].name + '<' + data[0].username + '>'
+        		);
+        		return;
+        	}
+			var suggestedAdmins = [];
+			data.forEach(item => {
+				suggestedAdmins.push(
+					item.name + '<' + item.username + '>'
+				);
+			});
+			$("#searchAdminKeyword").autocomplete({
+				source: function(request, response) {
+					response(suggestedAdmins);
+        		}
+			});
+        },
+        error: function (data, e) {
+            ezyadmin.processGetApiErrors(data);
+        }
+	});
+}
+
+$("#searchAdminKeyword").autocomplete({
+	source: []
+});
+
+ezyadmin.onSearchAdminFinishClick = function() {
+	$('#search-admin-modal').modal('hide');
+	var keyword = $('#searchAdminKeyword').val();
+	if(!keyword.length) {
+		return;
+	}
+	var username = keyword.substring(
+		keyword.indexOf('<') + 1,
+		keyword.indexOf('>')
+	);
+	var foundAdminData = ezyadmin.suggestedAdminByUsername[username];
+	if (foundAdminData) {
+		ezyadmin.onSearchAdminModalCloseWithAdminData(foundAdminData);
+	}
+}
+</script>
+</html>

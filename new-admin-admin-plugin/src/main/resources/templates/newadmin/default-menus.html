@@ -23,7 +23,7 @@
 >
   <body>
     <div layout:fragment="content" class="row">
-      <ul>
+      <ul th:if="${menu != null}">
         <li th:each="menuItem : ${menu.items}" th:if="${menuItem.visible}">
           <a th:href="${menuItem.uri}" th:text="#{${menuItem.name}}"></a>
         </li>

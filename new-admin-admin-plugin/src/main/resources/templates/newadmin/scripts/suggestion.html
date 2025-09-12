@@ -1,0 +1,146 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<body>
+<script th:fragment="input">
+// ========== input suggestion =============
+ezyadmin.latestSuggestedDataByKey = {};
+
+ezyadmin.registerAutocomplete = function(
+    uri,
+    nameExtractor,
+    valueExtractor,
+    inputId,
+    uriParametersFetcher
+) {
+    var source = function (request, response) {
+        var keyword = request.term.trim();
+        var url = uri +
+            (uri.indexOf('?') >= 0 ? '&' : '?') +
+            'keyword=' + keyword +
+            (uri.indexOf('limit=') >= 0 ? '' : '&limit=12');
+        if (uriParametersFetcher) {
+            var additionalParams = uriParametersFetcher();
+            if (additionalParams) {
+                url += additionalParams;
+            }
+        }
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (data) {
+                var items = [];
+                ezyadmin.latestSuggestedDataByKey = {};
+                data.forEach((item) => {
+                    var key = nameExtractor(item);
+                    if (key) {
+                        ezyadmin.latestSuggestedDataByKey[key] = item;
+                    }
+                    var name = nameExtractor(item);
+                    var value;
+                    if (valueExtractor) {
+                        value = valueExtractor(item);
+                    }
+                    items.push(value ? (value + '<' + name + '>') : name);
+                });
+                response(items);
+            },
+            error: function (e) {
+                response([]);
+                ezyadmin.processGetApiErrors(e);
+            }
+        });
+    }
+    $('#' + inputId).autocomplete({
+        minLength: 1,
+        source: source
+    });
+}
+
+ezyadmin.setActualFormData = function(formData, exclusiveKeys) {
+    Object.entries(formData).forEach(([key, value]) => {
+        if (value && (!exclusiveKeys || !exclusiveKeys.indexOf(key))) {
+            var from = value.lastIndexOf('<');
+            var to = value.lastIndexOf('>');
+            if (from && to && to > from) {
+                formData[key] = value.substring(from + 1, to);
+            }
+        }
+    });
+}
+
+ezyadmin.setActualFormFieldData = function(
+    formData,
+    field,
+    idExtractor
+) {
+    var value = formData[field];
+    if (value) {
+        var from = value.lastIndexOf('<');
+        var to = value.lastIndexOf('>');
+        if (from && to && to > from) {
+            var key = value.substring(from + 1, to);
+            if (idExtractor) {
+                var data = ezyadmin.latestSuggestedDataByKey[key];
+                key = data ? idExtractor(data) : 0;
+            }
+            formData[field] = key;
+        }
+    }
+}
+
+ezyadmin.getSelectedAutocompleteFieldData = function(
+    fieldId,
+    idExtractor
+) {
+    var formData = {};
+    formData[fieldId] = $('#' + fieldId).val();
+    ezyadmin.setActualFormFieldData(formData, fieldId, idExtractor);
+    return formData[fieldId];
+}
+</script>
+<script th:fragment="user">
+// ========== user suggestion =============
+ezyadmin.registerUserAutocomplete = function(inputId) {
+    $(document).ready(() => {
+        ezyadmin.registerAutocomplete(
+            '/api/v1/users/simple-search',
+            (item) => item.username,
+            (item) => item.name,
+            inputId
+        );
+    });
+}
+</script>
+<script th:fragment="admin">
+// ========== admin suggestion =============
+ezyadmin.registerAdminAutocomplete = function(inputId) {
+    $(document).ready(() => {
+        ezyadmin.registerAutocomplete(
+            '/api/v1/admins/simple-search',
+            (item) => item.username,
+            (item) => item.name,
+            inputId
+        );
+    });
+}
+</script>
+</body>
+</html>

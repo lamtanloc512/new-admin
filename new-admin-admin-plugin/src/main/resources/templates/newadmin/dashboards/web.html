@@ -1,0 +1,604 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{ezyadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-12">
+        <div id="statusBox"
+             class="small-box bg-success d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-center align-items-center">
+                <h5 id="statusText" class="p-2 font-weight-bold mb-1 mt-1">[[#{unknown}]]</h5>
+                <h6 id="liveTime" class="p-2 font-weight-bold mb-1 mt-1"></h6>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <button id="buttonStart" class="btn btn-dark mr-2" onclick="ezyadmin.startServer('web');"
+                        th:if="${adminRoles.isAccessible('/api/v1/start', 'POST')}">[[#{start}]]</button>
+                <button id="buttonStop" class="btn btn-danger mr-2" onclick="ezyadmin.stopServer('web');"
+                        th:if="${adminRoles.isAccessible('/api/v1/stop', 'POST')}">[[#{stop}]]</button>
+                <button id="buttonRestart" class="btn btn-primary mr-2" onclick="ezyadmin.restartServer('web');"
+                        th:if="${adminRoles.isAccessible('/api/v1/restart', 'POST')}">[[#{restart}]]</button>
+            </div>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-md-3">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3 id="totalRequest">100</h3>
+                <p>[[#{total_request}]]</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-handshake"></i>
+            </div>
+        </div>
+        <div class="small-box bg-primary">
+            <div class="inner">
+                <h3 id="requestPerSecond">100</h3>
+                <p>[[#{request}]]/[[${#strings.toLowerCase(#messages.msg('second'))}]]</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-arrow-right"></i>
+            </div>
+        </div>
+        <div class="small-box bg-secondary">
+            <div class="inner">
+                <h3 id="responsePerSecond">100</h3>
+                <p>[[#{response}]]/[[${#strings.toLowerCase(#messages.msg('second'))}]]</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-arrow-left"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="small-box bg-info" th:if="${adminRoles.isAccessible('/management/memory-usage')}">
+            <div class="inner">
+                <h3 id="memoryUsage">30MB</h3>
+                <p>[[#{memory_usage}]]</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-barcode"></i>
+            </div>
+        </div>
+        <div class="small-box bg-success" th:if="${adminRoles.isAccessible('/management/cpu-usage')}">
+            <div class="inner">
+                <h3><span id="cpuUsage">10</span><sup style="font-size: 20px">%</sup></h3>
+                <p>[[#{cpu_usage}]]</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-microchip"></i>
+            </div>
+        </div>
+        <div class="small-box bg-sky-blue" th:if="${adminRoles.isAccessible('/management/thread-count')}">
+            <div class="inner">
+                <h3 id="threadCount">10</h3>
+                <p>[[#{threads}]]</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-ios-flower"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-primary"
+             th:if="${adminRoles.isAccessible('/api/v1/settings/set-web-properties', 'PUT')}">
+            <div class="card-header">
+                <h3 class="card-title">[[#{settings}]]</h3>
+            </div>
+            <div>
+                <div class="card-body">
+                    <form id="webSettingsForm">
+                        <div class="form-group">
+                            <label for="webUrl">[[#{web_url}]]</label>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="webUrlErrorLabel" for="webUrl">
+                                    <i class="far fa-times-circle"></i> <span id="webUrlError"></span>
+                                </label>
+                                <input type="url" name="webUrl" id="webUrl" class="form-control" th:placeholder="#{enter_web_url}"
+                                       th:value="${webUrl}">
+                            </div>
+                        </div>
+                        <div class="form-group" id="webManagementGroup">
+                            <label for="webManagementUrl">[[#{web_management_url}]]</label>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="webManagementUrlErrorLabel" for="webManagementUrl">
+                                    <i class="far fa-times-circle"></i> <span id="webManagementUrlError"></span>
+                                </label>
+                                <input type="url" name="webManagementUrl" id="webManagementUrl"
+                                       class="form-control" th:placeholder="#{enter_web_management_url}"
+                                       th:value="${webManagementUrl}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <label for="webProperties">[[#{web_properties}]]</label>
+                                <i class="fas fa-info-circle text-info"
+                                   data-toggle="tooltip" data-placement="top"
+                                   th:title="#{must_restart_socket_to_apply}"></i>
+                            </div>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="webPropertiesErrorLabel" for="webProperties">
+                                    <i class="far fa-times-circle"></i> <span id="webPropertiesError"></span>
+                                </label>
+                                <textarea name="webProperties" id="webProperties" class="form-control"
+                                          rows="5" th:placeholder="#{web_properties}"
+                                          th:text="${webProperties}"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <div>
+                                <label for="webVmOptions">[[#{vm_options}]]</label>
+                                <i class="fas fa-info-circle text-info"
+                                   data-toggle="tooltip" data-placement="top"
+                                   th:title="#{must_restart_admin_to_apply}"></i>
+                            </div>
+                            <div>
+                                <label class="col-form-label text-danger d-none" id="webVmOptionsErrorLabel" for="webVmOptions">
+                                    <i class="far fa-times-circle"></i> <span id="webVmOptionsError"></span>
+                                </label>
+                                <textarea name="webVmOptions" id="webVmOptions" class="form-control"
+                                          rows="5" th:placeholder="#{example} + ': MAX_HEAP_SIZE=256m'"
+                                          th:text="${webVmOptions}"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                    <button type="button" class="btn btn-primary" onclick="ezyadmin.updateWebSettings();">[[#{submit}]]</button>
+                </div>
+            </div>
+        </div>
+        <div class="card card-info mb-0" th:if="${adminRoles.specialAdmin}">
+            <div class="card-header">
+                <h3 class="card-title">[[#{api_list}]]</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table id="apiList" class="table table-bordered table-hover"
+                       th:if="${adminRoles.specialAdmin}">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>[[#{uri}]]</th>
+                        <th class="text-center">[[#{method}]]</th>
+                        <th>[[#{module}]]</th>
+                        <th>[[#{from}]]</th>
+                        <th class="text-center">[[#{authenticated}]]</th>
+                        <th class="text-center">[[#{management}]]</th>
+                    </tr>
+                    </thead>
+                    <tbody id="apiListBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- ./metrics -->
+    <div class="col-12 mb-3"></div>
+</div>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.accessibleUris['/api/v1/modules'] = /*[[${adminRoles.isAccessible('/api/v1/modules')}]]*/;
+ezyadmin.messages.true = /*[[#{true}]]*/;
+ezyadmin.messages.false = /*[[#{false}]]*/;
+ezyadmin.messages.set_web_urls_failed = /*[[#{set_web_urls_failed}]]*/;
+ezyadmin.messages.set_web_urls_successfully = /*[[#{set_web_urls_successfully}]]*/;
+ezyadmin.messages.set_web_properties_successfully = /*[[#{set_web_properties_successfully}]]*/;
+ezyadmin.messages.set_web_properties_failed = /*[[#{set_web_properties_failed}]]*/;
+ezyadmin.messages.set_web_vm_options_successfully = /*[[#{set_web_vm_options_successfully}]]*/;
+ezyadmin.messages.set_web_vm_options_failed = /*[[#{set_web_vm_options_failed}]]*/;
+/*]]>*/
+
+$('#buttonStart').hide();
+
+ezyadmin.liveTime = 0;
+ezyadmin.statusBoxColorClass = 'bg-success';
+
+ezyadmin.fetchLiveTime = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/live-time',
+        type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data) {
+        ezyadmin.liveTime = data;
+        $('#liveTime').text(ezyadmin.durationToString(ezyadmin.liveTime));
+        ezyadmin.liveTimeInterval = setInterval(function() {
+            $('#liveTime').text(ezyadmin.durationToString(++ezyadmin.liveTime));
+        }, 1000);
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.fetchCpuUsage = function() {
+    $.ajax({
+    	url: ezyadmin.webManagementUrl + '/management/cpu-usage',
+    	type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data, status) {
+        $('#cpuUsage').text(Math.round(data.processCpuLoad * 1000.0)/10.0);
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchCpuUsageInterval = function() {
+    clearInterval(ezyadmin.fetchCpuUsageInterval);
+    ezyadmin.fetchCpuUsageInterval = setInterval(ezyadmin.fetchCpuUsage, 1000);
+}
+
+ezyadmin.fetchMemoryUsage = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/memory-usage',
+        type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data, status) {
+        $('#memoryUsage').text(ezyadmin.toCapacityString(data.usedMemory));
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchMemoryUsageInterval = function() {
+    clearInterval(ezyadmin.fetchMemoryUsageInterval);
+    ezyadmin.fetchMemoryUsageInterval = setInterval(ezyadmin.fetchMemoryUsage, 1000);
+}
+
+ezyadmin.fetchThreadCount = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/thread-count',
+        type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data, status) {
+        $('#threadCount').text(data.threadCount);
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchThreadCountInterval = function() {
+    clearInterval(ezyadmin.fetchThreadCountInterval);
+    ezyadmin.fetchThreadCountInterval = setInterval(ezyadmin.fetchThreadCount, 1000);
+}
+
+ezyadmin.fetchTotalRequest = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/total-request',
+        type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data, status) {
+        $('#totalRequest').text(ezyadmin.toCountString(data));
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchTotalRequestInterval = function() {
+    clearInterval(ezyadmin.fetchTotalRequestInterval);
+    ezyadmin.fetchTotalRequestInterval = setInterval(ezyadmin.fetchTotalRequest, 1000);
+}
+
+ezyadmin.fetchRequestPerSecond = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/request-per-second',
+        type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data, status) {
+        $('#requestPerSecond').text(ezyadmin.toCountString(data));
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchRequestPerSecondInterval = function() {
+    clearInterval(ezyadmin.fetchRequestPerSecondInterval);
+    ezyadmin.fetchRequestPerSecondInterval = setInterval(ezyadmin.fetchRequestPerSecond, 1000);
+}
+
+ezyadmin.fetchResponsePerSecond = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/response-per-second',
+        type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data, status) {
+        $('#responsePerSecond').text(ezyadmin.toCountString(data));
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.startFetchResponsePerSecondInterval = function() {
+    clearInterval(ezyadmin.fetchResponsePerSecondInterval);
+    ezyadmin.fetchResponsePerSecondInterval = setInterval(ezyadmin.fetchResponsePerSecond, 1000);
+}
+
+ezyadmin.fetchWebApiList = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/apis',
+        type: 'GET',
+        dataType: 'json',
+    	headers: {
+            'adminAccessToken': ezyadmin.getCookieAccessToken()
+        }
+    })
+    .done(function(data, status) {
+        ezyadmin.apiList = data;
+        ezyadmin.renderApiListTable();
+    })
+    .fail(function(e) {
+    	ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.fetchModuleMap = function() {
+    $.ajax({
+        url: '/api/v1/modules?target=web',
+        type: 'GET',
+        dataType: 'json'
+    })
+    .done(function(data) {
+        ezyadmin.moduleMap = data;
+        ezyadmin.renderApiListTable();
+    })
+    .fail(function(e) {
+        ezyadmin.processGetApiErrors(e);
+    });
+}
+
+ezyadmin.ping = function() {
+    $.ajax({
+        url: ezyadmin.webManagementUrl + '/management/health-check',
+        type: 'GET'
+    })
+    .done(function(data) {
+        $('#statusText').text(ezyadmin.messages.running);
+        $('#statusBox').addClass(ezyadmin.statusBoxColorClass).removeClass('bg-secondary');
+        $('#buttonStart').hide();
+        $('#buttonStop').show();
+        if (!ezyadmin.liveTime) {
+            ezyadmin.fetchLiveTime();
+            ezyadmin.startFetchCpuUsageInterval();
+            ezyadmin.startFetchMemoryUsageInterval();
+            ezyadmin.startFetchThreadCountInterval();
+            ezyadmin.startFetchTotalRequestInterval();
+            ezyadmin.startFetchRequestPerSecondInterval();
+            ezyadmin.startFetchResponsePerSecondInterval();
+            if (ezyadmin.accessibleUris['/api/v1/modules']) {
+                ezyadmin.fetchModuleMap();
+            } else {
+                ezyadmin.moduleMap = 403;
+            }
+            ezyadmin.fetchWebApiList();
+        }
+        ezyadmin.hideLoadingScreen();
+    })
+    .fail(function(data) {
+    	ezyadmin.processGetApiErrors(data);
+    	ezyadmin.clearDashboardStateAndIntervals();
+    });
+}
+
+ezyadmin.clearDashboardStateAndIntervals = function() {
+    ezyadmin.liveTime = 0;
+    clearInterval(ezyadmin.liveTimeInterval);
+    clearInterval(ezyadmin.fetchCpuUsageInterval);
+    clearInterval(ezyadmin.fetchMemoryUsageInterval);
+    clearInterval(ezyadmin.fetchThreadCountInterval);
+    clearInterval(ezyadmin.fetchTotalRequestInterval);
+    clearInterval(ezyadmin.fetchRequestPerSecondInterval);
+    clearInterval(ezyadmin.fetchResponsePerSecondInterval);
+    $('#statusText').text(ezyadmin.messages.no_connection);
+    $('#liveTime').text('');
+    $('#statusBox').addClass('bg-secondary').removeClass(ezyadmin.statusBoxColorClass);
+    $('#buttonStart').show();
+    $('#buttonStop').hide();
+}
+
+ezyadmin.startPingInterval = function() {
+    ezyadmin.ping();
+    ezyadmin.pingInterval = setInterval(ezyadmin.ping, 3000);
+}
+
+ezyadmin.stopPing = function() {
+    clearInterval(ezyadmin.pingInterval);
+    ezyadmin.clearDashboardStateAndIntervals();
+}
+
+ezyadmin.startPingInterval();
+
+// ======================= settings =================
+ezyadmin.updateWebSettings = function() {
+    var formAllData = ezyadmin.formDataToObject('webSettingsForm');
+    ezyadmin.hideFormErrors(formAllData);
+    ezyadmin.setWebUrls(formAllData);
+}
+
+ezyadmin.setWebUrls = function(formAllData) {
+    var webManagementUrl = ezyadmin.webProperties['management.uris_expose'] == 'true'
+        ? formAllData.webUrl
+        : formAllData.webManagementUrl;
+    var formData = {
+        webUrl: formAllData.webUrl,
+        webManagementUrl: webManagementUrl
+    };
+    $.ajax({
+        type: 'PUT',
+        url: '/api/v1/settings/set-web-urls',
+        contentType: 'application/json',
+        data: JSON.stringify(formData)
+    }).done(function() {
+        ezyadmin.shortToast('bg-success', ezyadmin.messages.set_web_urls_successfully);
+        ezyadmin.webUrl = formData.webUrl;
+        ezyadmin.webManagementUrl = formData.webManagementUrl;
+        ezyadmin.setTargetProperties('web', formAllData);
+    }).fail(function(data) {
+        ezyadmin.shortToast('bg-danger', ezyadmin.messages.set_web_urls_failed);
+        ezyadmin.processUpdateApiErrors(formData, data);
+    });
+}
+
+// ================= api list ==================
+ezyadmin.renderApiListTable = function() {
+    if (!ezyadmin.apiList || !ezyadmin.moduleMap || ezyadmin.apiListTableRendered) {
+        return;
+    }
+    ezyadmin.apiListTableRendered = true;
+    var html = ezyadmin.buildApiListBodyHtml();
+    $('#apiListBody').html(html);
+    ezyadmin.createDataTable('apiList', 12, false);
+}
+
+ezyadmin.buildApiListBodyHtml = function() {
+    var html = '';
+    ezyadmin.apiList.forEach((api, index) => {
+        var modules = ezyadmin.getModulesOfApi(api);
+        var moduleNames = '';
+        var moduleTypes = '';
+        modules.forEach((module, mi) => {
+            if (mi == 0) {
+                moduleNames += '<span class="text-success">';
+                moduleTypes += '<span class="text-success">';
+            }
+            else {
+                moduleNames += ', <span class="text-danger">';
+                moduleTypes += ', <span class="text-danger">';
+            }
+            moduleNames += module.name + '</span>';
+            moduleTypes += ezyadmin.getModuleTypeShortName(module.type) + '</span>';
+        });
+        html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td class="text-break">${api.uri}</td>
+                <td class="text-center">${api.method}</td>
+                <td>${moduleNames}</td>
+                <td>${moduleTypes}</td>
+                <td class="text-center">${ezyadmin.messages[api.authenticated]}</td>
+                <td class="text-center">${ezyadmin.messages[api.management]}</td>
+            </tr>`;
+    });
+    return html;
+}
+
+ezyadmin.getModulesOfApi = function(api) {
+    var answer = [];
+    api.handlers.forEach((handler) => {
+        if (handler.packet === 'com.tvd12.ezyhttp.server.management') {
+            answer.push({
+                name: 'core',
+                type: 'core'
+            });
+            return;
+        }
+        if (ezyadmin.moduleMap == 403) {
+            answer.push({
+                name: 'No permission',
+                type: 'No permission'
+            });
+            return;
+        }
+        Object.keys(ezyadmin.moduleMap).forEach((moduleType) => {
+            ezyadmin.moduleMap[moduleType].forEach((module) => {
+                if (handler.packet.startsWith(module.packageName)) {
+                    answer.push({
+                        name: module.name,
+                        type: moduleType
+                    });
+                } else if (api.resource) {
+                    var modulePath = 'web/' + ezyadmin.moduleContainerFolders[moduleType] + '/' + module.name;
+                    if (api.resourcePath.includes(modulePath)) {
+                        answer.push({
+                            name: module.name,
+                            type: moduleType
+                        });
+                    }
+                }
+            });
+        });
+    });
+    if (answer.length == 0) {
+        answer.push({
+            name: 'unknown',
+            type: 'unknown'
+        });
+    }
+    return answer;
+}
+// ============= check expose management uris =========
+ezyadmin.webProperties = {};
+$(document).ready(function() {
+    var webPropertiesLines = $('#webProperties')
+        .val()
+        .split('\n');
+    webPropertiesLines.forEach(line => {
+        var keyValue = line.split('=');
+        if (keyValue.length > 1) {
+            ezyadmin.webProperties[keyValue[0]] = keyValue[1];
+        }
+    });
+    if (ezyadmin.webProperties['management.uris_expose'] == 'true') {
+        $('#webManagementGroup').addClass('d-none');
+    }
+});
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{dashboards/scripts :: scripts}" />
+</th:block>
+</body>
+</html>
