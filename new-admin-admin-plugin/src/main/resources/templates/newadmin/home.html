@@ -1,0 +1,185 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{newadmin}"
+>
+  <body>
+    <div layout:fragment="content" class="row">
+      <div th:if="${adminRoles.isAccessible('/users')}" class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3 class="commas-number-string" th:text="${totalUser}">150</h3>
+            <p>[[#{users}]]</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <a href="/users" class="small-box-footer"
+            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+          ></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div
+        th:if="${adminRoles.isAccessible('/dashboard/web')}"
+        class="col-lg-3 col-6"
+      >
+        <!-- small box -->
+        <div class="small-box bg-success" id="boxWeb">
+          <div class="inner">
+            <h3 id="boxWebTitle">[[#{running}]]</h3>
+            <p>[[#{web}]]</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-android-globe"></i>
+          </div>
+          <a href="/dashboard/web" class="small-box-footer"
+            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+          ></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div
+        th:if="${adminRoles.isAccessible('/dashboard/socket')}"
+        class="col-lg-3 col-6"
+      >
+        <!-- small box -->
+        <div class="small-box bg-danger" id="boxSocket">
+          <div class="inner">
+            <h3 id="boxSocketTitle">[[#{running}]]</h3>
+            <p>[[#{socket}]]</p>
+          </div>
+          <div class="icon">
+            <i class="fa fa-rocket nav-icon"></i>
+          </div>
+          <a href="/dashboard/socket" class="small-box-footer"
+            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+          ></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div
+        th:if="${adminRoles.isAccessible('/dashboard/admin')}"
+        class="col-lg-3 col-6"
+      >
+        <!-- small box -->
+        <div class="small-box bg-primary" id="boxAdmin">
+          <div class="inner">
+            <h3 id="boxAdminTitle">[[#{running}]]</h3>
+            <p>[[#{admin}]]</p>
+          </div>
+          <div class="icon">
+            <i class="fa fa-suitcase nav-icon"></i>
+          </div>
+          <a href="/dashboard/admin" class="small-box-footer"
+            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+          ></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div th:if="${adminRoles.isAccessible('/admins')}" class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-sky-blue">
+          <div class="inner">
+            <h3 class="commas-number-string" th:text="${totalAdmin}">150</h3>
+            <p>[[#{administrators}]]</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <a href="/admins" class="small-box-footer"
+            >[[#{more_info}]] <i class="fas fa-arrow-circle-right"></i
+          ></a>
+        </div>
+      </div>
+    </div>
+    <script layout:fragment="scripts">
+      ezyadmin.targets = {
+        admin: {
+          managementUrl: "",
+        },
+        web: {
+          managementUrl: ezyadmin.webManagementUrl,
+        },
+      };
+
+      ezyadmin.connectionSuccessFunc = function (boxId, colorClass) {
+        $("#" + boxId + "Title").text(ezyadmin.messages.running);
+        $("#" + boxId)
+          .addClass(colorClass)
+          .removeClass("bg-secondary");
+      };
+
+      ezyadmin.connectionFailFunc = function (boxId, colorClass) {
+        $("#" + boxId + "Title").text(ezyadmin.messages.off);
+        $("#" + boxId)
+          .addClass("bg-secondary")
+          .removeClass(colorClass);
+      };
+
+      ezyadmin.pingTarget = function (target) {
+        var boxId = "boxWeb";
+        var colorClass = "bg-success";
+
+        if (target === "admin") {
+          boxId = "boxAdmin";
+          colorClass = "bg-primary";
+        }
+
+        var url = ezyadmin.targets[target].managementUrl;
+        $.ajax({
+          url: url + "/management/health-check",
+          type: "GET",
+          dataType: "json",
+        })
+          .done(function (data, status) {
+            ezyadmin.connectionSuccessFunc(boxId, colorClass);
+          })
+          .fail(function (e) {
+            ezyadmin.connectionFailFunc(boxId, colorClass);
+          });
+      };
+
+      ezyadmin.pingTarget("admin");
+      setInterval(() => {
+        ezyadmin.pingTarget("admin");
+      }, 3000);
+
+      ezyadmin.pingTarget("web");
+      setInterval(() => {
+        ezyadmin.pingTarget("web");
+      }, 3000);
+
+      ezyadmin.socket.onConnectionFailed(() => {
+        ezyadmin.connectionFailFunc("boxSocket", "bg-danger");
+      });
+
+      ezyadmin.socket.onAuthenticated(() => {
+        ezyadmin.connectionSuccessFunc("boxSocket", "bg-danger");
+      });
+
+      if (!ezyadmin.socketEnable) {
+        ezyadmin.connectionFailFunc("boxSocket", "bg-danger");
+      }
+    </script>
+  </body>
+</html>

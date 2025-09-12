@@ -1,0 +1,659 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+ -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <!-- leftbar-tab-menu -->
+    <div th:fragment="sidebar" class="startbar d-print-none">
+      <!--start brand-->
+      <div class="brand">
+        <a href="/ezyplatform" class="logo">
+          <span>
+            <img
+              th:src="${ezyplatformLogoUrl != null ? ezyplatformLogoUrl : '/images/ezyplatform-logo.png'}"
+              alt="logo-small"
+              class="logo-sm"
+            />
+          </span>
+          <span class="">
+            <img
+              th:src="${ezyplatformLogoUrl != null ? ezyplatformLogoUrl : '/images/ezyplatform-logo.png'}"
+              alt="EzyPlatform Logo"
+              id="ezyplatformTopLogo"
+              class="logo-lg logo-dark"
+              style="opacity: 0.8"
+            />
+            <span class="brand-text font-weight-light">
+              EzyPlatform
+              <i
+                class="far fa-arrow-alt-circle-up text-warning"
+                th:classappend="${hasNewPlatformVersion ? '' : 'd-none'}"
+              ></i>
+            </span>
+          </span>
+        </a>
+      </div>
+      <!--end brand-->
+      <!-- Sidebar user panel (optional) -->
+      <div
+        th:if="${adminRoles.isAccessible('/admins/me')}"
+        class="user-panel mt-3 pb-3 mb-3 d-flex cursor-pointer"
+        onclick="ezyadmin.showProfile();"
+      >
+        <div
+          class="image"
+          id="mainAdminAvatarContainer"
+          th:classappend="${avatarImage != null ? '' : 'd-none'}"
+        >
+          <img
+            th:src="${avatarImage != null ? avatarImage.getMeUrlOrDefault('') : '#'}"
+            th:classappend="${avatarImage != null ? '' : 'd-none'}"
+            id="mainAdminAvatar"
+            class="img-circle elevation-2 object-fit-cover"
+            alt="Admin Image"
+          />
+        </div>
+        <div
+          id="mainAdminAvatarTmp"
+          th:classappend="${avatarImage == null ? '' : 'd-none'}"
+        >
+          <div
+            class="rounded-circle avatar-tmp main-avatar-tmp"
+            th:text="${#strings.capitalize(admin != null ? admin.getName().charAt(0) : 'A')}"
+          ></div>
+        </div>
+        <div class="info">
+          <a
+            href="/admins/me"
+            class="d-block"
+            th:text="${admin != null ? admin.getName() : ''}"
+            >Dzung</a
+          >
+        </div>
+      </div>
+      <!--start startbar-menu-->
+      <div class="startbar-menu">
+        <div class="startbar-collapse" id="startbarCollapse" data-simplebar>
+          <div class="d-flex align-items-start flex-column w-100">
+            <!-- Navigation -->
+            <ul class="navbar-nav mb-auto w-100">
+              <li class="menu-label mt-2">
+                <span>Navigation</span>
+              </li>
+
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/dashboard')}"
+              >
+                <a
+                  class="nav-link"
+                  href="/"
+                  th:classappend="${currentMenu == 'home'} ? 'active' : ''"
+                >
+                  <i class="iconoir-home menu-icon"></i>
+                  <span>[[#{home}]]</span>
+                </a>
+              </li>
+
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessibleAny({'/dashboard/admin', '/dashboard/web', '/dashboard/socket'})}"
+              >
+                <a
+                  class="nav-link"
+                  href="#sidebarDashboards"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="sidebarDashboards"
+                  th:classappend="${currentMenu == 'dashboard'} ? 'active' : ''"
+                >
+                  <i class="iconoir-report-columns menu-icon"></i>
+                  <span>[[#{dashboard.title}]]</span>
+                </a>
+                <div
+                  class="collapse"
+                  id="sidebarDashboards"
+                  th:classappend="${currentOpen == 'dashboard'} ? 'show' : ''"
+                >
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/dashboard/web')}"
+                    >
+                      <a
+                        href="/dashboard/web"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'dashboard.web'} ? 'active' : ''"
+                      >
+                        <i class="fab fa-firefox nav-icon"></i>
+                        <span>[[#{web}]]</span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/dashboard/socket')}"
+                    >
+                      <a
+                        href="/dashboard/socket"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'dashboard.socket'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-rocket nav-icon"></i>
+                        <span>[[#{socket}]]</span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/dashboard/admin')}"
+                    >
+                      <a
+                        href="/dashboard/admin"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'dashboard.admin'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-suitcase nav-icon"></i>
+                        <span>[[#{admin}]]</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <li class="nav-item" th:if="${adminRoles.isAccessible('/media')}">
+                <a
+                  class="nav-link"
+                  href="/media"
+                  th:classappend="${currentMenu == 'media'} ? 'active' : ''"
+                >
+                  <i class="iconoir-media-image menu-icon"></i>
+                  <span>[[#{media}]]</span>
+                </a>
+              </li>
+
+              <th:block
+                th:replace="~{fragments/menu-items :: menu-items(menus=${topMenus.menus})}"
+              />
+
+              <li
+                class="menu-label mt-2"
+                th:if="${adminRoles.isAccessibleAny({'/plugins', '/themes', '/socket-apps'})}"
+                th:with="componentsTitle=#{components.title}"
+              >
+                <small class="label-border">
+                  <div class="border_left hidden-xs"></div>
+                  <div class="border_right"></div>
+                </small>
+                <span
+                  th:text="${componentsTitle != null ? #strings.toUpperCase(componentsTitle) : 'COMPONENTS'}"
+                  >Components</span
+                >
+              </li>
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/plugins')}"
+              >
+                <a
+                  class="nav-link"
+                  href="#sidebarPlugins"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="sidebarPlugins"
+                  th:classappend="${currentMenu == 'plugins'} ? 'active' : ''"
+                >
+                  <i class="iconoir-plug menu-icon"></i>
+                  <span>[[#{plugins}]]</span>
+                </a>
+                <div
+                  class="collapse"
+                  id="sidebarPlugins"
+                  th:classappend="${currentOpen == 'plugins'} ? 'show' : ''"
+                >
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/web-plugins')}"
+                    >
+                      <a
+                        href="/web-plugins"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'plugins.web'} ? 'active' : ''"
+                      >
+                        <i class="fab fa-firefox nav-icon"></i>
+                        <span
+                          >[[#{web}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalWebPlugin}"
+                        /></span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/socket-plugins')}"
+                    >
+                      <a
+                        href="/socket-plugins"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'plugins.socket'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-rocket nav-icon"></i>
+                        <span
+                          >[[#{socket}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalSocketPlugin}"
+                        /></span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admin-plugins')}"
+                    >
+                      <a
+                        href="/admin-plugins"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'plugins.admin'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-suitcase nav-icon"></i>
+                        <span
+                          >[[#{admin}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalAdminPlugin}"
+                        /></span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/themes')}"
+              >
+                <a
+                  href="/themes"
+                  class="nav-link"
+                  th:classappend="${currentMenu == 'themes'} ? 'active' : ''"
+                >
+                  <i class="iconoir-window menu-icon"></i>
+                  <span
+                    >[[#{themes}]]
+                    <span
+                      class="badge badge-info right commas-number-string"
+                      th:text="${totalTheme}"
+                  /></span>
+                </a>
+              </li>
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/socket-apps')}"
+              >
+                <a
+                  href="/socket-apps"
+                  class="nav-link"
+                  th:classappend="${currentMenu == 'socket.apps'} ? 'active' : ''"
+                >
+                  <i class="iconoir-cubes menu-icon"></i>
+                  <span
+                    >[[#{socket_apps}]]
+                    <span
+                      class="badge badge-info right commas-number-string"
+                      th:text="${totalSocketApp}"
+                  /></span>
+                </a>
+              </li>
+
+              <th:block
+                th:replace="~{fragments/menu-items :: menu-items(menus=${componentsMenus.menus})}"
+              />
+
+              <li
+                class="menu-label mt-2"
+                th:if="${adminRoles.isAccessibleAny({'/admins', '/admin-list'})}"
+                th:with="administratorTitle=#{administrator.title}"
+              >
+                <small class="label-border">
+                  <div class="border_left hidden-xs"></div>
+                  <div class="border_right"></div>
+                </small>
+                <span
+                  th:text="${administratorTitle != null ? #strings.toUpperCase(administratorTitle) : 'ADMINISTRATOR'}"
+                  >Administrator</span
+                >
+              </li>
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/admins')}"
+              >
+                <a
+                  class="nav-link"
+                  href="#sidebarAdmins"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="sidebarAdmins"
+                  th:classappend="${currentMenu == 'admins'} ? 'active' : ''"
+                >
+                  <i class="iconoir-user-circle menu-icon"></i>
+                  <span>[[#{admins}]]</span>
+                </a>
+                <div
+                  class="collapse"
+                  id="sidebarAdmins"
+                  th:classappend="${currentOpen == 'admins'} ? 'show' : ''"
+                >
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins')}"
+                    >
+                      <a
+                        href="/admins"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.list'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-list nav-icon"></i>
+                        <span
+                          >[[#{list}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalAdmin}"
+                        /></span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins/roles')}"
+                    >
+                      <a
+                        href="/admins/roles"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.roles'} ? 'active' : ''"
+                      >
+                        <i class="fas fa-users-cog nav-icon"></i>
+                        <span
+                          >[[#{roles}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalAdminRoles}"
+                        /></span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins/add')}"
+                    >
+                      <a
+                        href="/admins/add"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.add'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-plus-circle nav-icon"></i>
+                        <span>[[#{add_new}]]</span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins/me')}"
+                    >
+                      <a
+                        href="/admins/me"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.profile'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-user nav-icon"></i>
+                        <span>[[#{profile}]]</span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/admins/inbox')}"
+                    >
+                      <a
+                        th:href="${'/admins/inbox'}"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'admins.inbox'} ? 'active' : ''"
+                      >
+                        <i class="fas fa-envelope-open-text nav-icon"></i>
+                        <span
+                          >[[#{inbox}]]
+                          <span
+                            class="badge badge-info right letter-count"
+                          ></span
+                        ></span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item" th:if="${adminRoles.isAccessible('/users')}">
+                <a
+                  class="nav-link"
+                  href="#sidebarUsers"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="sidebarUsers"
+                  th:classappend="${currentMenu == 'users'} ? 'active' : ''"
+                >
+                  <i class="iconoir-users menu-icon"></i>
+                  <span>[[#{users}]]</span>
+                </a>
+                <div
+                  class="collapse"
+                  id="sidebarUsers"
+                  th:classappend="${currentOpen == 'users'} ? 'show' : ''"
+                >
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users')}"
+                    >
+                      <a
+                        href="/users"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.list'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-list nav-icon"></i>
+                        <span
+                          >[[#{list}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalUser}"
+                        /></span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users/roles')}"
+                    >
+                      <a
+                        href="/users/roles"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.roles'} ? 'active' : ''"
+                      >
+                        <i class="fas fa-users-cog nav-icon"></i>
+                        <span
+                          >[[#{roles}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            th:text="${totalUserRoles}"
+                        /></span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/users/add')}"
+                    >
+                      <a
+                        href="/users/add"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'users.add'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-plus-circle nav-icon"></i>
+                        <span>[[#{add_new}]]</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li
+                class="nav-item"
+                th:if="${adminRoles.isAccessible('/settings')}"
+              >
+                <a
+                  class="nav-link"
+                  href="#sidebarSettings"
+                  data-bs-toggle="collapse"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="sidebarSettings"
+                  th:classappend="${currentMenu == 'settings'} ? 'active' : ''"
+                >
+                  <i class="iconoir-tools menu-icon"></i>
+                  <span>[[#{settings}]]</span>
+                </a>
+                <div
+                  class="collapse"
+                  id="sidebarSettings"
+                  th:classappend="${currentOpen == 'settings'} ? 'show' : ''"
+                >
+                  <ul class="nav flex-column">
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/settings/regular')}"
+                    >
+                      <a
+                        href="/settings/regular"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.regular'} ? 'active' : ''"
+                      >
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <span>[[#{regular}]]</span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/settings/website')}"
+                    >
+                      <a
+                        href="/settings/website"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.website'} ? 'active' : ''"
+                      >
+                        <i class="fab fa-firefox nav-icon"></i>
+                        <span>[[#{website}]]</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a
+                        href="/settings"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.list'} ? 'active' : ''"
+                      >
+                        <i class="fa fa-list nav-icon"></i>
+                        <span
+                          >[[#{list}]]
+                          <span
+                            class="badge badge-info right commas-number-string"
+                            id="totalSetting"
+                            th:text="${totalSetting}"
+                        /></span>
+                      </a>
+                    </li>
+                    <li
+                      class="nav-item"
+                      th:if="${adminRoles.isAccessible('/settings/encryption')}"
+                    >
+                      <a
+                        href="/settings/encryption"
+                        class="nav-link"
+                        th:classappend="${currentMenu == 'settings.encryption'} ? 'active' : ''"
+                      >
+                        <i class="fas fa-key nav-icon"></i>
+                        <span>[[#{encryption}]]</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+              <th:block
+                th:replace="~{fragments/menu-items :: menu-items(menus=${administratorMenus.menus})}"
+              />
+
+              <li
+                class="menu-label mt-2"
+                th:if="${extensionsMenus.hasMenus()}"
+                th:with="extensionsTitle=#{extensions.title}"
+              >
+                <small class="label-border">
+                  <div class="border_left hidden-xs"></div>
+                  <div class="border_right"></div>
+                </small>
+                <span
+                  th:text="${extensionsTitle != null ? #strings.toUpperCase(extensionsTitle) : 'EXTENSIONS'}"
+                  >Extensions</span
+                >
+              </li>
+
+              <th:block
+                th:replace="~{fragments/menu-items :: menu-items(menus=${extensionsMenus.menus})}"
+              />
+
+              <li class="nav-item">
+                <a href="#" class="nav-link" onclick="ezyadmin.logout()">
+                  <i class="iconoir-log-out menu-icon"></i>
+                  <span>[[#{logout}]]</span>
+                </a>
+              </li>
+            </ul>
+            <!--end navbar-nav--->
+            <div class="update-msg text-center">
+              <div
+                class="d-flex justify-content-center align-items-center thumb-lg update-icon-box rounded-circle mx-auto"
+              >
+                <img
+                  src="assets/images/extra/party.gif"
+                  alt=""
+                  class="d-inline-block me-1"
+                  height="30"
+                />
+              </div>
+              <h5 class="mt-3">Mannat Themes</h5>
+              <p class="mb-3 text-muted">
+                Dastone is a high quality web applications.
+              </p>
+              <a
+                href="javascript: void(0);"
+                class="btn bg-black text-white shadow-sm rounded-pill"
+                >Upgrade your plan</a
+              >
+            </div>
+          </div>
+        </div>
+        <!--end startbar-collapse-->
+      </div>
+      <!--end startbar-menu-->
+    </div>
+    <!--end startbar-->
+    <div class="startbar-overlay d-print-none"></div>
+    <!-- end leftbar-tab-menu-->
+  </body>
+</html>

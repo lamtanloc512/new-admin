@@ -1,0 +1,57 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="menu-items">
+	<li th:each="menu : ${menus}"
+		th:if="${menu.isVisible() && adminRoles.isAccessible(menu.uri)}"
+		th:class="${menu.hasItems() ? 'nav-item has-treeview' : 'nav-item'}"
+		th:classappend="${currentOpen == menu.fullName} ? 'menu-open' : ''">
+		<a th:href="${menu.uri}" class="nav-link"
+		   th:classappend="${currentMenu == menu.fullName} ? active : ''">
+			<i th:if="${menu.icon == null}" class="nav-icon fas fa-circle"></i>
+			<i th:if="${menu.icon != null}" class="nav-icon" th:classappend="${menu.icon}"></i>
+			<p th:inline="text">
+				[[#{${menu.name}}]]
+				<span class="badge badge-info right commas-number-string"
+					  th:if="${menuBadges.containsKey(menu.fullName)}"
+					  th:text="${menuBadges.get(menu.fullName)}" />
+				<i th:if="${menu.hasItems()}" class="fas fa-angle-left right"></i>
+			</p>
+		</a>
+		<ul th:if="${menu.hasItems()}" class="nav nav-treeview">
+			<li th:each="menuItem : ${menu.visibleItems}" class="nav-item"
+				th:if="${adminRoles.isAccessible(menuItem.uri)}">
+				<a th:href="${menuItem.uri}" class="nav-link"
+				   th:classappend="${currentMenu == menuItem.fullName} ? active : ''">
+					<i th:if="${menuItem.icon == null}" class="nav-icon far fa-circle"></i>
+					<i th:if="${menuItem.icon != null}" class="nav-icon" th:classappend="${menuItem.icon}"></i>
+					<p>
+						[[#{${menuItem.name}}]]
+						<span class="badge badge-info right commas-number-string"
+							  th:if="${menuItemBadges.containsKey(menuItem.fullName)}"
+							  th:text="${menuItemBadges.get(menuItem.fullName)}" />
+					</p>
+				</a>
+			</li>
+		</ul>
+	</li>
+</th:block>
+</body>
+</html>

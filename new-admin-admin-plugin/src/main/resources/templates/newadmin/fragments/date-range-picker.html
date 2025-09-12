@@ -1,0 +1,102 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<script th:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.messages.apply = /*[[#{apply}]]*/ '';
+ezyadmin.messages.cancel = /*[[#{cancel}]]*/ '';
+ezyadmin.messages.from = /*[[#{from}]]*/ '';
+ezyadmin.messages.to = /*[[#{to}]]*/ '';
+ezyadmin.messages.custom = /*[[#{custom}]]*/ '';
+ezyadmin.messages.short_sunday = /*[[#{short_sunday}]]*/ '';
+ezyadmin.messages.short_monday = /*[[#{short_monday}]]*/ '';
+ezyadmin.messages.short_tuesday = /*[[#{short_tuesday}]]*/ '';
+ezyadmin.messages.short_wednesday = /*[[#{short_wednesday}]]*/ '';
+ezyadmin.messages.short_thursday = /*[[#{short_thursday}]]*/ '';
+ezyadmin.messages.short_friday = /*[[#{short_friday}]]*/ '';
+ezyadmin.messages.short_saturday = /*[[#{short_saturday}]]*/ '';
+ezyadmin.messages.january = /*[[#{january}]]*/ '';
+ezyadmin.messages.february = /*[[#{february}]]*/ '';
+ezyadmin.messages.march = /*[[#{march}]]*/ '';
+ezyadmin.messages.april = /*[[#{april}]]*/ '';
+ezyadmin.messages.may = /*[[#{may}]]*/ '';
+ezyadmin.messages.june = /*[[#{june}]]*/ '';
+ezyadmin.messages.july = /*[[#{july}]]*/ '';
+ezyadmin.messages.august = /*[[#{august}]]*/ '';
+ezyadmin.messages.september = /*[[#{september}]]*/ '';
+ezyadmin.messages.october = /*[[#{october}]]*/ '';
+ezyadmin.messages.november = /*[[#{november}]]*/ '';
+ezyadmin.messages.december = /*[[#{december}]]*/ '';
+/*]]>*/
+
+ezyadmin.createDateRangePicker = function(selector, properties, callback) {
+    var defaultProperties = {
+        locale: {
+            format: ezyadmin.defaultDateFormat,
+            separator: ' - ',
+            applyLabel: ezyadmin.messages.apply,
+            cancelLabel: ezyadmin.messages.cancel,
+            fromLabel: ezyadmin.messages.from,
+            toLabel: ezyadmin.messages.to,
+            customRangeLabel: ezyadmin.messages.custom,
+            weekLabel: 'W',
+            daysOfWeek: [
+                ezyadmin.messages.short_sunday,
+                ezyadmin.messages.short_monday,
+                ezyadmin.messages.short_tuesday,
+                ezyadmin.messages.short_wednesday,
+                ezyadmin.messages.short_thursday,
+                ezyadmin.messages.short_friday,
+                ezyadmin.messages.short_saturday
+            ],
+            monthNames: [
+                ezyadmin.messages.january,
+                ezyadmin.messages.february,
+                ezyadmin.messages.march,
+                ezyadmin.messages.april,
+                ezyadmin.messages.may,
+                ezyadmin.messages.june,
+                ezyadmin.messages.july,
+                ezyadmin.messages.august,
+                ezyadmin.messages.september,
+                ezyadmin.messages.october,
+                ezyadmin.messages.november,
+                ezyadmin.messages.december
+            ],
+            firstDay: 1
+        },
+        opens: 'left',
+        showDropdowns: true,
+        allowApplyWithoutChange: true
+    };
+    var newProperties = ezyadmin.deepMergeObjects(
+        defaultProperties,
+        properties
+    );
+    $(selector).daterangepicker(newProperties, callback);
+    if (newProperties.allowApplyWithoutChange) {
+        $(selector).on('apply.daterangepicker', function(ev, picker) {
+            callback(picker.startDate, picker.endDate, picker.chosenLabel);
+        });
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <footer
+      th:fragment="footer"
+      class="footer text-center text-sm-start d-print-none"
+    >
+      <div class="container-fluid px-0">
+        <div class="row">
+          <div class="col-12">
+            <div class="card mb-0 border-bottom-0 rounded-bottom-0">
+              <div class="card-body">
+                <th:block th:if="${ezyPlatformCopyright == null}">
+                  <strong
+                    >Copyright &copy; 2022
+                    <a href="https://youngmonkeys.org">youngmonkeys.org</a
+                    >.</strong
+                  >
+                  All rights reserved.
+                </th:block>
+                <th:block
+                  th:if="${ezyPlatformCopyright != null}"
+                  th:utext="${ezyPlatformCopyright}"
+                >
+                </th:block>
+                <span><b>[[#{version}]]</b> [[${platformVersion}]]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
