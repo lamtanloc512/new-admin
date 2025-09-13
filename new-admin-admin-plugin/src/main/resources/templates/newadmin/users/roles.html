@@ -106,14 +106,14 @@
               `;
               if (ezyadmin.accessibleUris['/users/roles/{roleName}']) {
                   html += `
-                      <a class="btn pr-1" href="/users/roles/${role.name}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                      <a class="btn pe-1" href="/users/roles/${role.name}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
                           <i class="fas fa-eye text-primary"></i>
                       </a>
                   `;
               }
               if (ezyadmin.accessibleUris['/api/v1/user/role-names/{roleName}']) {
                   html += `
-                      <button class="btn pl-1" onclick="ezyadmin.onDeleteUserRole('${role.name}');">
+                      <button class="btn ps-1" onclick="ezyadmin.onDeleteUserRole('${role.name}');">
                           <i class="text-danger fas fa-trash"></i>
                       </button>
                   `;

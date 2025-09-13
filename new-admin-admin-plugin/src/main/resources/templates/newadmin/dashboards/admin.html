@@ -336,7 +336,7 @@
             <table class="table table-bordered table-hover">
               <thead>
                 <tr>
-                  <th class="pl-2p5">#</th>
+                  <th class="ps-2p5">#</th>
                   <th>[[#{username}]]</th>
                   <th>[[#{email}]]</th>
                   <th class="text-center">[[#{status}]]</th>
@@ -356,7 +356,7 @@
             <ul class="pagination pagination-sm m-0 float-right">
               <li class="page-item">
                 <a class="page-link cursor-pointer" id="firstPageButtonAdmin">
-                  <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                  <i class="fas fa-arrow-circle-left ps-1 pr-1"></i>
                 </a>
               </li>
               <li class="page-item">
@@ -371,7 +371,7 @@
               </li>
               <li class="page-item">
                 <a class="page-link cursor-pointer" id="lastPageButtonAdmin">
-                  <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                  <i class="fas fa-arrow-circle-right ps-1 pr-1"></i>
                 </a>
               </li>
             </ul>
@@ -892,7 +892,7 @@
               var statusColor = ezyadmin.getTextColorByStatus(admin.status);
               html += `
                   <tr>
-                      <td class="pl-2p5">${admin.id}</td>
+                      <td class="ps-2p5">${admin.id}</td>
                       <td>${admin.username}</td>
                       <td class="text-wrap">${admin.email || ''}</td>
                       <td class="text-center ${statusColor}">${ezyadmin.getI18nMessage(admin.status.toLowerCase())}</td>

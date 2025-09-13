@@ -112,7 +112,7 @@
                       ` : ''}
                       ${role.name !== 'super_admin' && role.name !== 'devops' &&
                       ezyadmin.accessibleUris['/api/v1/admin/role-names/{roleName}'] ? `
-                          <button type="button" class="btn pl-1" onclick="ezyadmin.onDeleteAdminRole('${role.name}');">
+                          <button type="button" class="btn ps-1" onclick="ezyadmin.onDeleteAdminRole('${role.name}');">
                               <i class="text-danger fas fa-trash"></i>
                           </button>
                       ` : ''}

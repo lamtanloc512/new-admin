@@ -107,7 +107,7 @@
               <button
                 type="button"
                 id="addUserCoverImageButton"
-                class="btn btn-link pl-0"
+                class="btn btn-link ps-0"
                 th:classappend="${userCoverImage != null ? 'd-none' : ''}"
                 th:if="${adminRoles.isAccessible('/api/v1/users/{username}/update-cover-image', 'PUT')}"
                 onclick="ezyadmin.selectUserCoverImage();"
@@ -249,8 +249,8 @@
               <button
                 type="button"
                 class="btn btn-primary btn-block mt-md-0 mt-3"
-                data-toggle="modal"
-                data-target="#add-new-role-modal"
+                data-bs-toggle="modal"
+                data-bs-target="#add-new-role-modal"
               >
                 [[#{add_new_role}]]
               </button>

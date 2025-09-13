@@ -88,7 +88,7 @@
                 >
                   <thead>
                     <tr>
-                      <th class="text-center pl-2p5">#</th>
+                      <th class="text-center ps-2p5">#</th>
                       <th>[[#{username}]]</th>
                       <th>[[#{display_name}]]</th>
                       <th class="text-center">[[#{granted_at}]]</th>
@@ -109,7 +109,7 @@
                 <ul class="pagination pagination-sm m-0 float-right">
                   <li class="page-item">
                     <a class="page-link cursor-pointer" id="firstPageButton">
-                      <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                      <i class="fas fa-arrow-circle-left ps-1 pr-1"></i>
                     </a>
                   </li>
                   <li class="page-item">
@@ -124,7 +124,7 @@
                   </li>
                   <li class="page-item">
                     <a class="page-link cursor-pointer" id="lastPageButton">
-                      <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                      <i class="fas fa-arrow-circle-right ps-1 pr-1"></i>
                     </a>
                   </li>
                 </ul>
@@ -182,7 +182,7 @@
             <div class="d-flex justify-content-center">
               <button
                 type="button"
-                class="btn btn-primary ml-5 mr-1"
+                class="btn btn-primary ml-5 me-1"
                 onclick="ezyadmin.saveAdminRoleFeatures();"
               >
                 [[#{save_features}]]
@@ -360,7 +360,7 @@
           var admin = member.memberName;
           var html = `
               <tr>
-                  <td class="text-center pl-2p5">${admin.adminId}</td>
+                  <td class="text-center ps-2p5">${admin.adminId}</td>
                   <td>${admin.username}</td>
                   <td>
                       <a href="/admins/${admin.username}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">

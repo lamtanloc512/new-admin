@@ -78,7 +78,7 @@
                         ></p>
                         <div th:if="${module.active == true}" class="d-flex">
                           <button
-                            class="btn btn-link text-left p-0"
+                            class="btn btn-link text-start p-0"
                             th:if="${module.name != 'socket-monitor' && module.active == true}"
                             th:text="#{deactivate}"
                             th:attr="onclick=|ezyadmin.showDeactivateModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
@@ -86,13 +86,13 @@
                         </div>
                         <div th:if="${module.active == false}" class="d-flex">
                           <button
-                            class="btn btn-link text-left p-0"
+                            class="btn btn-link text-start p-0"
                             th:text="#{activate}"
                             th:attr="onclick=|ezyadmin.showActivateModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"
                           ></button>
                           <span th:if="${module.name != 'welcome'}">|</span>
                           <button
-                            class="btn btn-link text-left p-0 text-danger"
+                            class="btn btn-link text-start p-0 text-danger"
                             th:text="#{delete}"
                             th:if="${module.name != 'welcome'}"
                             th:attr="onclick=|ezyadmin.showDeleteModuleModal('${module.typeName}', '${module.name}', '${module.projectName}', '${module.version}')|"

@@ -29,31 +29,31 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<div class="mt-2 pl-5 text-danger d-none" id="missingDependenciesDivApplyFailed">
+					<div class="mt-2 ps-5 text-danger d-none" id="missingDependenciesDivApplyFailed">
 						<span>[[#{missing_plugins}]]
 							<i class="fas fa-info-circle text-info"
 							   data-toggle="tooltip" data-placement="top"
 							   th:title="#{please_install_them_to_continue}"></i>:
 						</span>
-						<ol class="m-0 pl-3" id="missingDependenciesOlApplyFailed">
+						<ol class="m-0 ps-3" id="missingDependenciesOlApplyFailed">
 						</ol>
 					</div>
-					<div class="mt-2 pl-5 text-danger d-none" id="needToUpdateDependenciesDivApplyFailed">
+					<div class="mt-2 ps-5 text-danger d-none" id="needToUpdateDependenciesDivApplyFailed">
 						<span>[[#{need_to_update_plugins}]]
 							<i class="fas fa-info-circle text-info"
 							   data-toggle="tooltip" data-placement="top"
 							   th:title="#{please_update_them_to_continue}"></i>:
 						</span>
-						<ol class="m-0 pl-3" id="needToUpdateDependenciesOlApplyFailed">
+						<ol class="m-0 ps-3" id="needToUpdateDependenciesOlApplyFailed">
 						</ol>
 					</div>
-					<div class="mt-2 pl-5 text-danger d-none" id="inactiveDependenciesDivApplyFailed">
+					<div class="mt-2 ps-5 text-danger d-none" id="inactiveDependenciesDivApplyFailed">
 						<span>[[#{inactive_plugins}]]
 							<i class="fas fa-info-circle text-info"
 							   data-toggle="tooltip" data-placement="top"
 							   th:title="#{please_activate_them_to_continue}"></i>:
 						</span>
-						<ol class="m-0 pl-3" id="inactiveDependenciesOlApplyFailed">
+						<ol class="m-0 ps-3" id="inactiveDependenciesOlApplyFailed">
 						</ol>
 					</div>
 				</div>
@@ -72,33 +72,33 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form id="activateModuleForm" class="pl-5">
+					<form id="activateModuleForm" class="ps-5">
 					</form>
-					<div class="mt-2 pl-5 text-danger d-none" id="missingDependenciesDiv">
+					<div class="mt-2 ps-5 text-danger d-none" id="missingDependenciesDiv">
 						<span>[[#{missing_plugins}]]
 							<i class="fas fa-info-circle text-info"
 							   data-toggle="tooltip" data-placement="top"
 							   th:title="#{please_install_them_to_continue}"></i>:
 						</span>
-						<ol class="m-0 pl-3" id="missingDependenciesOl">
+						<ol class="m-0 ps-3" id="missingDependenciesOl">
 						</ol>
 					</div>
-					<div class="mt-2 pl-5 text-danger d-none" id="needToUpdateDependenciesDiv">
+					<div class="mt-2 ps-5 text-danger d-none" id="needToUpdateDependenciesDiv">
 						<span>[[#{need_to_update_plugins}]]
 							<i class="fas fa-info-circle text-info"
 							   data-toggle="tooltip" data-placement="top"
 							   th:title="#{please_update_them_to_continue}"></i>:
 						</span>
-						<ol class="m-0 pl-3" id="needToUpdateDependenciesOl">
+						<ol class="m-0 ps-3" id="needToUpdateDependenciesOl">
 						</ol>
 					</div>
-					<div class="mt-2 pl-5 text-danger d-none" id="inactiveDependenciesDiv">
+					<div class="mt-2 ps-5 text-danger d-none" id="inactiveDependenciesDiv">
 						<span>[[#{inactive_plugins}]]
 							<i class="fas fa-info-circle text-info"
 							   data-toggle="tooltip" data-placement="top"
 							   th:title="#{please_activate_them_to_continue}"></i>:
 						</span>
-						<ol class="m-0 pl-3" id="inactiveDependenciesOl">
+						<ol class="m-0 ps-3" id="inactiveDependenciesOl">
 						</ol>
 					</div>
 				</div>
@@ -136,15 +136,15 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form id="deactivateModuleForm" class="pl-5">
+					<form id="deactivateModuleForm" class="ps-5">
 					</form>
-					<div class="mt-2 pl-5 text-danger d-none" id="dependingPluginsDiv">
+					<div class="mt-2 ps-5 text-danger d-none" id="dependingPluginsDiv">
 						<span>[[#{depending_plugins}]]
 							<i class="fas fa-info-circle text-info"
 							   data-toggle="tooltip" data-placement="top"
 							   th:title="#{please_deactivate_them_to_continue}"></i>:
 						</span>
-						<ol class="m-0 pl-3" id="dependingPluginsOl">
+						<ol class="m-0 ps-3" id="dependingPluginsOl">
 						</ol>
 					</div>
 				</div>
@@ -182,7 +182,7 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form id="deleteModuleForm" class="pl-5">
+					<form id="deleteModuleForm" class="ps-5">
 					</form>
 				</div>
 				<div class="modal-footer justify-content-between">
@@ -514,12 +514,12 @@ ezyadmin.doBuildMissingDependenciesHtml = function(
 			<li>
 				${it.projectName}: ${it.projectVersion}
 				${existingProjectMap[it.projectName] ? `
-					<span class="text-secondary ml-1 mr-1">|</span>
+					<span class="text-secondary ml-1 me-1">|</span>
 					<span class="text-primary cursor-pointer" onclick="ezyadmin.installProject('${it.projectName}', '${it.projectVersion}')">
 						${ezyadmin.messages.install.toLowerCase()} <i class="fas fa-download"></i>
 					</span>
 				` : ''}
-				<span class="text-secondary ml-1 mr-1">|</span>
+				<span class="text-secondary ml-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.showUploadProjectModal()">
 					${ezyadmin.messages.upload.toLowerCase()} <i class="fas fa-upload"></i>
 				</span>
@@ -539,11 +539,11 @@ ezyadmin.buildNeedToUpdateDependenciesHtml = function(dependencies) {
 		html += `
 			<li>
 				${it.projectName}: ${it.projectVersion}
-				<span class="text-secondary ml-1 mr-1">|</span>
+				<span class="text-secondary ml-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.installProject('${it.projectName}', '${it.projectVersion}')">
 					${ezyadmin.messages.install.toLowerCase()} <i class="fas fa-download"></i>
 				</span>
-				<span class="text-secondary ml-1 mr-1">|</span>
+				<span class="text-secondary ml-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.showUploadProjectModal()">
 					${ezyadmin.messages.upload.toLowerCase()} <i class="fas fa-upload"></i>
 				</span>
@@ -559,7 +559,7 @@ ezyadmin.buildInactiveDependenciesHtml = function(dependencies) {
 		html += `
 			<li>
 				${it}
-				<span class="text-secondary ml-1 mr-1">|</span>
+				<span class="text-secondary ml-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.onActiveDependentPluginClick('${it}')">
 					${ezyadmin.messages.activate.toLowerCase()} <i class="fas fa-paper-plane"></i>
 				</span>
