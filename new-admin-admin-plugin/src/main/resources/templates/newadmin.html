@@ -97,9 +97,99 @@
               <div
                 class="page-title-box d-md-flex justify-content-md-between align-items-center"
               >
-                <h4 class="page-title" th:text="#{${currentPageTitle}}">
-                  Dashboard
-                </h4>
+                <div class="d-flex gap-2 align-items-center">
+                  <h4 class="page-title" th:text="#{${currentPageTitle}}">
+                    Dashboard
+                  </h4>
+                  <button
+                    th:if="${enableAddNewButton == true}"
+                    type="button"
+                    id="ezyAddNewButton"
+                    onclick="ezyadmin.onNewButtonClick(this)"
+                    class="btn btn-outline-primary"
+                  >
+                    [[#{add_new}]] <i class="fas fa-plus-circle"></i>
+                  </button>
+                  <button
+                    th:if="${enableEditButton == true}"
+                    type="button"
+                    id="ezyEditButton"
+                    onclick="ezyadmin.onEditButtonClick(this)"
+                    class="btn btn-outline-primary"
+                  >
+                    [[#{edit}]] <i class="fas fa-edit"></i>
+                  </button>
+                  <button
+                    th:if="${enableSaveButton == true}"
+                    type="button"
+                    id="ezySaveButton"
+                    onclick="ezyadmin.onSaveButtonClick(this)"
+                    class="btn btn-outline-primary"
+                  >
+                    [[#{save}]] <i class="fas fa-save"></i>
+                  </button>
+                  <i
+                    th:if="${showLastSavedInfo == true}"
+                    id="lastSavedInfoTooltip"
+                    class="fas fa-info-circle text-info top-button-tooltip"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    th:title="#{last_saved_at} + ': '"
+                  ></i>
+                  <button
+                    th:if="${enableUploadButton == true}"
+                    type="button"
+                    id="ezyUploadButton"
+                    onclick="ezyadmin.onUploadButtonClick(this)"
+                    class="btn btn-outline-primary"
+                  >
+                    [[#{upload}]] <i class="fas fa-upload"></i>
+                  </button>
+                  <button
+                    th:if="${enableHistoryButton == true}"
+                    type="button"
+                    id="ezyHistoryButton"
+                    onclick="ezyadmin.onHistoryButtonClick(this)"
+                    class="btn btn-outline-dark ml-2 pt-0 pb-0"
+                  >
+                    [[#{history}]] <i class="fas fa-history"></i>
+                  </button>
+                  <button
+                    th:if="${enableDeleteButton == true}"
+                    type="button"
+                    id="ezyDeleteButton"
+                    onclick="ezyadmin.onDeleteButtonClick(this)"
+                    class="btn btn-outline-danger ml-2 pt-0 pb-0"
+                  >
+                    [[#{delete}]] <i class="fas fa-trash"></i>
+                  </button>
+                  <button
+                    th:if="${enableRecoverButton == true}"
+                    type="button"
+                    id="ezyRecoverButton"
+                    onclick="ezyadmin.onRecoverButtonClick(this)"
+                    class="btn btn-outline-danger ml-2 pt-0 pb-0"
+                  >
+                    [[#{recover}]] <i class="fas fa-undo"></i>
+                  </button>
+                  <button
+                    th:if="${enableRestartToApplyButton == true}"
+                    type="button"
+                    id="restartToApply"
+                    onclick="ezyadmin.onRestartToApplyButtonClick(this)"
+                    class="btn btn-outline-primary"
+                  >
+                    [[#{apply}]] v[[${newApplyItemVersion}]]
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                  <i
+                    th:if="${showRestartToApplyInfo == true}"
+                    class="fas fa-info-circle text-info top-button-tooltip"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    th:title="#{restart_server_and_apply}"
+                  ></i>
+                </div>
                 <div class="">
                   <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item">
