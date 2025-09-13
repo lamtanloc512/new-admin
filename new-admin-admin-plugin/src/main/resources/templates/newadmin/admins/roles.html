@@ -24,23 +24,27 @@
   <body>
     <div layout:fragment="content" class="row">
       <div class="col-12">
-        <table
-          id="adminRoleList"
-          class="table table-bordered table-hover bg-white align-middle-cells"
-        >
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>[[#{name}]]</th>
-              <th>[[#{display_name}]]</th>
-              <th class="text-center">[[#{priority}]]</th>
-              <th class="text-center">[[#{admins}]]</th>
-              <th class="text-center">[[#{created_at}]]</th>
-              <th class="text-center">[[#{actions}]]</th>
-            </tr>
-          </thead>
-          <tbody id="adminRoleListBody"></tbody>
-        </table>
+        <div class="card mb-0">
+          <div class="card-body table-responsive">
+            <table
+              id="adminRoleList"
+              class="table table-bordered table-hover align-middle-cells"
+            >
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>[[#{name}]]</th>
+                  <th>[[#{display_name}]]</th>
+                  <th class="text-center">[[#{priority}]]</th>
+                  <th class="text-center">[[#{admins}]]</th>
+                  <th class="text-center">[[#{created_at}]]</th>
+                  <th class="text-center">[[#{actions}]]</th>
+                </tr>
+              </thead>
+              <tbody id="adminRoleListBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
     <th:block layout:fragment="modals">

@@ -40,7 +40,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
-    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="icon" type="image/x-icon" ezy:vhref="/favicon.ico">
 
     <link
       href="/libs/simple-datatables/style.css"
@@ -52,6 +52,7 @@
     <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/app.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/theme.css" rel="stylesheet" type="text/css" />
 
     <!-- Admin -->
     <link rel="stylesheet" type="text/css" ezy:vhref="/css/ezyadmin.css" />
@@ -327,9 +328,9 @@
       <!-- end page content -->
     </div>
 
-    <div id="loadingScreen" class="screen-loading d-none">
+    <!-- <div id="loadingScreen" class="screen-loading d-none">
       <i class="fas fa-3x fa-sync fa-spin"></i>
-    </div>
+    </div> -->
 
     <th:block th:replace="~{newadmin/media/modal :: content}" />
     <th:block th:replace="~{newadmin/modals/file-permission :: content}" />
@@ -789,7 +790,7 @@
         responsive,
         properties
       ) {
-        var dataTable = $("#" + tableId).DataTable({
+        var dataTable = new simpleDatatables.DataTable(`#${tableId}`,{
           language: ezyadmin.dataTable.language,
           paging: true,
           lengthChange: false,

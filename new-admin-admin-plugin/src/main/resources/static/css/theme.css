@@ -1,0 +1,20 @@
+[class^="elevation-"],
+[class*=" elevation-"] {
+  box-shadow: none !important;
+}
+.wh-150px {
+  width: 150px !important;
+  height: 150px !important;
+}
+
+.d-flex {
+  gap: 0.5rem !important;
+}
+
+ul.media-list li .delete-button {
+  position: absolute;
+  padding: 5px;
+  top: -18px;
+  right: 8px;
+  font-size: 40px;
+}

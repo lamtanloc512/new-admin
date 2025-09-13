@@ -23,7 +23,7 @@
 >
   <body>
     <div layout:fragment="content">
-      <div class="d-flex align-items-center px-2p5 pb-3">
+      <div class="d-flex align-items-center gap-2 my-2">
         <input
           type="search"
           class="form-control"
@@ -44,8 +44,12 @@
           </option>
         </select>
       </div>
-      <div class="text-center media-list-page">
-        <ul class="media-list" id="mediaListBody"></ul>
+      <div class="card">
+        <div class="card-body">
+          <div class="text-center media-list-page">
+            <ul class="media-list" id="mediaListBody"></ul>
+          </div>
+        </div>
       </div>
       <div class="d-flex flex-column text-center">
         <span>
