@@ -94,10 +94,10 @@
               <span id="totalAdminText">0</span>
               [[${#strings.toLowerCase(#messages.msg('admins'))}]]
             </span>
-            <ul class="pagination pagination-sm m-0 float-right">
+            <ul class="pagination pagination-sm m-0 float-end">
               <li class="page-item">
                 <a class="page-link cursor-pointer" id="firstPageButton">
-                  <i class="fas fa-arrow-circle-left ps-1 pr-1"></i>
+                  <i class="fas fa-arrow-circle-left ps-1 pe-1"></i>
                 </a>
               </li>
               <li class="page-item">
@@ -112,7 +112,7 @@
               </li>
               <li class="page-item">
                 <a class="page-link cursor-pointer" id="lastPageButton">
-                  <i class="fas fa-arrow-circle-right ps-1 pr-1"></i>
+                  <i class="fas fa-arrow-circle-right ps-1 pe-1"></i>
                 </a>
               </li>
             </ul>
@@ -267,7 +267,7 @@
                   <td class="text-center">${ezyadmin.formatTimeStamp(admin.createdAt)}</td>
                   <td class="text-center">
                       ${admin.username === ezyadmin.adminUsername || ezyadmin.accessibleUris['/admins/{username}'] ? `
-                          <a class="btn pr-1" href="/admins/${ezyadmin.adminUsername}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                          <a class="btn pe-1" href="/admins/${ezyadmin.adminUsername}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
                               <i class="fas fa-eye text-info"></i>
                           </a>
                       ` : ''}

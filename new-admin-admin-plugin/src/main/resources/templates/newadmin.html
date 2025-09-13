@@ -150,7 +150,7 @@
                     type="button"
                     id="ezyHistoryButton"
                     onclick="ezyadmin.onHistoryButtonClick(this)"
-                    class="btn btn-outline-dark ml-2 pt-0 pb-0"
+                    class="btn btn-outline-dark ms-2 pt-0 pb-0"
                   >
                     [[#{history}]] <i class="fas fa-history"></i>
                   </button>
@@ -159,7 +159,7 @@
                     type="button"
                     id="ezyDeleteButton"
                     onclick="ezyadmin.onDeleteButtonClick(this)"
-                    class="btn btn-outline-danger ml-2 pt-0 pb-0"
+                    class="btn btn-outline-danger ms-2 pt-0 pb-0"
                   >
                     [[#{delete}]] <i class="fas fa-trash"></i>
                   </button>
@@ -168,7 +168,7 @@
                     type="button"
                     id="ezyRecoverButton"
                     onclick="ezyadmin.onRecoverButtonClick(this)"
-                    class="btn btn-outline-danger ml-2 pt-0 pb-0"
+                    class="btn btn-outline-danger ms-2 pt-0 pb-0"
                   >
                     [[#{recover}]] <i class="fas fa-undo"></i>
                   </button>
@@ -897,7 +897,7 @@
         }');">
 			<i class="${notification.iconImage || "far fa-envelope"} me-2"></i>
 			${ezyadmin.truncateString(notification.title, 18, "...")}
-			<span class="float-right text-muted text-sm">
+			<span class="float-end text-muted text-sm">
 				${ezyadmin.getTimeRangeTextValue(notification.sentAt, false)}
 			</span>
 		</a>
@@ -980,7 +980,7 @@
 				<div class="media-body">
 					<h3 class="dropdown-item-title">
 						${item.title || ezyadmin.messages.new_message}
-						<span class="float-right text-sm ${item.rightIconColor || "text-secondary"}">
+						<span class="float-end text-sm ${item.rightIconColor || "text-secondary"}">
 							<i class="${item.rightIcon || "fas fa-star"}"></i>
 						</span>
 					</h3>

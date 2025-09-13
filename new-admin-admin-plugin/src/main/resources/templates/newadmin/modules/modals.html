@@ -514,12 +514,12 @@ ezyadmin.doBuildMissingDependenciesHtml = function(
 			<li>
 				${it.projectName}: ${it.projectVersion}
 				${existingProjectMap[it.projectName] ? `
-					<span class="text-secondary ml-1 me-1">|</span>
+					<span class="text-secondary ms-1 me-1">|</span>
 					<span class="text-primary cursor-pointer" onclick="ezyadmin.installProject('${it.projectName}', '${it.projectVersion}')">
 						${ezyadmin.messages.install.toLowerCase()} <i class="fas fa-download"></i>
 					</span>
 				` : ''}
-				<span class="text-secondary ml-1 me-1">|</span>
+				<span class="text-secondary ms-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.showUploadProjectModal()">
 					${ezyadmin.messages.upload.toLowerCase()} <i class="fas fa-upload"></i>
 				</span>
@@ -539,11 +539,11 @@ ezyadmin.buildNeedToUpdateDependenciesHtml = function(dependencies) {
 		html += `
 			<li>
 				${it.projectName}: ${it.projectVersion}
-				<span class="text-secondary ml-1 me-1">|</span>
+				<span class="text-secondary ms-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.installProject('${it.projectName}', '${it.projectVersion}')">
 					${ezyadmin.messages.install.toLowerCase()} <i class="fas fa-download"></i>
 				</span>
-				<span class="text-secondary ml-1 me-1">|</span>
+				<span class="text-secondary ms-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.showUploadProjectModal()">
 					${ezyadmin.messages.upload.toLowerCase()} <i class="fas fa-upload"></i>
 				</span>
@@ -559,7 +559,7 @@ ezyadmin.buildInactiveDependenciesHtml = function(dependencies) {
 		html += `
 			<li>
 				${it}
-				<span class="text-secondary ml-1 me-1">|</span>
+				<span class="text-secondary ms-1 me-1">|</span>
 				<span class="text-primary cursor-pointer" onclick="ezyadmin.onActiveDependentPluginClick('${it}')">
 					${ezyadmin.messages.activate.toLowerCase()} <i class="fas fa-paper-plane"></i>
 				</span>
