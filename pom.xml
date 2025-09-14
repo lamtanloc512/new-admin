@@ -6,12 +6,12 @@
         <artifactId>ezyplatform-parent</artifactId>
         <version>0.0.2</version>
     </parent>
-    <artifactId>new-admin</artifactId>
+    <artifactId>enhancement</artifactId>
     <groupId>org.ltl</groupId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>new-admin</name>
-    <description>New Admin</description>
+    <name>enhancement</name>
+    <description>Admin Enhancement</description>
     <properties>
         <!--suppress UnresolvedMavenProperty -->
         <ezyplatform.home>${env.EZYPLATFORM_HOME}</ezyplatform.home>
@@ -23,7 +23,7 @@
         <maven.compiler.fork>true</maven.compiler.fork>
     </properties>
     <modules>
-        <module>new-admin-admin-plugin</module>
+        <module>enhancement-admin-plugin</module>
     </modules>
     <dependencies>
         <dependency>
@@ -102,7 +102,6 @@
                         <arg>-feature</arg>
                         <arg>-unchecked</arg>
                         <arg>-Xfatal-warnings</arg>
-                        <arg>-java-output-version:8</arg>
                     </args>
                 </configuration>
             </plugin>
