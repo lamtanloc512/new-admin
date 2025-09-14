@@ -1,0 +1,182 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{newadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-3 d-flex align-items-center">
+        <label>[[#{avatar}]]:</label>
+    </div>
+    <div class="col-9">
+        <div class="image-button wh-72px mb-3">
+            <img id="userAvatarImage" class="rounded-circle object-fit-cover" width="72" height="72"
+                 th:classappend="${userAvatarImage != null ? '' : 'd-none'}"
+                 th:if="${adminRoles.isAccessible('/api/v1/media/{name}')}"
+                 th:src="${userAvatarImage != null ? userAvatarImage.getUrlOrDefault('') : '#'}">
+            <div id="userAvatarImageTmp" class="text-uppercase rounded-circle avatar-tmp wh-72px"
+                 th:classappend="${userAvatarImage != null && adminRoles.isAccessible('/api/v1/media/{name}') ? 'd-none' : ''}">
+                [[${selectedUser.name.charAt(0)}]]
+            </div>
+            <button type="button" id="editAvatarButton" class="rounded-circle"
+                    onclick="ezyadmin.selectUserAvatarImage();"
+                    th:if="${adminRoles.isAccessible('/api/v1/users/{username}/update-avatar', 'PUT')}">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+        </div>
+    </div>
+    <div class="col-3 d-flex align-items-center">
+        <label>[[#{cover_image}]]:</label>
+    </div>
+    <div class="col-9">
+        <div class="image-button mb-3 w-192" id="mainUserCoverImageContainer"
+             th:classappend="${userCoverImage != null ? '' : 'd-none'}"
+             th:if="${adminRoles.isAccessible('/api/v1/media/{name}')}">
+            <img id="userCoverImage" class="object-fit-cover mw-100" width="192" height="128"
+                 th:classappend="${userCoverImage != null ? '' : 'd-none'}"
+                 th:src="${userCoverImage != null ? userCoverImage.getUrlOrDefault('') : '#'}">
+            <button type="button" id="editCoverImageButton"
+                    onclick="ezyadmin.selectUserCoverImage();"
+                    th:if="${adminRoles.isAccessible('/api/v1/users/{username}/update-cover-image', 'PUT')}">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+        </div>
+        <button type="button" id="addUserCoverImageButton" class="btn btn-link pl-0"
+                th:classappend="${userCoverImage != null ? 'd-none' : ''}"
+                th:if="${adminRoles.isAccessible('/api/v1/users/{username}/update-cover-image', 'PUT')}"
+                onclick="ezyadmin.selectUserCoverImage();">
+            [[#{add}]]
+            <i class="fas fa-plus-square"></i>
+        </button>
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{id}]]:</label></div>
+    <div class="col-md-9 col-8">[[${selectedUser.id}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{uuid}]]:</label></div>
+    <div class="col-md-9 col-8 text-break">[[${selectedUser.uuid}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{username}]]:</label></div>
+    <div class="col-md-9 col-8 text-break">[[${selectedUser.username}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{display_name}]]:</label></div>
+    <div class="col-md-9 col-8 text-break">[[${selectedUser.displayName}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{email}]]:</label></div>
+    <div class="col-md-9 col-8 text-break">
+        <a th:href="${'mailto:' + selectedUser.email}">
+            [[${selectedUser.email}]]
+        </a>
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{phone}]]:</label></div>
+    <div class="col-md-9 col-8">
+        <div class="d-flex align-items-center">
+            <a th:href="${'tel:' + selectedUser.phone}">
+                [[${selectedUser.phone}]]
+            </a>
+            <div class="ml-2 d-flex align-item-centers gap-1"
+                 id="afterUserPhonePlaceHolder">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{website}]]:</label></div>
+    <div class="col-md-9 col-8 text-break">
+        <a th:href="${selectedUser.url}">[[${selectedUser.url}]]</a>
+    </div>
+    <th:block th:replace="~{fragments/additional :: content}" />
+    <div class="col-12" id="userProfileDetailsPlaceholder"></div>
+    <div class="col-md-3 col-4"><label>[[#{status}]]:</label></div>
+    <div class="col-md-9 col-8 status-text" th:attr="status=|${selectedUser.status}|">
+        [[#{${selectedUser.status.toLowerCase()}}]]
+    </div>
+    <div class="col-md-3 col-4"><label>[[#{created_at}]]:</label></div>
+    <div class="col-md-9 col-8 date-time-string">[[${selectedUser.createdAt}]]</div>
+    <div class="col-md-3 col-4"><label>[[#{updated_at}]]:</label></div>
+    <div class="col-md-9 col-8 date-time-string">[[${selectedUser.updatedAt}]]</div>
+    <div class="col-md-3 col-4"></div>
+    <div class="col-md-9 col-8">
+        <button class="btn btn-warning mb-2"
+                th:if="${adminRoles.isAccessible('/api/v1/users/{username}', 'DELETE') && selectedUser.status != 'DELETED'}"
+                th:attr="onclick=|ezyadmin.onEraseUserClick('${selectedUser.username}')|">
+            [[#{erase}]] <i class="fas fa-eraser"></i>
+        </button>
+        <button class="btn btn-danger mb-2"
+                th:if="${adminRoles.isAccessible('/api/v1/users/{username}', 'DELETE')}"
+                th:attr="onclick=|ezyadmin.onDeleteUserClick('${selectedUser.username}')|">
+            [[#{delete}]] <i class="fas fa-trash"></i>
+        </button>
+    </div>
+    <div class="col-12" id="userProfilePlaceholder"></div>
+    <div class="col-12"><label>[[#{role_list}]]:</label></div>
+    <div class="col-md-8 col-12">
+        <table id="roleList" class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>[[#{role_name}]]</th>
+                <th>[[#{created_at}]]</th>
+                <th>[[#{actions}]]</th>
+            </tr>
+            </thead>
+            <tbody id="roleListBody">
+            <tr th:each="userRole,iterator : ${userRoles}">
+                <td>[[${iterator.index + 1}]]</td>
+                <td>
+                    <a th:href="${'/users/roles/' + userRole.name}">[[${userRole.displayName}]]</a>
+                </td>
+                <td class="date-time-string">[[${userRole.createdAt}]]</td>
+                <td>
+                    <a class="btn"
+                       th:if="${adminRoles.isAccessible('/users/roles/{roleName}')}"
+                       th:href="${'/users/roles/' + userRole.name}">
+                        <i class="fas fa-eye text-primary"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4 col-0"></div>
+    <div class="col-12 mb-3"></div>
+</div>
+<th:block layout:fragment="modals">
+<th:block th:replace="~{fragments/prompt :: content(id='delete-user-modal', title=confirm, confirmButton=delete, closeButton=close)}" />
+<th:block th:replace="~{fragments/prompt :: content(id='erase-user-modal', title=confirm, confirmButton=erase, closeButton=close, type=delete)}" />
+</th:block>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.currentParentURL = /*[[${currentParentURL}]]*/ '';
+ezyadmin.previousScreen = /*[[${previousScreen}]]*/ '';
+ezyadmin.previousQueryString = /*[[${previousQueryString}]]*/ '';
+ezyadmin.selectedUserId = /*[[${selectedUser.id}]]*/ '';
+ezyadmin.selectedUsername = /*[[${selectedUser.username}]]*/ '';
+ezyadmin.selectedUserPhone = /*[[${selectedUser.phone}]]*/ '';
+/*]]>*/
+
+ezyadmin.onEditButtonClick = function() {
+    window.location = ezyadmin.createUrlWithPreviousScreenParams(
+        '/users/' + ezyadmin.selectedUsername + '/edit'
+    );
+}
+ezyadmin.createDataTable('roleList', 12);
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{users/scripts :: avatar}" />
+<script th:replace="~{users/scripts :: update}" />
+<th:block th:replace="~{fragments/additional :: scripts}" />
+</th:block>
+</body>
+</html>

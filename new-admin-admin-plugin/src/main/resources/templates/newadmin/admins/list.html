@@ -1,0 +1,285 @@
+<!--
+ ~ Copyright 2022 youngmonkeys.org
+ ~ 
+ ~ Licensed under the ezyplatform, Version 1.0.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~     https://youngmonkeys.org/licenses/ezyplatform-1.0.0.txt
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{newadmin}">
+
+<body>
+<div layout:fragment="content" class="row">
+    <div class="col-lg-6 col-md-4 col-12"></div>
+    <div class="col-lg-3 col-md-3 col-12 page-search mt-md-0 mt-3">
+        <label for="adminSearchStatus" class="white-space-nowrap d-md-block d-none">
+            [[#{status}]]:
+        </label>
+        <select class="form-control form-select" id="adminSearchStatus"
+                onchange="ezyadmin.onAdminStatusSelected();">
+            <option value="">[[#{all}]]</option>
+            <option th:each="adminStatus : ${adminStatuses}"
+                    th:value="${adminStatus}"
+                    th:selected="${adminStatus == adminSearchStatus}">
+                [[#{${adminStatus.toString().toLowerCase()}}]]
+            </option>
+        </select>
+    </div>
+    <div class="col-lg-3 col-md-5 col-12 page-search">
+        <label for="adminSearchKeyword" class="white-space-nowrap d-md-block d-none">
+            [[#{search}]]:
+        </label>
+        <input type="search" class="form-control" th:value="${adminSearchKeyword}"
+               th:placeholder="#{keyword}" id="adminSearchKeyword"
+               oninput="ezyadmin.onKeydownToSearchAdmin();"
+               onkeydown="ezyadmin.onKeydownToSearchAdmin();">
+    </div>
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body table-responsive p-0">
+                <table class="table table-bordered table-hover text-nowrap align-middle-cells">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="white-space-nowrap">[[#{username}]]</th>
+                        <th class="white-space-nowrap">[[#{email}]]</th>
+                        <th class="white-space-nowrap">[[#{display_name}]]</th>
+                        <th class="white-space-nowrap">[[#{phone}]]</th>
+                        <th class="white-space-nowrap text-center">[[#{status}]]</th>
+                        <th class="white-space-nowrap text-center">[[#{created_at}]]</th>
+                        <th class="white-space-nowrap text-center">[[#{actions}]]</th>
+                    </tr>
+                    </thead>
+                    <tbody id="adminListBody">
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer clearfix">
+                <span>
+                    <span id="adminCountText">0</span>
+                    [[${#strings.toLowerCase(#messages.msg('of'))}]]
+                    <span id="totalAdminText">0</span>
+                    [[${#strings.toLowerCase(#messages.msg('admins'))}]]
+                </span>
+                <ul class="pagination pagination-sm m-0 float-right">
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="firstPageButton">
+                            <i class="fas fa-arrow-circle-left pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="prevPageButton">[[#{prev}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="nextPageButton">[[#{next}]]</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link cursor-pointer" id="lastPageButton">
+                            <i class="fas fa-arrow-circle-right pl-1 pr-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.card-footer -->
+        </div>
+    </div>
+</div>
+<script layout:fragment="scripts" th:inline="javascript">
+/*<![CDATA[*/
+ezyadmin.messages.activated = /*[[#{activated}]]*/;
+ezyadmin.messages.archived = /*[[#{archived}]]*/;
+ezyadmin.messages.blocked = /*[[#{blocked}]]*/;
+ezyadmin.messages.inactivated = /*[[#{inactivated}]]*/;
+ezyadmin.adminSearchKeyword = /*[[${adminSearchKeyword}]]*/;
+ezyadmin.accessibleUris['/admins/{username}'] = /*[[${adminRoles.isAccessible('/admins/{username}')}]]*/;
+ezyadmin.accessibleUris['/admins/{username}/edit'] = /*[[${adminRoles.isAccessible('/admins/{username}/edit')}]]*/;
+ezyadmin.accessibleUris['/api/v1/admins/{username}/activate'] = /*[[${adminRoles.isAccessible('/api/v1/admins/{username}/activate', 'PUT')}]]*/;
+ezyadmin.accessibleUris['/api/v1/admins/{username}/archive'] = /*[[${adminRoles.isAccessible('/api/v1/admins/{username}/archive', 'PUT')}]]*/;
+/*]]>*/
+
+// ========== admin init =============
+ezyadmin.onNewButtonClick = function() {
+    window.location = '/admins/add'
+        + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+}
+
+// ========== admin search =============
+ezyadmin.onKeydownToSearchAdmin = function() {
+    ezyadmin.adminSearchKeyword = $('#adminSearchKeyword').val();
+    if(event.key === 'Enter' || !ezyadmin.adminSearchKeyword) {
+        ezyadmin.fetchAdminList();
+        ezyadmin.changeBrowserUrl();
+    }
+}
+
+ezyadmin.onAdminStatusSelected = function() {
+    ezyadmin.adminSearchStatus = $('#adminSearchStatus').val();
+    ezyadmin.fetchAdminList();
+    ezyadmin.changeBrowserUrl();
+}
+
+ezyadmin.changeBrowserUrl = function() {
+    var params = [];
+    if (ezyadmin.adminSearchKeyword) {
+        params.push('keyword=' + ezyadmin.adminSearchKeyword);
+    }
+    if (ezyadmin.adminSearchStatus) {
+        params.push('adminStatus=' + ezyadmin.adminSearchStatus);
+    }
+    if (ezyadmin.lang) {
+        params.push('lang=' + ezyadmin.lang);
+    }
+    var url = '/admins';
+    if (params.length) {
+        url += '?' + params.join('&');
+    }
+    window.history.pushState({}, '', url);
+}
+
+// ========== admin pagination =============
+$('#firstPageButton').click(() => {
+    ezyadmin.fetchAdminList('first');
+});
+$('#lastPageButton').click(() => {
+    ezyadmin.fetchAdminList('last');
+});
+$('#nextPageButton').click(() => {
+    ezyadmin.fetchAdminList('next');
+});
+$('#prevPageButton').click(() => {
+    ezyadmin.fetchAdminList('prev');
+});
+
+// ========== admin list =============
+ezyadmin.fetchAdminList = function(action) {
+    var queryString = '';
+    if (ezyadmin.adminSearchKeyword) {
+        queryString += '&keyword=' + ezyadmin.adminSearchKeyword;
+    }
+    if (ezyadmin.adminSearchStatus) {
+        queryString += '&adminStatus=' + ezyadmin.adminSearchStatus;
+    }
+    if (action == 'current') {
+        if (ezyadmin.lastAdminQueryString) {
+            queryString = ezyadmin.lastAdminQueryString;
+        }
+    } else if (action == 'next') {
+        if (ezyadmin.lastAdminPageToken.next) {
+            queryString += '&nextPageToken=' + ezyadmin.lastAdminPageToken.next;
+        } else {
+            return;
+        }
+    } else if (action == 'prev') {
+        if (ezyadmin.lastAdminPageToken.prev) {
+            queryString += '&prevPageToken=' + ezyadmin.lastAdminPageToken.prev;
+        } else {
+            return;
+        }
+    } else if (action == 'last') {
+        queryString += '&lastPage=true';
+    }
+    $.ajax({
+        type: 'GET',
+        url: '/api/v1/admins?limit=12' + queryString,
+        contentType: 'application/json',
+        success: function (data) {
+            $('#adminCountText').text(data.count);
+            $('#totalAdminText').text(ezyadmin.formatNumberWithCommas(data.total));
+            ezyadmin.lastAdminQueryString = queryString;
+            ezyadmin.lastAdminPageToken = data.pageToken;
+            $('#adminListBody').html(ezyadmin.buildAdminListBodyHtml(data.items));
+            if (data.continuation.hasNext) {
+                $('#nextPageButton').removeClass('text-secondary');
+            } else {
+                $('#nextPageButton').addClass('text-secondary');
+            }
+            if (data.continuation.hasPrevious) {
+                $('#prevPageButton').removeClass('text-secondary');
+            } else {
+                $('#prevPageButton').addClass('text-secondary');
+            }
+        },
+        error: function (data) {
+            ezyadmin.processGetApiErrors(data);
+        }
+    });
+}
+
+ezyadmin.buildAdminListBodyHtml = function(adminList) {
+    var html = '';
+    adminList.forEach((admin) => {
+        html += ezyadmin.buildAdminListItemHtml(admin);
+    });
+    return html;
+}
+
+ezyadmin.buildAdminListItemHtml = function(admin) {
+    var statusColor = ezyadmin.getTextColorByStatus(admin.status);
+    var html = `
+        <tr>
+            <td>${admin.id}</td>
+            <td>
+                <a href="/admins/${admin.username}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                    ${admin.username}
+                </a>
+            </td>
+            <td><a href="mailto:${admin.email}">${admin.email}</a></td>
+            <td>${admin.displayName || ''}</td>
+            <td><a href="tel:${admin.phone}">${admin.phone || ''}</a></td>
+            <td class="text-center ${statusColor}">${ezyadmin.getI18nMessage(admin.status.toLowerCase())}</td>
+            <td class="text-center">${ezyadmin.formatTimeStamp(admin.createdAt)}</td>
+            <td class="text-center">
+                ${admin.username === ezyadmin.adminUsername || ezyadmin.accessibleUris['/admins/{username}'] ? `
+                    <a class="btn pr-1" href="/admins/${ezyadmin.adminUsername}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
+                        <i class="fas fa-eye text-info"></i>
+                    </a>
+                ` : ''}
+                ${admin.username === ezyadmin.adminUsername || ezyadmin.accessibleUris['/admins/{username}/edit'] ? `
+                    <button type="button" class="btn btn-link px-1" onclick="ezyadmin.editAdmin('${admin.username}')">
+                        <i class="fas fa-edit text-primary"></i>
+                    </button>
+                ` : ''}
+                ${admin.status === 'ACTIVATED' && ezyadmin.accessibleUris['/api/v1/admins/{username}/archive'] ? `
+                    <button class="btn pl-1" onclick="ezyadmin.archiveAdmin('${admin.username}')">
+                        <i class="fas fa-archive text-danger"></i>
+                    </button>
+                ` : ''}
+                ${admin.status !== 'ACTIVATED' && ezyadmin.accessibleUris['/api/v1/admins/{username}/activate'] ? `
+                    <button class="btn pl-1" onclick="ezyadmin.activateAdmin('${admin.username}')">
+                        <i class="fas fa-location-arrow text-success"></i>
+                    </button>
+                ` : ''}
+            </td>
+        </tr>
+        `;
+	return html;
+}
+ezyadmin.fetchAdminList();
+
+// ============== admin actions =============
+ezyadmin.editAdmin = function(username) {
+    var url = username == ezyadmin.adminUsername
+        ? '/admins/me/edit'
+        : '/admins/' + username + '/edit';
+    window.location = url + (ezyadmin.lang ? '?lang=' + ezyadmin.lang : '');
+}
+</script>
+<th:block layout:fragment="post-scripts">
+<script th:replace="~{admins/scripts :: update}" />
+</th:block>
+</body>
+</html>
