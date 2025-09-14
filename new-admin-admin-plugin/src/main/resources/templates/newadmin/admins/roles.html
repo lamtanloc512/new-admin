@@ -19,32 +19,28 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:th="http://www.thymeleaf.org"
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{newadmin}"
+  layout:decorate="~{ezyadmin}"
 >
   <body>
     <div layout:fragment="content" class="row">
       <div class="col-12">
-        <div class="card mb-0">
-          <div class="card-body table-responsive">
-            <table
-              id="adminRoleList"
-              class="table table-bordered table-hover align-middle-cells"
-            >
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>[[#{name}]]</th>
-                  <th>[[#{display_name}]]</th>
-                  <th class="text-center">[[#{priority}]]</th>
-                  <th class="text-center">[[#{admins}]]</th>
-                  <th class="text-center">[[#{created_at}]]</th>
-                  <th class="text-center">[[#{actions}]]</th>
-                </tr>
-              </thead>
-              <tbody id="adminRoleListBody"></tbody>
-            </table>
-          </div>
-        </div>
+        <table
+          id="adminRoleList"
+          class="table table-bordered table-hover align-middle-cells responsive"
+        >
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>[[#{name}]]</th>
+              <th>[[#{display_name}]]</th>
+              <th class="text-center">[[#{priority}]]</th>
+              <th class="text-center">[[#{admins}]]</th>
+              <th class="text-center">[[#{created_at}]]</th>
+              <th class="text-left">[[#{actions}]]</th>
+            </tr>
+          </thead>
+          <tbody id="adminRoleListBody"></tbody>
+        </table>
       </div>
     </div>
     <th:block layout:fragment="modals">
@@ -108,7 +104,7 @@
                   <td class="text-center">${ezyadmin.formatNumberWithCommas(role.priority)}</td>
                   <td class="text-center">${ezyadmin.formatNumberWithCommas(role.admins)}</td>
                   <td class="text-center">${ezyadmin.formatTimeStamp(role.createdAt)}</td>
-                  <td class="text-center">
+                  <td class="text-left">
                       ${ezyadmin.accessibleUris['/admins/roles/{roleName}'] ? `
                           <a class="btn pe-1" href="/admins/roles/${role.name}${ezyadmin.lang ? `?lang=${ezyadmin.lang}` : ''}">
                               <i class="fas fa-eye text-primary"></i>
