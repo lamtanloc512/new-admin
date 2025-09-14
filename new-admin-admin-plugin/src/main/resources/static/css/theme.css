@@ -44,6 +44,10 @@ ul.media-list li .delete-button {
   width: calc(200px - 1rem * 2);
 }
 
+/* .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
+  background-color: var(-gray);
+} */
+
 @media (min-width: 768px) {
   body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav)
     .content-wrapper,
