@@ -522,7 +522,7 @@ ezyadmin.mediaTotal = 0;
 ezyadmin.mediaById = {};
 ezyadmin.fetchMediaList = function(replace) {
 	var url = ezyadmin.accessibleUris['/api/v1/media/list']
-		? '/api/v1/media/list'
+		? '/enhancement/api/v1/media/list'
 		: '/api/v1/me/media/list';
 	url += '?limit=' + ezyadmin.numberOfMediaPerPage;
 	if (ezyadmin.searchMediaKeyword) {
