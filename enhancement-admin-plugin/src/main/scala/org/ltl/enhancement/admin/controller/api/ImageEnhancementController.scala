@@ -67,17 +67,21 @@ class ImageEnhancementController @EzyAutoBind() (
     else adminService.isAllowAccessAllMedia(adminId)
   }
 
+  @Async
   @DoGet("/media/{name}")
   def getMediaFile(
       args: RequestArguments,
       @PathVariable name: String
-  ): Unit = {
+  ): ResponseEntity = {
     imageEnhancementService.getCompressedMedia(
       args,
       name,
       exposePrivateMedia = true,
       _ => true
-    )
+    ) match {
+      case Right(_)    => ResponseEntity.ok()
+      case Left(error) => ResponseEntity.notFound()
+    }
   }
 
 }
