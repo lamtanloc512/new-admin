@@ -17,10 +17,11 @@
         <ezyplatform.home>${env.EZYPLATFORM_HOME}</ezyplatform.home>
         <scala.version>3.7.2</scala.version>
         <scala.compat.version>3.7</scala.compat.version>
+        <scrimage.version>4.3.4</scrimage.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <argLine>-Djava.security.egd=file:/dev/./urandom</argLine>
         <maven.compiler.fork>true</maven.compiler.fork>
+        <argLine>-Djava.security.egd=file:/dev/./urandom</argLine>
     </properties>
     <modules>
         <module>enhancement-admin-plugin</module>
