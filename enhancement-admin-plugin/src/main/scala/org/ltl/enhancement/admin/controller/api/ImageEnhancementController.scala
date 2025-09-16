@@ -2,28 +2,29 @@ package org.ltl.enhancement.admin.controller.api
 
 import com.tvd12.ezyfox.annotation.EzyFeature
 import com.tvd12.ezyfox.bean.annotation.EzyAutoBind
+import com.tvd12.ezyhttp.core.response.ResponseEntity
 import com.tvd12.ezyhttp.server.core.annotation.*
+import com.tvd12.ezyhttp.server.core.request.RequestArguments
 import org.ltl.enhancement.admin.controller.api.pagination.DefaultEnhancementMediaFilter
+import org.ltl.enhancement.admin.service.ImageEnhancementService
+import org.ltl.enhancement.admin.service.ImageResponse
 import org.youngmonkeys.ezyplatform.admin.controller.service.AdminMediaControllerService
 import org.youngmonkeys.ezyplatform.admin.service.AdminAdminService
-import org.youngmonkeys.ezyplatform.annotation.{AdminId, AdminRoles}
+import org.youngmonkeys.ezyplatform.annotation.AdminId
+import org.youngmonkeys.ezyplatform.annotation.AdminRoles
 import org.youngmonkeys.ezyplatform.data.AdminRolesProxy
 import org.youngmonkeys.ezyplatform.entity.MediaType
+import org.youngmonkeys.ezyplatform.exception.MediaNotFoundException
 import org.youngmonkeys.ezyplatform.manager.FileSystemManager
+import org.youngmonkeys.ezyplatform.model.MediaModel
 import org.youngmonkeys.ezyplatform.model.PaginationModel
+import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
 import org.youngmonkeys.ezyplatform.response.MediaResponse
 import org.youngmonkeys.ezyplatform.util.StringConverters
-import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
-import com.tvd12.ezyhttp.core.response.ResponseEntity
-import com.tvd12.ezyhttp.server.core.request.RequestArguments
-import org.ltl.enhancement.admin.service.{
-  ImageEnhancementService,
-  ImageResponse
-}
-import org.youngmonkeys.ezyplatform.model.MediaModel
-import org.youngmonkeys.ezyplatform.exception.MediaNotFoundException
 
 import java.io.File
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Api
 @Authenticated
@@ -104,8 +105,8 @@ class ImageEnhancementController @EzyAutoBind() (
   def getMediaFile(
       args: RequestArguments,
       @PathVariable name: String
-  ): Either[Throwable, Unit] = {
-    imageEnhancementService.getCompressedMedia(
+  ): Future[Either[Throwable, Unit]] = {
+    imageEnhancementService.getWebpImage(
       args,
       name,
       exposePrivateMedia = true,

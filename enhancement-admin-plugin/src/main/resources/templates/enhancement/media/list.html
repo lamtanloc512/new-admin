@@ -14,7 +14,7 @@
  ~ limitations under the License.
 -->
 
-<!DOCTYPE html>
+<!doctype html>
 <html
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:th="http://www.thymeleaf.org"
@@ -44,7 +44,6 @@
           </option>
         </select>
       </div>
-      <h1>Hello</h1>
       <div class="text-center media-list-page">
         <ul class="media-list" id="mediaListBody"></ul>
       </div>
@@ -64,13 +63,14 @@
           </button>
         </div>
       </div>
+      <h1>Hello</h1>
+      <div id="root"></div>
     </div>
     <script layout:fragment="scripts">
       ezyadmin.onNewButtonClick = function () {
         ezyadmin.showAddNewMediaModal();
       };
-
-      enhancement.fetchMediaList();
+      ezyadmin.fetchMediaList();
     </script>
   </body>
 </html>

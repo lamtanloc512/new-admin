@@ -1,0 +1,18 @@
+{
+  "name": "enhancement-ui",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --cwd apps dev",
+    "build": "bun run --cwd apps build",
+    "lint": "bun run --cwd apps lint",
+    "format": "bun run --cwd apps format"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node-fetch": "^2.6.13"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "workspaces": ["apps"]
+}

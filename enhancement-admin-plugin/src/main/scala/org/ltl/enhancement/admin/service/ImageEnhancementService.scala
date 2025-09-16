@@ -45,6 +45,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.nio.file.Files
 import java.util.function.Predicate
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 import scala.util.Using
@@ -98,38 +100,41 @@ class ImageEnhancementService @EzyAutoBind() (
       name: String,
       exposePrivateMedia: Boolean,
       validMediaCondition: java.util.function.Predicate[MediaModel]
-  ): Either[Throwable, Unit] = {
-    for {
-      _ <- Try(mediaValidator.validateMediaName(name)).toEither
-      media <- getImageByName(mediaService, name)
-      _ <- checkMediaAccessible(
-        name,
-        exposePrivateMedia,
-        validMediaCondition,
-        media
-      )
-      _ <- notifyMediaEvent(MediaDownloadEvent(media))
-      extension = FolderProxy.getFileExtension(name)
-      resourceFile <- getResourceFile(fileSystemManager, name, media)
-      uploadFolder <- Try(fileSystemManager.getUploadFolder).toEither
-      cachedFile <- extension match {
-        case "webp" =>
-          val webpFile = File(uploadFolder, s"images/webp/$name")
-          if (webpFile.exists()) Right(webpFile)
-          else convertToWebpAndCache(resourceFile, webpFile)
-        case _ =>
-          val compressedFile = File(uploadFolder, s"images/compressed/$name")
-          if (compressedFile.exists()) Right(compressedFile)
-          else compressAndCache(resourceFile, compressedFile)
-      }
-      _ <- writeAsyncImageToResponse(
-        resourceDownloadManager,
-        inputStreamLoader,
-        requestArguments,
-        name,
-        cachedFile
-      )
-    } yield ()
+  ): Future[Either[Throwable, Unit]] = {
+    Future {
+      for {
+        _ <- Try(mediaValidator.validateMediaName(name)).toEither
+        media <- getImageByName(mediaService, name)
+        _ <- checkMediaAccessible(
+          name,
+          exposePrivateMedia,
+          validMediaCondition,
+          media
+        )
+        _ <- notifyMediaEvent(MediaDownloadEvent(media))
+        resourceFile <- getResourceFile(fileSystemManager, name, media)
+        uploadFolder <- Try(fileSystemManager.getUploadFolder).toEither
+        extension = FolderProxy.getFileExtension(name)
+        cachedFile <- extension match {
+          case "webp" =>
+            val webpFile =
+              File(uploadFolder, s"images/webp/${replaceWithWebp(name)}")
+            if (webpFile.exists()) Right(webpFile)
+            else convertToWebpAndCache(resourceFile, webpFile)
+          case _ =>
+            val compressedFile = File(uploadFolder, s"images/compressed/$name")
+            if (compressedFile.exists()) Right(compressedFile)
+            else compressAndCache(resourceFile, compressedFile)
+        }
+        _ <- writeAsyncImageToResponse(
+          resourceDownloadManager,
+          inputStreamLoader,
+          requestArguments,
+          name,
+          cachedFile
+        )
+      } yield ()
+    }
 
   }
 
@@ -138,31 +143,33 @@ class ImageEnhancementService @EzyAutoBind() (
       name: String,
       exposePrivateMedia: Boolean,
       validMediaCondition: java.util.function.Predicate[MediaModel]
-  ): Either[Throwable, Unit] = {
-    for {
-      _ <- Try(mediaValidator.validateMediaName(name)).toEither
-      media <- getImageByName(mediaService, name)
-      _ <- checkMediaAccessible(
-        name,
-        exposePrivateMedia,
-        validMediaCondition,
-        media
-      )
-      _ <- notifyMediaEvent(MediaDownloadEvent(media))
-      resourceFile <- getResourceFile(fileSystemManager, name, media)
-      uploadFolder <- Try(fileSystemManager.getUploadFolder).toEither
-      webpFile = File(uploadFolder, s"images/webp/${replaceWithWebp(name)}")
-      cachedFile <-
-        if (webpFile.exists()) Right(webpFile)
-        else convertToWebpAndCache(resourceFile, webpFile)
-      _ <- writeAsyncImageToResponse(
-        resourceDownloadManager,
-        inputStreamLoader,
-        requestArguments,
-        name,
-        cachedFile
-      )
-    } yield ()
+  ): Future[Either[Throwable, Unit]] = {
+    Future {
+      for {
+        _ <- Try(mediaValidator.validateMediaName(name)).toEither
+        media <- getImageByName(mediaService, name)
+        _ <- checkMediaAccessible(
+          name,
+          exposePrivateMedia,
+          validMediaCondition,
+          media
+        )
+        _ <- notifyMediaEvent(MediaDownloadEvent(media))
+        resourceFile <- getResourceFile(fileSystemManager, name, media)
+        uploadFolder <- Try(fileSystemManager.getUploadFolder).toEither
+        webpFile = File(uploadFolder, s"images/webp/${replaceWithWebp(name)}")
+        cachedFile <-
+          if (webpFile.exists()) Right(webpFile)
+          else convertToWebpAndCache(resourceFile, webpFile)
+        _ <- writeAsyncImageToResponse(
+          resourceDownloadManager,
+          inputStreamLoader,
+          requestArguments,
+          name,
+          cachedFile
+        )
+      } yield ()
+    }
 
   }
 
@@ -277,18 +284,10 @@ class ImageEnhancementService @EzyAutoBind() (
       cachedFile: File
   ) = {
     Try {
-      val response = requestArguments.getResponse
-      val mimeType = Files.probeContentType(cachedFile.toPath) match {
-        case null => "application/octet-stream"
-        case mt   => mt
-      }
-
-      response.setContentType(mimeType)
-      response.setHeader("Content-Disposition", s"""inline; filename="$name"""")
       ResourceRequestHandler(
         cachedFile.toString,
         cachedFile.toString,
-        FolderProxy.getFileExtension(name),
+        FolderProxy.getFileExtension(cachedFile.getName),
         inputStreamLoader,
         resourceDownloadManager
       ).handle(requestArguments)

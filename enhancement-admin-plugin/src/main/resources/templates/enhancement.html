@@ -61,6 +61,10 @@
     />
     <!-- Admin -->
     <link rel="stylesheet" type="text/css" ezy:vhref="/css/ezyadmin.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/tdesign-react@1.15.1/dist/tdesign.min.css"
+    />
     <style th:inline="css">
       .custom-file-label::after {
         content: "[[#{browse}]]" !important;
@@ -77,6 +81,8 @@
         accessibleUris: {},
       };
     </script>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
   </head>
   <!--
 BODY TAG OPTIONS:
@@ -1069,6 +1075,21 @@ to get the desired effect
     >
       <script ezy:vsrc="${finalScriptFile}"></script>
     </th:block>
+    <script
+      type="module"
+      src="https://unpkg.com/tdesign-react@1.15.1/dist/tdesign.min.js"
+    ></script>
+    <script type="text/babel">
+      const { Row, Col, Button } = TDesign;
+      const root = document.getElementById("root");
+      ReactDOM.render(
+        <div>
+          <Button>Click mee</Button>
+        </div>,
+        root
+      );
+    </script>
+
     <script layout:fragment="final-scripts" type="text/javascript"></script>
   </body>
 </html>
