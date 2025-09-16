@@ -239,7 +239,7 @@ to get the desired effect
       <i class="fas fa-3x fa-sync fa-spin"></i>
     </div>
 
-    <th:block th:replace="~{media/modal :: content}" />
+    <th:block th:replace="~{enhancement/media/modal :: content}" />
     <th:block th:replace="~{modals/file-permission :: content}" />
     <th:block th:replace="~{fragments/alert :: content}" />
 
@@ -395,6 +395,54 @@ to get the desired effect
     <script layout:fragment="pre-main-scripts" type="text/javascript"></script>
     <script ezy:vsrc="/js/socket.js"></script>
     <script ezy:vsrc="/js/ezyadmin.js"></script>
+    <script type="text/javascript">
+      var enhancement = {};
+      enhancement.fetchMediaList = function (replace) {
+        var url = ezyadmin.accessibleUris["/api/v1/media/list"]
+          ? "/enhancement/api/v1/media/list/"
+          : "/api/v1/me/media/list";
+        url += "?limit=" + ezyadmin.numberOfMediaPerPage;
+        if (ezyadmin.searchMediaKeyword) {
+          url += "&keyword=" + ezyadmin.searchMediaKeyword;
+        }
+        if (ezyadmin.searchMediaType) {
+          url += "&type=" + ezyadmin.searchMediaType;
+        }
+        if (replace) {
+          ezyadmin.lastNextPageToken = null;
+        }
+        $.ajax({
+          type: "GET",
+          async: true,
+          url:
+            url +
+            (ezyadmin.lastNextPageToken
+              ? "&nextPageToken=" + ezyadmin.lastNextPageToken
+              : ""),
+          success: function (data) {
+            ezyadmin.appendToMediaListTable(data.items, false, replace);
+            ezyadmin.mediaCount = replace
+              ? data.count
+              : ezyadmin.mediaCount + data.count;
+            ezyadmin.mediaTotal = data.total;
+            data.items.forEach((item) => {
+              ezyadmin.mediaById[item.id] = item;
+            });
+            $("#mediaCountText").text(ezyadmin.mediaCount);
+            $("#totalMediaText").text(data.total);
+            ezyadmin.lastNextPageToken = data.pageToken.next;
+            if (data.continuation.hasNext) {
+              $("#loadMoreMediaButton").removeClass("d-none");
+            } else {
+              $("#loadMoreMediaButton").addClass("d-none");
+            }
+          },
+          error: function (data, e) {
+            ezyadmin.processGetApiErrors(data);
+          },
+        });
+      };
+    </script>
     <th:block
       th:if="${moduleScriptFiles != null}"
       th:each="moduleScriptFile : ${moduleScriptFiles}"
@@ -720,7 +768,7 @@ to get the desired effect
           ...properties,
         });
         ezyadmin.dataTableById[tableId] = dataTable;
-		$('.dataTables_filter input').removeClass('form-control-sm')
+        $(".dataTables_filter input").removeClass("form-control-sm");
         return dataTable;
       };
 
@@ -987,7 +1035,7 @@ to get the desired effect
           });
       };
     </script>
-    <script th:replace="~{media/modal :: scripts}"></script>
+    <script th:replace="~{enhancement/media/modal :: scripts}"></script>
     <script th:replace="~{modals/file-permission :: scripts}"></script>
     <script th:replace="~{fragments/alert :: scripts}"></script>
     <script layout:fragment="scripts" type="text/javascript"></script>
@@ -1021,8 +1069,6 @@ to get the desired effect
     >
       <script ezy:vsrc="${finalScriptFile}"></script>
     </th:block>
-    <script layout:fragment="final-scripts" type="text/javascript">
-		console.log('hello')
-	</script>
+    <script layout:fragment="final-scripts" type="text/javascript"></script>
   </body>
 </html>

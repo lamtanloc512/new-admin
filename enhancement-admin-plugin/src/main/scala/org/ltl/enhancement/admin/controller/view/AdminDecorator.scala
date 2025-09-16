@@ -38,6 +38,8 @@ class AdminDecorator extends ViewDecorator {
       "users/list",
       "users/profile",
       "ezyplatform/history",
+      "media/list",
+      "media/modal",
       "modules"
     )
   private val cssFiles = Seq("/css/abaculus/index.min.css", "/css/theme.css")

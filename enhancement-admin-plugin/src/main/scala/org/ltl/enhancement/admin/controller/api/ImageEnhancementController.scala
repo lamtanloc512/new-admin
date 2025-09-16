@@ -16,9 +16,13 @@ import org.youngmonkeys.ezyplatform.util.StringConverters
 import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
 import com.tvd12.ezyhttp.core.response.ResponseEntity
 import com.tvd12.ezyhttp.server.core.request.RequestArguments
-import org.ltl.enhancement.admin.service.ImageEnhancementService
+import org.ltl.enhancement.admin.service.{
+  ImageEnhancementService,
+  ImageResponse
+}
 import org.youngmonkeys.ezyplatform.model.MediaModel
 import org.youngmonkeys.ezyplatform.exception.MediaNotFoundException
+
 import java.io.File
 
 @Api
@@ -42,16 +46,44 @@ class ImageEnhancementController @EzyAutoBind() (
       @RequestParam("lastPage") lastPage: Boolean,
       @RequestParam(value = "limit", defaultValue = "30") limit: Int
   ): PaginationModel[MediaResponse] = {
-    val allowAccessAllMedia = isAllowAccessAllMedia(adminId, adminRoles)
-
-    val filter = DefaultMediaFilter
+    val filterBuilder = DefaultMediaFilter
       .builder()
       .`type`(t)
       .prefixKeyword(StringConverters.trimOrNull(keyword))
-      .build()
-
+    if (!isAllowAccessAllMedia(adminId, adminRoles)) {
+      filterBuilder
+        .ownerAdminId(adminId)
+    }
     mediaControllerService.getMediaList(
-      filter,
+      filterBuilder.build(),
+      nextPageToken,
+      prevPageToken,
+      lastPage,
+      limit
+    )
+  }
+
+  @DoGet("/media/list/webp")
+  def listMediaWebp(
+      @AdminId adminId: Long,
+      @AdminRoles adminRoles: AdminRolesProxy,
+      @RequestParam("type") t: MediaType,
+      @RequestParam("keyword") keyword: String,
+      @RequestParam("nextPageToken") nextPageToken: String,
+      @RequestParam("prevPageToken") prevPageToken: String,
+      @RequestParam("lastPage") lastPage: Boolean,
+      @RequestParam(value = "limit", defaultValue = "30") limit: Int
+  ): PaginationModel[ImageResponse] = {
+    val filterBuilder = DefaultMediaFilter
+      .builder()
+      .`type`(t)
+      .prefixKeyword(StringConverters.trimOrNull(keyword))
+    if (!isAllowAccessAllMedia(adminId, adminRoles)) {
+      filterBuilder
+        .ownerAdminId(adminId)
+    }
+    imageEnhancementService.getMediaListWebp(
+      filterBuilder.build(),
       nextPageToken,
       prevPageToken,
       lastPage,
@@ -72,16 +104,13 @@ class ImageEnhancementController @EzyAutoBind() (
   def getMediaFile(
       args: RequestArguments,
       @PathVariable name: String
-  ): ResponseEntity = {
+  ): Either[Throwable, Unit] = {
     imageEnhancementService.getCompressedMedia(
       args,
       name,
       exposePrivateMedia = true,
       _ => true
-    ) match {
-      case Right(_)    => ResponseEntity.ok()
-      case Left(error) => ResponseEntity.notFound()
-    }
+    )
   }
 
 }
