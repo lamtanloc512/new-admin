@@ -14,5 +14,9 @@
   "peerDependencies": {
     "typescript": "^5"
   },
-  "workspaces": ["apps"]
+  "workspaces": ["apps"],
+  "dependencies": {
+    "apps": "./apps",
+    "tdesign-react": "^1.15.1"
+  }
 }

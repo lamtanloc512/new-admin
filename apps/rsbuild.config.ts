@@ -3,19 +3,32 @@ import { pluginReact } from '@rsbuild/plugin-react';
 
 export default defineConfig({
   plugins: [pluginReact()],
+  source: {
+    entry: {
+      plugin: './src/index.ts',
+    },
+  },
+  output: {
+    filenameHash: false,
+  },
   dev: {
+    liveReload: true,
+    progressBar: true,
+    hmr: true,
     setupMiddlewares: (middlewares) => {
       middlewares.unshift(async (req, res, next) => {
         const url = req.url ?? '/';
-
-        // Bỏ qua request mà Rsbuild phải xử lý (bundle, HMR, static build)
         if (
-          url.startsWith('/src') ||
-          url.startsWith('/@rsbuild') ||
-          url.startsWith('/__rsbuild_hmr') ||
           url.startsWith('/assets') ||
-          url.startsWith('/node_modules')
+          url.startsWith('/plugin') ||
+          url.startsWith('/static/')
         ) {
+          if (url.endsWith('.js')) {
+            res.setHeader(
+              'Content-Type',
+              'application/javascript; charset=utf-8',
+            );
+          }
           return next();
         }
 
@@ -26,63 +39,61 @@ export default defineConfig({
             headers.cookie = req.headers.cookie;
           }
           const upstreamResp = await fetch(upstreamUrl, {
-            redirect: 'manual', // giữ nguyên 302 để forward Location
+            redirect: 'manual',
             headers,
           });
 
-          // Forward status
           res.statusCode = upstreamResp.status;
 
-          // Forward headers (bao gồm Set-Cookie, Location)
           upstreamResp.headers.forEach((value, key) => {
             if (key.toLowerCase() !== 'content-encoding') {
-              if (key.toLowerCase() === 'set-cookie') {
-                // Modify cookie domain for localhost proxying
-                const modifiedCookies = Array.isArray(value) ? value : [value];
-                const newCookies = modifiedCookies.map((cookie) =>
-                  cookie.replace(/domain=[^;]+/i, 'domain=localhost'),
-                );
-                res.setHeader(
-                  key,
-                  newCookies.length === 1 ? newCookies[0] : newCookies,
-                );
-              } else {
-                res.setHeader(key, value);
-              }
+              res.setHeader(key, value);
             }
           });
 
-          // Nếu redirect (302/301), không cần body
+          // Nếu redirect 30x
           if (upstreamResp.status >= 300 && upstreamResp.status < 400) {
             res.end();
             return;
           }
 
-          // Nếu HTML → inject script
+          // Nếu là HTML → inject script dev
           if (upstreamResp.headers.get('content-type')?.includes('text/html')) {
             let body = await upstreamResp.text();
-            const injection = `<script type="module" src="/src/index.tsx"></script>`;
+
+            // Fetch Rsbuild's HTML to get the scripts and styles
+            const rsbuildResp = await fetch('http://localhost:3000/plugin');
+            const rsbuildHtml = await rsbuildResp.text();
+
+            // Extract scripts and links from Rsbuild's HTML
+            const scriptRegex = /<script[^>]*>[\s\S]*?<\/script>/gi;
+            const linkRegex = /<link[^>]*>/gi;
+            const scripts = rsbuildHtml.match(scriptRegex) || [];
+            const links = rsbuildHtml.match(linkRegex) || [];
+
+            const injection = [...links, ...scripts].join('\n');
+
             if (body.includes('</body>')) {
               body = body.replace(/<\/body>/i, `${injection}</body>`);
-            } else if (body.includes('</html>')) {
-              body = body.replace(/<\/html>/i, `${injection}</html>`);
             } else {
               body += injection;
             }
-            // Ensure root div exists for React mounting
+
+            // đảm bảo tồn tại <div id="root">
             if (!body.includes('id="root"')) {
-              if (body.includes('<body>')) {
-                body = body.replace(/<body>/i, '<body><div id="root"></div>');
-              } else {
-                body = '<div id="root"></div>' + body;
-              }
+              body = body.replace(
+                /<div id="pageContentBodyWrapper">/,
+                `<div id="pageContentBodyWrapper"><div id="root"></div>`,
+              );
             }
+
             res.setHeader('content-length', Buffer.byteLength(body).toString());
             res.end(body);
           } else {
-            // Handle binary/static resources properly
-            const buffer = await upstreamResp.arrayBuffer();
-            res.end(Buffer.from(buffer));
+            // Các resource khác (CSS, JS, ảnh…)
+            const buffer = Buffer.from(await upstreamResp.arrayBuffer());
+            res.setHeader('content-length', buffer.length);
+            res.end(buffer);
           }
         } catch (err) {
           console.error('Proxy error:', err);
@@ -90,6 +101,11 @@ export default defineConfig({
           res.end('Proxy to EzyPlatform failed');
         }
       });
+    },
+    client: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 3000,
     },
   },
 });

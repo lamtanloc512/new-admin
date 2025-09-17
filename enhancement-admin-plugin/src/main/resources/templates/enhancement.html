@@ -14,7 +14,7 @@
  ~ limitations under the License.
 -->
 
-<!DOCTYPE html>
+<!doctype html>
 <html
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:th="http://www.thymeleaf.org"
@@ -81,8 +81,6 @@
         accessibleUris: {},
       };
     </script>
-    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
   </head>
   <!--
 BODY TAG OPTIONS:
@@ -858,8 +856,8 @@ to get the desired effect
         var html = `
 		<a href="javascript:void(0)" class="dropdown-item notification-item"
 		   onclick="ezyadmin.readNotification(${notification.id}, '${
-          notification.deepLink || ""
-        }');">
+         notification.deepLink || ""
+       }');">
 			<i class="${notification.iconImage || "far fa-envelope"} mr-2"></i>
 			${ezyadmin.truncateString(notification.title, 18, "...")}
 			<span class="float-right text-muted text-sm">
@@ -1075,21 +1073,6 @@ to get the desired effect
     >
       <script ezy:vsrc="${finalScriptFile}"></script>
     </th:block>
-    <script
-      type="module"
-      src="https://unpkg.com/tdesign-react@1.15.1/dist/tdesign.min.js"
-    ></script>
-    <script type="text/babel">
-      const { Row, Col, Button } = TDesign;
-      const root = document.getElementById("root");
-      ReactDOM.render(
-        <div>
-          <Button>Click mee</Button>
-        </div>,
-        root
-      );
-    </script>
-
     <script layout:fragment="final-scripts" type="text/javascript"></script>
   </body>
 </html>
