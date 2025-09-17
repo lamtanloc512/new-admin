@@ -19,7 +19,9 @@ export default defineConfig({
       middlewares.unshift(async (req, res, next) => {
         const url = req.url ?? '/';
         if (
-          url.startsWith('/assets') ||
+          url.startsWith('/@rsbuild') || // runtime
+          url.startsWith('/rsbuild-hmr') || // HMR
+          url.startsWith('/assets') || // static assets
           url.startsWith('/plugin') ||
           url.startsWith('/static/')
         ) {
