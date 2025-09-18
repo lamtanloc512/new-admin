@@ -5,26 +5,23 @@ import com.tvd12.ezyfox.bean.annotation.EzyAutoBind
 import com.tvd12.ezyhttp.core.response.ResponseEntity
 import com.tvd12.ezyhttp.server.core.annotation.*
 import com.tvd12.ezyhttp.server.core.request.RequestArguments
-import org.ltl.enhancement.admin.controller.api.pagination.DefaultEnhancementMediaFilter
-import org.ltl.enhancement.admin.service.ImageEnhancementService
-import org.ltl.enhancement.admin.service.ImageResponse
+import org.eclipse.jetty.http.HttpStatus
+import org.ltl.enhancement.admin.service.{
+  ImageEnhancementService,
+  ImageResponse
+}
 import org.youngmonkeys.ezyplatform.admin.controller.service.AdminMediaControllerService
 import org.youngmonkeys.ezyplatform.admin.service.AdminAdminService
-import org.youngmonkeys.ezyplatform.annotation.AdminId
-import org.youngmonkeys.ezyplatform.annotation.AdminRoles
+import org.youngmonkeys.ezyplatform.annotation.{AdminId, AdminRoles}
 import org.youngmonkeys.ezyplatform.data.AdminRolesProxy
 import org.youngmonkeys.ezyplatform.entity.MediaType
-import org.youngmonkeys.ezyplatform.exception.MediaNotFoundException
-import org.youngmonkeys.ezyplatform.manager.FileSystemManager
-import org.youngmonkeys.ezyplatform.model.MediaModel
 import org.youngmonkeys.ezyplatform.model.PaginationModel
 import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
 import org.youngmonkeys.ezyplatform.response.MediaResponse
 import org.youngmonkeys.ezyplatform.util.StringConverters
 
-import java.io.File
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Api
 @Authenticated
@@ -114,4 +111,18 @@ class ImageEnhancementController @EzyAutoBind() (
     )
   }
 
+  @DoGet("/media/image/convert")
+  def convert(
+      @RequestParam format: String
+  ): Future[ResponseEntity] = {
+    imageEnhancementService.convertImage(format).map {
+      case Right(_) =>
+        ResponseEntity.status(HttpStatus.NO_CONTENT_204).build()
+      case Left(err) =>
+        ResponseEntity
+          .status(HttpStatus.INTERNAL_SERVER_ERROR_500)
+          .body(err.getMessage)
+          .build()
+    }
+  }
 }

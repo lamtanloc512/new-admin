@@ -19,6 +19,7 @@ import com.tvd12.ezyfox.stream.EzyInputStreamLoader
 import com.tvd12.ezyfox.util.EzyLoggable
 import com.tvd12.ezyhttp.client.HttpClient
 import com.tvd12.ezyhttp.core.resources.ResourceDownloadManager
+import com.tvd12.ezyhttp.core.response.ResponseEntity
 import com.tvd12.ezyhttp.server.core.handler.ResourceRequestHandler
 import com.tvd12.ezyhttp.server.core.request.RequestArguments
 import com.tvd12.ezyhttp.server.core.resources.FileUploader
@@ -43,10 +44,11 @@ import org.youngmonkeys.ezyplatform.validator.MediaValidator
 
 import java.io.File
 import java.io.FileInputStream
-import java.nio.file.Files
+import java.nio.file.{Files, Paths}
+import java.util.concurrent.{Executors, ThreadPoolExecutor}
 import java.util.function.Predicate
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 import scala.util.Using
@@ -87,6 +89,9 @@ class ImageEnhancementService @EzyAutoBind() (
     objectMapper: ObjectMapper
 ) extends EzyLoggable {
 
+  private given ExecutionContext =
+    ExecutionContext.fromExecutor(Executors.newFixedThreadPool(4))
+
   private val fileUploaderWrapper =
     EzyLazyInitializer(() =>
       singletonFactory.getSingletonCast(classOf[FileUploader])
@@ -100,7 +105,7 @@ class ImageEnhancementService @EzyAutoBind() (
       name: String,
       exposePrivateMedia: Boolean,
       validMediaCondition: java.util.function.Predicate[MediaModel]
-  ): Future[Either[Throwable, Unit]] = {
+  ): Future[Either[scala.Throwable, Unit]] = {
     Future {
       for {
         _ <- Try(mediaValidator.validateMediaName(name)).toEither
@@ -143,7 +148,7 @@ class ImageEnhancementService @EzyAutoBind() (
       name: String,
       exposePrivateMedia: Boolean,
       validMediaCondition: java.util.function.Predicate[MediaModel]
-  ): Future[Either[Throwable, Unit]] = {
+  ): Future[Either[scala.Throwable, Unit]] = {
     Future {
       for {
         _ <- Try(mediaValidator.validateMediaName(name)).toEither
@@ -191,6 +196,28 @@ class ImageEnhancementService @EzyAutoBind() (
       .map(toImageResponse)
   }
 
+  def convertImage(
+      format: String = "webp"
+  ): Future[Either[scala.Throwable, Unit]] = {
+    Future {
+      Try {
+        Paths
+          .get(s"${fileSystemManager.getUploadFolder.getName}/images")
+          .toFile
+          .listFiles()
+          .filter(file => !file.isDirectory && file.isFile)
+          .foreach(photo => {
+            val newPhoto =
+              File(photo.getParentFile, s"${replaceWithWebp(photo.getName)}")
+            ImmutableImage
+              .loader()
+              .fromFile(photo)
+              .output(WebpWriter.DEFAULT, newPhoto)
+          })
+      }.toEither
+    }
+  }
+
   private def replaceWithWebp(fileName: String): String =
     fileName.lastIndexOf('.') match
       case -1 => s"$fileName.webp"
@@ -229,10 +256,11 @@ class ImageEnhancementService @EzyAutoBind() (
   ): Either[Throwable, File] =
     Try {
       cached.getParentFile.mkdirs()
+      logger.info(s"cached: $cached")
       ImmutableImage
         .loader()
         .fromFile(original)
-        .output(WebpWriter.MAX_LOSSLESS_COMPRESSION, cached)
+        .output(WebpWriter.DEFAULT, cached)
       cached
     }.toEither
 
