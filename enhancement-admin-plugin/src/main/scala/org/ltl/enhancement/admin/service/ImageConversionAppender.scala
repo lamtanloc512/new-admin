@@ -2,19 +2,25 @@ package org.ltl.enhancement.admin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sksamuel.scrimage.ImmutableImage
+import com.sksamuel.scrimage.color.Colors
+import com.sksamuel.scrimage.composite.AlphaComposite
+import com.sksamuel.scrimage.filter.LensBlurFilter
+import com.sksamuel.scrimage.nio.BmpWriter
 import com.sksamuel.scrimage.webp.WebpWriter
-import com.tvd12.ezyfox.bean.annotation.EzyAutoBind
-import com.tvd12.ezyfox.bean.annotation.EzySingleton
+import com.tvd12.ezyfox.bean.annotation.{EzyAutoBind, EzySingleton}
 import org.youngmonkeys.ezyplatform.admin.appender.AdminDataAppender
 import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService
 import org.youngmonkeys.ezyplatform.controller.service.MediaControllerService
 import org.youngmonkeys.ezyplatform.entity.MediaType
+import org.youngmonkeys.ezyplatform.manager.FileSystemManager
 import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
 import org.youngmonkeys.ezyplatform.service.MediaService
-import org.youngmonkeys.ezyplatform.manager.FileSystemManager
+import com.sksamuel.scrimage.color.RGBColor
 
+import java.awt.Color
 import java.io.File
 import java.util
+import java.util.Base64
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
@@ -68,7 +74,8 @@ class ImageConversionAppender @EzyAutoBind() (
         val uploadFolder = fileSystemManager.getUploadFolder
         val webpName = replaceWithWebp(value)
         val webpFile = File(uploadFolder, s"images/webp/$webpName")
-        if (webpFile.exists()) {
+        val bmpFile = File(uploadFolder, s"images/bmp/${replaceWithBmp(value)}")
+        if (webpFile.exists() && bmpFile.exists()) {
           ImageConversionRecord(
             m.getId,
             value,
@@ -77,30 +84,29 @@ class ImageConversionAppender @EzyAutoBind() (
             System.currentTimeMillis()
           )
         } else {
-          Try {
-            val resourceFile =
-              fileSystemManager.getMediaFilePath(m.getType.getFolder, value)
-            webpFile.getParentFile.mkdirs()
-            ImmutableImage
-              .loader()
-              .fromFile(resourceFile)
-              .output(WebpWriter.DEFAULT, webpFile)
-            ImageConversionRecord(
-              m.getId,
-              value,
-              webpName,
-              "converted",
-              System.currentTimeMillis()
-            )
-          }.getOrElse {
-            ImageConversionRecord(
-              m.getId,
-              value,
-              webpName,
-              "failed",
-              System.currentTimeMillis()
-            )
-          }
+          val resourceFile =
+            fileSystemManager.getMediaFilePath(m.getType.getFolder, value)
+          webpFile.getParentFile.mkdirs()
+          ImmutableImage
+            .loader()
+            .fromFile(resourceFile)
+            .output(WebpWriter.DEFAULT, webpFile)
+
+          bmpFile.getParentFile.mkdirs()
+          val x = ImmutableImage
+            .loader()
+            .fromFile(resourceFile)
+            .scale(0.01)
+            .autocrop()
+            .output(BmpWriter(), bmpFile)
+
+          ImageConversionRecord(
+            m.getId,
+            value,
+            webpName,
+            "converted",
+            System.currentTimeMillis()
+          )
         }
       case None =>
         ImageConversionRecord(
@@ -124,6 +130,13 @@ class ImageConversionAppender @EzyAutoBind() (
     fileName.lastIndexOf('.') match {
       case -1 => s"$fileName.webp"
       case i  => fileName.substring(0, i) + ".webp"
+    }
+  }
+
+  private def replaceWithBmp(fileName: String): String = {
+    fileName.lastIndexOf('.') match {
+      case -1 => s"$fileName.bmp"
+      case i  => fileName.substring(0, i) + ".bmp"
     }
   }
 }

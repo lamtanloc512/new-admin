@@ -19,3 +19,8 @@ target/
 .idea
 **/.idea
 .vscode/
+.bloop/*
+.bloop/**/*
+.gitignore
+.metals/**/*
+.metals/*

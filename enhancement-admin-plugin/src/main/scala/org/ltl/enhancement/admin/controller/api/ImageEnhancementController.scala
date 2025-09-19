@@ -2,6 +2,7 @@ package org.ltl.enhancement.admin.controller.api
 
 import com.tvd12.ezyfox.annotation.EzyFeature
 import com.tvd12.ezyfox.bean.annotation.EzyAutoBind
+import com.tvd12.ezyhttp.core.constant.Headers
 import com.tvd12.ezyhttp.core.response.ResponseEntity
 import com.tvd12.ezyhttp.server.core.annotation.*
 import com.tvd12.ezyhttp.server.core.request.RequestArguments
@@ -20,8 +21,8 @@ import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
 import org.youngmonkeys.ezyplatform.response.MediaResponse
 import org.youngmonkeys.ezyplatform.util.StringConverters
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Api
 @Authenticated
@@ -89,6 +90,35 @@ class ImageEnhancementController @EzyAutoBind() (
     )
   }
 
+  @Async
+  @DoGet("/media/{name}")
+  def getMediaFile(
+      args: RequestArguments,
+      @PathVariable name: String
+  ): Future[Either[Throwable, Unit]] = {
+    imageEnhancementService.getCompressedImage(
+      args,
+      name,
+      exposePrivateMedia = true,
+      _ => true
+    )
+  }
+
+  @Async
+  @DoGet("/media/preload/{name}")
+  def getPreloadImage(
+      args: RequestArguments,
+      @PathVariable name: String
+  ): Future[Either[Throwable, Unit]] = {
+    imageEnhancementService
+      .getPlaceholderImage(
+        args,
+        name,
+        exposePrivateMedia = true,
+        _ => true
+      )
+  }
+
   private def isAllowAccessAllMedia(
       adminId: Long,
       adminRoles: AdminRolesProxy
@@ -97,32 +127,4 @@ class ImageEnhancementController @EzyAutoBind() (
     else adminService.isAllowAccessAllMedia(adminId)
   }
 
-  @Async
-  @DoGet("/media/{name}")
-  def getMediaFile(
-      args: RequestArguments,
-      @PathVariable name: String
-  ): Future[Either[Throwable, Unit]] = {
-    imageEnhancementService.getWebpImage(
-      args,
-      name,
-      exposePrivateMedia = true,
-      _ => true
-    )
-  }
-
-  @DoGet("/media/image/convert")
-  def convert(
-      @RequestParam format: String
-  ): Future[ResponseEntity] = {
-    imageEnhancementService.convertImage(format).map {
-      case Right(_) =>
-        ResponseEntity.status(HttpStatus.NO_CONTENT_204).build()
-      case Left(err) =>
-        ResponseEntity
-          .status(HttpStatus.INTERNAL_SERVER_ERROR_500)
-          .body(err.getMessage)
-          .build()
-    }
-  }
 }

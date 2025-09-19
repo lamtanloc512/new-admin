@@ -4,16 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.format.Format
-import com.sksamuel.scrimage.format.FormatDetector
-import com.sksamuel.scrimage.nio.GifWriter
-import com.sksamuel.scrimage.nio.ImageWriter
-import com.sksamuel.scrimage.nio.JpegWriter
-import com.sksamuel.scrimage.nio.PngWriter
+import com.sksamuel.scrimage.format.{Format, FormatDetector}
+import com.sksamuel.scrimage.nio.*
 import com.sksamuel.scrimage.webp.WebpWriter
 import com.tvd12.ezyfox.bean.EzySingletonFactory
-import com.tvd12.ezyfox.bean.annotation.EzyAutoBind
-import com.tvd12.ezyfox.bean.annotation.EzySingleton
+import com.tvd12.ezyfox.bean.annotation.{EzyAutoBind, EzySingleton}
 import com.tvd12.ezyfox.concurrent.EzyLazyInitializer
 import com.tvd12.ezyfox.stream.EzyInputStreamLoader
 import com.tvd12.ezyfox.util.EzyLoggable
@@ -26,11 +21,13 @@ import com.tvd12.ezyhttp.server.core.resources.FileUploader
 import net.bytebuddy.implementation.bytecode.Throw
 import org.apache.tika.config.TikaConfig
 import org.apache.tika.mime.MimeType
+import org.ltl.enhancement.admin.utils.{replaceWithBmp, replaceWithWebp}
 import org.youngmonkeys.ezyplatform.controller.service.MediaControllerService
-import org.youngmonkeys.ezyplatform.converter.HttpModelToResponseConverter
-import org.youngmonkeys.ezyplatform.converter.HttpRequestToModelConverter
-import org.youngmonkeys.ezyplatform.entity.MediaType
-import org.youngmonkeys.ezyplatform.entity.UploadFrom
+import org.youngmonkeys.ezyplatform.converter.{
+  HttpModelToResponseConverter,
+  HttpRequestToModelConverter
+}
+import org.youngmonkeys.ezyplatform.entity.{MediaType, UploadFrom}
 import org.youngmonkeys.ezyplatform.event.*
 import org.youngmonkeys.ezyplatform.exception.MediaNotFoundException
 import org.youngmonkeys.ezyplatform.io.FolderProxy
@@ -39,19 +36,18 @@ import org.youngmonkeys.ezyplatform.model.*
 import org.youngmonkeys.ezyplatform.pagination.MediaFilter
 import org.youngmonkeys.ezyplatform.response.MediaResponse
 import org.youngmonkeys.ezyplatform.service.*
-import org.youngmonkeys.ezyplatform.validator.CommonValidator
-import org.youngmonkeys.ezyplatform.validator.MediaValidator
+import org.youngmonkeys.ezyplatform.validator.{CommonValidator, MediaValidator}
 
-import java.io.File
-import java.io.FileInputStream
+import java.awt.Color
+import java.io.{File, FileInputStream}
 import java.nio.file.{Files, Paths}
+import java.util.Base64
 import java.util.concurrent.{Executors, ThreadPoolExecutor}
 import java.util.function.Predicate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.*
-import scala.util.Try
-import scala.util.Using
+import scala.util.{Try, Using}
 
 case class ImageResponse(
     @JsonProperty("id") id: Long,
@@ -100,50 +96,7 @@ class ImageEnhancementService @EzyAutoBind() (
   private val tika =
     EzyLazyInitializer(() => TikaConfig())
 
-  def getCompressedMedia(
-      requestArguments: RequestArguments,
-      name: String,
-      exposePrivateMedia: Boolean,
-      validMediaCondition: java.util.function.Predicate[MediaModel]
-  ): Future[Either[scala.Throwable, Unit]] = {
-    Future {
-      for {
-        _ <- Try(mediaValidator.validateMediaName(name)).toEither
-        media <- getImageByName(mediaService, name)
-        _ <- checkMediaAccessible(
-          name,
-          exposePrivateMedia,
-          validMediaCondition,
-          media
-        )
-        _ <- notifyMediaEvent(MediaDownloadEvent(media))
-        resourceFile <- getResourceFile(fileSystemManager, name, media)
-        uploadFolder <- Try(fileSystemManager.getUploadFolder).toEither
-        extension = FolderProxy.getFileExtension(name)
-        cachedFile <- extension match {
-          case "webp" =>
-            val webpFile =
-              File(uploadFolder, s"images/webp/${replaceWithWebp(name)}")
-            if (webpFile.exists()) Right(webpFile)
-            else convertToWebpAndCache(resourceFile, webpFile)
-          case _ =>
-            val compressedFile = File(uploadFolder, s"images/compressed/$name")
-            if (compressedFile.exists()) Right(compressedFile)
-            else compressAndCache(resourceFile, compressedFile)
-        }
-        _ <- writeAsyncImageToResponse(
-          resourceDownloadManager,
-          inputStreamLoader,
-          requestArguments,
-          name,
-          cachedFile
-        )
-      } yield ()
-    }
-
-  }
-
-  def getWebpImage(
+  def getCompressedImage(
       requestArguments: RequestArguments,
       name: String,
       exposePrivateMedia: Boolean,
@@ -165,7 +118,7 @@ class ImageEnhancementService @EzyAutoBind() (
         webpFile = File(uploadFolder, s"images/webp/${replaceWithWebp(name)}")
         cachedFile <-
           if (webpFile.exists()) Right(webpFile)
-          else convertToWebpAndCache(resourceFile, webpFile)
+          else Left(MediaNotFoundException(s"Not found $name"))
         _ <- writeAsyncImageToResponse(
           resourceDownloadManager,
           inputStreamLoader,
@@ -175,7 +128,40 @@ class ImageEnhancementService @EzyAutoBind() (
         )
       } yield ()
     }
+  }
 
+  def getPlaceholderImage(
+      args: RequestArguments,
+      name: String,
+      exposePrivateMedia: Boolean,
+      validMediaCondition: java.util.function.Predicate[MediaModel]
+  ): Future[Either[scala.Throwable, Unit]] = {
+    Future {
+      for {
+        _ <- Try(mediaValidator.validateMediaName(name)).toEither
+        media <- getImageByName(mediaService, name)
+        _ <- checkMediaAccessible(
+          name,
+          exposePrivateMedia,
+          validMediaCondition,
+          media
+        )
+        _ <- notifyMediaEvent(MediaDownloadEvent(media))
+        resourceFile <- getResourceFile(fileSystemManager, name, media)
+        uploadFolder <- Try(fileSystemManager.getUploadFolder).toEither
+        bmpFile = File(uploadFolder, s"images/bmp/${replaceWithBmp(name)}")
+        cachedFile <-
+          if (bmpFile.exists()) Right(bmpFile)
+          else Left(MediaNotFoundException(s"Image not found $name"))
+        _ <- writeAsyncImageToResponse(
+          resourceDownloadManager,
+          inputStreamLoader,
+          args,
+          name,
+          cachedFile
+        )
+      } yield ()
+    }
   }
 
   def getMediaListWebp(
@@ -218,11 +204,6 @@ class ImageEnhancementService @EzyAutoBind() (
     }
   }
 
-  private def replaceWithWebp(fileName: String): String =
-    fileName.lastIndexOf('.') match
-      case -1 => s"$fileName.webp"
-      case i  => fileName.substring(0, i) + ".webp"
-
   private def writerFor(format: Format): ImageWriter = format match {
     case Format.PNG  => PngWriter.MaxCompression
     case Format.GIF  => GifWriter.Progressive
@@ -233,21 +214,6 @@ class ImageEnhancementService @EzyAutoBind() (
   private def detectFormat(file: File): Either[Throwable, Format] =
     Using(FileInputStream(file)) { in =>
       FormatDetector.detect(in).orElse(Format.JPEG)
-    }.toEither
-
-  private def compressAndCache(
-      original: File,
-      cached: File
-  ): Either[Throwable, File] =
-    Try {
-      val image = ImmutableImage.loader().fromFile(original)
-      cached.getParentFile.mkdirs()
-      detectFormat(original) match {
-        case Left(error) => throw MediaNotFoundException(error.getMessage)
-        case Right(format) =>
-          image.output(writerFor(format), cached)
-      }
-      cached
     }.toEither
 
   private def convertToWebpAndCache(
