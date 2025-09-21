@@ -2,7 +2,6 @@ package org.ltl.enhancement.admin.job
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.nio.BmpWriter
 import com.sksamuel.scrimage.webp.WebpWriter
 import com.tvd12.ezyfox.bean.annotation.{EzyAutoBind, EzySingleton}
 import org.youngmonkeys.ezyplatform.admin.appender.AdminDataAppender
@@ -67,8 +66,9 @@ class ImageConversionAppender @EzyAutoBind() (
         val uploadFolder = fileSystemManager.getUploadFolder
         val webpName = replaceWithWebp(value)
         val webpFile = File(uploadFolder, s"images/webp/$webpName")
-        val bmpFile = File(uploadFolder, s"images/bmp/${replaceWithBmp(value)}")
-        if (webpFile.exists() && bmpFile.exists()) {
+        val webpCropFile =
+          File(uploadFolder, s"images/crop/${replaceWithWebp(value)}")
+        if (webpFile.exists() && webpCropFile.exists()) {
           ImageConversionRecord(
             m.getId,
             value,
@@ -85,14 +85,12 @@ class ImageConversionAppender @EzyAutoBind() (
             .fromFile(resourceFile)
             .output(WebpWriter.DEFAULT, webpFile)
 
-          bmpFile.getParentFile.mkdirs()
-          val x = ImmutableImage
+          webpCropFile.getParentFile.mkdirs()
+          ImmutableImage
             .loader()
             .fromFile(resourceFile)
-            .scale(0.01)
-            .autocrop()
-            .output(BmpWriter(), bmpFile)
-
+            .scale(0.1)
+            .output(WebpWriter.DEFAULT, webpCropFile)
           ImageConversionRecord(
             m.getId,
             value,
@@ -126,10 +124,4 @@ class ImageConversionAppender @EzyAutoBind() (
     }
   }
 
-  private def replaceWithBmp(fileName: String): String = {
-    fileName.lastIndexOf('.') match {
-      case -1 => s"$fileName.bmp"
-      case i  => fileName.substring(0, i) + ".bmp"
-    }
-  }
 }

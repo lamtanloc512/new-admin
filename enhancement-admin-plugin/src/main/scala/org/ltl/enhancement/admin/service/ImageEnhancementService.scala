@@ -35,7 +35,6 @@ import org.youngmonkeys.ezyplatform.service.*
 import org.youngmonkeys.ezyplatform.validator.{CommonValidator, MediaValidator}
 
 import java.io.{File, FileInputStream}
-import java.nio.file.Paths
 import java.util.concurrent.Executors
 import java.util.function.Predicate
 import scala.concurrent.{ExecutionContext, Future}
@@ -78,7 +77,7 @@ class ImageEnhancementService @EzyAutoBind() (
 ) extends EzyLoggable {
 
   private given ExecutionContext =
-    ExecutionContext.fromExecutor(Executors.newFixedThreadPool(4))
+    ExecutionContext.fromExecutor(Executors.newFixedThreadPool(16))
 
   private val fileUploaderWrapper =
     EzyLazyInitializer(() =>
@@ -141,9 +140,12 @@ class ImageEnhancementService @EzyAutoBind() (
         _ <- notifyMediaEvent(MediaDownloadEvent(media))
         resourceFile <- getResourceFile(fileSystemManager, name, media)
         uploadFolder <- Try(fileSystemManager.getUploadFolder).toEither
-        bmpFile = File(uploadFolder, s"images/bmp/${replaceWithBmp(name)}")
+        webpCropFile = File(
+          uploadFolder,
+          s"images/crop/${replaceWithWebp(name)}"
+        )
         cachedFile <-
-          if (bmpFile.exists()) Right(bmpFile)
+          if (webpCropFile.exists()) Right(webpCropFile)
           else Left(MediaNotFoundException(s"Image not found $name"))
         _ <- writeAsyncImageToResponse(
           resourceDownloadManager,
@@ -188,28 +190,6 @@ class ImageEnhancementService @EzyAutoBind() (
         _ <- removeRelatedImageFiles(media)
         _ <- notifyMediaEvent(MediaRemovedEvent(media))
       } yield ()
-    }
-  }
-
-  def convertImage(
-      format: String = "webp"
-  ): Future[Either[scala.Throwable, Unit]] = {
-    Future {
-      Try {
-        Paths
-          .get(s"${fileSystemManager.getUploadFolder.getName}/images")
-          .toFile
-          .listFiles()
-          .filter(file => !file.isDirectory && file.isFile)
-          .foreach(photo => {
-            val newPhoto =
-              File(photo.getParentFile, s"${replaceWithWebp(photo.getName)}")
-            ImmutableImage
-              .loader()
-              .fromFile(photo)
-              .output(WebpWriter.DEFAULT, newPhoto)
-          })
-      }.toEither
     }
   }
 
@@ -330,7 +310,7 @@ class ImageEnhancementService @EzyAutoBind() (
       originalName = media.getOriginalName,
       uploadFrom = media.getUploadFrom,
       `type` = media.getType,
-      mimeType = media.getMimeType,
+      mimeType = "image/webp",
       title = media.getTitle,
       caption = media.getCaption,
       alternativeText = media.getAlternativeText,

@@ -16,7 +16,6 @@ import org.youngmonkeys.ezyplatform.data.AdminRolesProxy
 import org.youngmonkeys.ezyplatform.entity.MediaType
 import org.youngmonkeys.ezyplatform.model.PaginationModel
 import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
-import org.youngmonkeys.ezyplatform.response.MediaResponse
 import org.youngmonkeys.ezyplatform.util.StringConverters
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -42,45 +41,10 @@ class ImageEnhancementController @EzyAutoBind() (
       @RequestParam("prevPageToken") prevPageToken: String,
       @RequestParam("lastPage") lastPage: Boolean,
       @RequestParam(value = "limit", defaultValue = "30") limit: Int
-  ): PaginationModel[MediaResponse] = {
-    val filterBuilder = DefaultMediaFilter
-      .builder()
-      .`type`(t)
-      .prefixKeyword(StringConverters.trimOrNull(keyword))
-    if (!isAllowAccessAllMedia(adminId, adminRoles)) {
-      filterBuilder
-        .ownerAdminId(adminId)
-    }
-    mediaControllerService.getMediaList(
-      filterBuilder.build(),
-      nextPageToken,
-      prevPageToken,
-      lastPage,
-      limit
-    )
-  }
-
-  @DoGet("/media/list/webp")
-  def listMediaWebp(
-      @AdminId adminId: Long,
-      @AdminRoles adminRoles: AdminRolesProxy,
-      @RequestParam("type") t: MediaType,
-      @RequestParam("keyword") keyword: String,
-      @RequestParam("nextPageToken") nextPageToken: String,
-      @RequestParam("prevPageToken") prevPageToken: String,
-      @RequestParam("lastPage") lastPage: Boolean,
-      @RequestParam(value = "limit", defaultValue = "30") limit: Int
   ): PaginationModel[ImageResponse] = {
-    val filterBuilder = DefaultMediaFilter
-      .builder()
-      .`type`(t)
-      .prefixKeyword(StringConverters.trimOrNull(keyword))
-    if (!isAllowAccessAllMedia(adminId, adminRoles)) {
-      filterBuilder
-        .ownerAdminId(adminId)
-    }
+    val filterBuilder = defaultMediaFilter(adminId, adminRoles, t, keyword)
     imageEnhancementService.getMediaListWebp(
-      filterBuilder.build(),
+      filterBuilder,
       nextPageToken,
       prevPageToken,
       lastPage,
@@ -117,15 +81,6 @@ class ImageEnhancementController @EzyAutoBind() (
       )
   }
 
-  // @DoPut("/media/{id}")
-  // def mediaIdPut(
-  //     @PathVariable("id") mediaId: Long,
-  //     @RequestBody request: UpdateMediaRequest
-  // ): ResponseEntity = {
-  //   imageEnhancementService.updateMedia(mediaId, request)
-  //   return ResponseEntity.noContent()
-  // }
-
   @DoDelete("/media/{name}")
   def deleteMedia(
       @PathVariable imageId: Long
@@ -138,6 +93,23 @@ class ImageEnhancementController @EzyAutoBind() (
           new RuntimeException(s"Failed to delete media: ${error.getMessage}")
         )
     }
+  }
+
+  private def defaultMediaFilter(
+      adminId: Long,
+      adminRoles: AdminRolesProxy,
+      t: MediaType,
+      keyword: String
+  ) = {
+    val filterBuilder = DefaultMediaFilter
+      .builder()
+      .`type`(t)
+      .prefixKeyword(StringConverters.trimOrNull(keyword))
+    if (!isAllowAccessAllMedia(adminId, adminRoles)) {
+      filterBuilder
+        .ownerAdminId(adminId)
+    }
+    filterBuilder.build()
   }
 
   private def isAllowAccessAllMedia(
