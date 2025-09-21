@@ -13,11 +13,11 @@
     <name>enhancement</name>
     <description>Admin Enhancement</description>
     <properties>
-        <!--suppress UnresolvedMavenProperty -->
         <ezyplatform.home>/home/ethan/Application/ezyplatform</ezyplatform.home>
         <scala.version>3.7.2</scala.version>
         <scala.compat.version>3.7</scala.compat.version>
         <scrimage.version>4.3.4</scrimage.version>
+        <pekko.version>1.2.0</pekko.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.fork>true</maven.compiler.fork>

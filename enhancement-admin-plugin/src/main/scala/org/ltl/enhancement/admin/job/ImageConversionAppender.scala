@@ -2,9 +2,6 @@ package org.ltl.enhancement.admin.job
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.color.Colors
-import com.sksamuel.scrimage.composite.AlphaComposite
-import com.sksamuel.scrimage.filter.LensBlurFilter
 import com.sksamuel.scrimage.nio.BmpWriter
 import com.sksamuel.scrimage.webp.WebpWriter
 import com.tvd12.ezyfox.bean.annotation.{EzyAutoBind, EzySingleton}
@@ -15,14 +12,10 @@ import org.youngmonkeys.ezyplatform.entity.MediaType
 import org.youngmonkeys.ezyplatform.manager.FileSystemManager
 import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
 import org.youngmonkeys.ezyplatform.service.MediaService
-import com.sksamuel.scrimage.color.RGBColor
 
-import java.awt.Color
 import java.io.File
 import java.util
-import java.util.Base64
 import scala.jdk.CollectionConverters.*
-import scala.util.Try
 
 case class ImageConversionRecord(
     mediaId: Long,

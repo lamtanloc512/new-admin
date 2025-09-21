@@ -2,11 +2,9 @@ package org.ltl.enhancement.admin.controller.api
 
 import com.tvd12.ezyfox.annotation.EzyFeature
 import com.tvd12.ezyfox.bean.annotation.EzyAutoBind
-import com.tvd12.ezyhttp.core.constant.Headers
 import com.tvd12.ezyhttp.core.response.ResponseEntity
 import com.tvd12.ezyhttp.server.core.annotation.*
 import com.tvd12.ezyhttp.server.core.request.RequestArguments
-import org.eclipse.jetty.http.HttpStatus
 import org.ltl.enhancement.admin.service.{
   ImageEnhancementService,
   ImageResponse
@@ -23,8 +21,6 @@ import org.youngmonkeys.ezyplatform.util.StringConverters
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import org.youngmonkeys.ezyplatform.request.UpdateMediaIncludeUrlRequest
-import org.youngmonkeys.ezyplatform.request.UpdateMediaRequest
 
 @Api
 @Authenticated

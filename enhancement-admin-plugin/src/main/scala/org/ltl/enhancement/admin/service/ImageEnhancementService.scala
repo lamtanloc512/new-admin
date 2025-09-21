@@ -2,7 +2,6 @@ package org.ltl.enhancement.admin.service
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.format.{Format, FormatDetector}
 import com.sksamuel.scrimage.nio.*
@@ -14,13 +13,10 @@ import com.tvd12.ezyfox.stream.EzyInputStreamLoader
 import com.tvd12.ezyfox.util.EzyLoggable
 import com.tvd12.ezyhttp.client.HttpClient
 import com.tvd12.ezyhttp.core.resources.ResourceDownloadManager
-import com.tvd12.ezyhttp.core.response.ResponseEntity
 import com.tvd12.ezyhttp.server.core.handler.ResourceRequestHandler
 import com.tvd12.ezyhttp.server.core.request.RequestArguments
 import com.tvd12.ezyhttp.server.core.resources.FileUploader
-import net.bytebuddy.implementation.bytecode.Throw
 import org.apache.tika.config.TikaConfig
-import org.apache.tika.mime.MimeType
 import org.ltl.enhancement.admin.utils.Common.{replaceWithBmp, replaceWithWebp}
 import org.youngmonkeys.ezyplatform.controller.service.MediaControllerService
 import org.youngmonkeys.ezyplatform.converter.{
@@ -38,15 +34,11 @@ import org.youngmonkeys.ezyplatform.response.MediaResponse
 import org.youngmonkeys.ezyplatform.service.*
 import org.youngmonkeys.ezyplatform.validator.{CommonValidator, MediaValidator}
 
-import java.awt.Color
 import java.io.{File, FileInputStream}
-import java.nio.file.{Files, Paths}
-import java.util.Base64
-import java.util.concurrent.{Executors, ThreadPoolExecutor}
+import java.nio.file.Paths
+import java.util.concurrent.Executors
 import java.util.function.Predicate
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-import scala.jdk.CollectionConverters.*
 import scala.util.{Try, Using}
 
 case class ImageResponse(

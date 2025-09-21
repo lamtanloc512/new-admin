@@ -1,7 +1,7 @@
 package org.ltl.enhancement.admin.utils
 
 object Common {
-  def getLastIndex(fileName: String) = fileName.lastIndexOf('.')
+  private def getLastIndex(fileName: String) = fileName.lastIndexOf('.')
 
   def replaceWithWebp(fileName: String): String =
     getLastIndex(fileName) match
