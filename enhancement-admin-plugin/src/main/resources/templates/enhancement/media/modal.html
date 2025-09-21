@@ -626,7 +626,7 @@
 				onclick="ezyadmin.showMediaDetails(${media.id});"
 				onmouseover="ezyadmin.onMediaMouseOver(this, ${media.id});">
 				${media.type === 'IMAGE' || media.type === 'AVATAR' ? `
-					<img src="${placeholderUrl}" img-full="${mediaUrl}" alt="${media.originalName}" class="wh-150px img-thumbnail progressive-image">
+					<img src="${placeholderUrl}" img-full="${mediaUrl}" img-mobile="${mediaUrl}" img-tablet="${mediaUrl}" alt="${media.originalName}" class="wh-150px img-thumbnail progressive-image">
 					<span class="text-danger delete-button" aria-hidden="true" onclick="ezyadmin.onFastDeleteMediaClick(${media.id});">&times;</span>
 					<input type="checkbox" name="mediaItemCheckbox" class="media-item-checkbox" onclick="ezyadmin.onMediaItemCheckboxClick(this, ${media.id})">
 				` : (media.type === 'VIDEO' && internalMedia) ? `
@@ -865,7 +865,7 @@
 		ezyadmin.deleteMedia = function (mediaId) {
 			var actualMediaId = (mediaId || ezyadmin.selectedMediaId);
 			var url = ezyadmin.accessibleUris['/api/v1/media/{id}/delete']
-				? '/api/v1/media/' + actualMediaId
+				? '/enhancement/api/v1/media/' + actualMediaId
 				: '/api/v1/me/media/' + actualMediaId;
 			$.ajax({
 				type: "DELETE",

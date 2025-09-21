@@ -43,5 +43,5 @@ class AdminDecorator extends ViewDecorator {
       "modules"
     )
   private val cssFiles = Seq("/css/abaculus/index.min.css", "/css/theme.css")
-  private val scriptFiles = Seq("/js/theme.js")
+  private val scriptFiles = Seq("/js/lazy.js", "/js/theme.js")
 }

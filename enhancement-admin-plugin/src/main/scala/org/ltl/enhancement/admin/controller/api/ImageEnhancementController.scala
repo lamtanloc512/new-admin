@@ -23,6 +23,8 @@ import org.youngmonkeys.ezyplatform.util.StringConverters
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import org.youngmonkeys.ezyplatform.request.UpdateMediaIncludeUrlRequest
+import org.youngmonkeys.ezyplatform.request.UpdateMediaRequest
 
 @Api
 @Authenticated
@@ -117,6 +119,29 @@ class ImageEnhancementController @EzyAutoBind() (
         exposePrivateMedia = true,
         _ => true
       )
+  }
+
+  // @DoPut("/media/{id}")
+  // def mediaIdPut(
+  //     @PathVariable("id") mediaId: Long,
+  //     @RequestBody request: UpdateMediaRequest
+  // ): ResponseEntity = {
+  //   imageEnhancementService.updateMedia(mediaId, request)
+  //   return ResponseEntity.noContent()
+  // }
+
+  @DoDelete("/media/{name}")
+  def deleteMedia(
+      @PathVariable imageId: Long
+  ): Future[Either[Throwable, ResponseEntity]] = {
+    imageEnhancementService.removeMedia(imageId).map {
+      case Right(_) =>
+        Right(ResponseEntity.noContent())
+      case Left(error) =>
+        Left(
+          new RuntimeException(s"Failed to delete media: ${error.getMessage}")
+        )
+    }
   }
 
   private def isAllowAccessAllMedia(

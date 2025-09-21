@@ -21,7 +21,7 @@ import com.tvd12.ezyhttp.server.core.resources.FileUploader
 import net.bytebuddy.implementation.bytecode.Throw
 import org.apache.tika.config.TikaConfig
 import org.apache.tika.mime.MimeType
-import org.ltl.enhancement.admin.utils.{replaceWithBmp, replaceWithWebp}
+import org.ltl.enhancement.admin.utils.Common.{replaceWithBmp, replaceWithWebp}
 import org.youngmonkeys.ezyplatform.controller.service.MediaControllerService
 import org.youngmonkeys.ezyplatform.converter.{
   HttpModelToResponseConverter,
@@ -182,6 +182,23 @@ class ImageEnhancementService @EzyAutoBind() (
       .map(toImageResponse)
   }
 
+  def removeMedia(imageId: Long): Future[Either[scala.Throwable, Unit]] = {
+    Future {
+      for {
+        media <- Try(mediaService.removeMedia(imageId)).toEither
+        file <- Try(
+          fileSystemManager.getMediaFilePath(
+            media.getType.getFolder,
+            media.getName
+          )
+        ).toEither
+        _ <- Try(FolderProxy.deleteFile(file)).toEither
+        _ <- removeRelatedImageFiles(media)
+        _ <- notifyMediaEvent(MediaRemovedEvent(media))
+      } yield ()
+    }
+  }
+
   def convertImage(
       format: String = "webp"
   ): Future[Either[scala.Throwable, Unit]] = {
@@ -285,6 +302,31 @@ class ImageEnhancementService @EzyAutoBind() (
         inputStreamLoader,
         resourceDownloadManager
       ).handle(requestArguments)
+    }.toEither
+  }
+
+  private def removeRelatedImageFiles(
+      image: MediaModel
+  ): Either[Throwable, Unit] = {
+    Try {
+      val webpFile = File(
+        fileSystemManager.getUploadFolder,
+        s"images/webp/${replaceWithWebp(image.getName)}"
+      )
+      val bmpFile = File(
+        fileSystemManager.getUploadFolder,
+        s"images/bmp/${replaceWithBmp(image.getName)}"
+      )
+
+      if (webpFile.exists()) {
+        FolderProxy.deleteFile(webpFile)
+        logger.info(s"Deleted webp file: ${webpFile.getAbsolutePath}")
+      }
+
+      if (bmpFile.exists()) {
+        FolderProxy.deleteFile(bmpFile)
+        logger.info(s"Deleted bmp file: ${bmpFile.getAbsolutePath}")
+      }
     }.toEither
   }
 

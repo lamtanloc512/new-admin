@@ -1,12 +1,6 @@
-package org.ltl.enhancement.admin.service
+package org.ltl.enhancement.admin.job
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sksamuel.scrimage.ImmutableImage
-import com.sksamuel.scrimage.color.Colors
-import com.sksamuel.scrimage.composite.AlphaComposite
-import com.sksamuel.scrimage.filter.LensBlurFilter
-import com.sksamuel.scrimage.nio.BmpWriter
-import com.sksamuel.scrimage.webp.WebpWriter
 import com.tvd12.ezyfox.bean.annotation.{EzyAutoBind, EzySingleton}
 import org.youngmonkeys.ezyplatform.admin.appender.AdminDataAppender
 import org.youngmonkeys.ezyplatform.admin.service.AdminSettingService
@@ -15,36 +9,33 @@ import org.youngmonkeys.ezyplatform.entity.MediaType
 import org.youngmonkeys.ezyplatform.manager.FileSystemManager
 import org.youngmonkeys.ezyplatform.pagination.DefaultMediaFilter
 import org.youngmonkeys.ezyplatform.service.MediaService
-import com.sksamuel.scrimage.color.RGBColor
 
-import java.awt.Color
 import java.io.File
 import java.util
-import java.util.Base64
 import scala.jdk.CollectionConverters.*
-import scala.util.Try
 
-case class ImageConversionRecord(
+case class ImageCleanupRecord(
     mediaId: Long,
     originalName: String,
-    convertedName: String,
+    webpDeleted: Boolean,
+    bmpDeleted: Boolean,
     status: String,
     timestamp: Long
 )
 
 @EzySingleton
-class ImageConversionAppender @EzyAutoBind() (
+class ImageCleanupAppender @EzyAutoBind() (
     objectMapper: ObjectMapper,
     adminSettingService: AdminSettingService,
     mediaService: MediaService,
     mediaControllerService: MediaControllerService,
     fileSystemManager: FileSystemManager
-) extends AdminDataAppender[String, ImageConversionRecord, String](
+) extends AdminDataAppender[String, ImageCleanupRecord, String](
       objectMapper,
       adminSettingService
     ) {
 
-  override protected def getAppenderNamePrefix: String = "image-conversion"
+  override protected def getAppenderNamePrefix: String = "image-cleanup"
 
   override protected def defaultPageToken: String = ""
 
@@ -67,52 +58,47 @@ class ImageConversionAppender @EzyAutoBind() (
     pagination.getPageToken.getNext
   }
 
-  override protected def toDataRecord(value: String): ImageConversionRecord = {
+  override protected def toDataRecord(value: String): ImageCleanupRecord = {
     val media = Option(mediaService.getMediaByName(value))
     media match {
       case Some(m) =>
         val uploadFolder = fileSystemManager.getUploadFolder
-        val webpName = replaceWithWebp(value)
-        val webpFile = File(uploadFolder, s"images/webp/$webpName")
+
+        val webpFile =
+          File(uploadFolder, s"images/webp/${replaceWithWebp(value)}")
         val bmpFile = File(uploadFolder, s"images/bmp/${replaceWithBmp(value)}")
-        if (webpFile.exists() && bmpFile.exists()) {
-          ImageConversionRecord(
-            m.getId,
-            value,
-            webpName,
-            "already_converted",
-            System.currentTimeMillis()
-          )
-        } else {
-          val resourceFile =
-            fileSystemManager.getMediaFilePath(m.getType.getFolder, value)
-          webpFile.getParentFile.mkdirs()
-          ImmutableImage
-            .loader()
-            .fromFile(resourceFile)
-            .output(WebpWriter.DEFAULT, webpFile)
 
-          bmpFile.getParentFile.mkdirs()
-          val x = ImmutableImage
-            .loader()
-            .fromFile(resourceFile)
-            .scale(0.01)
-            .autocrop()
-            .output(BmpWriter(), bmpFile)
+        val originalFile =
+          fileSystemManager.getMediaFilePath(m.getType.getFolder, value)
 
-          ImageConversionRecord(
-            m.getId,
-            value,
-            webpName,
-            "converted",
-            System.currentTimeMillis()
-          )
+        var webpDeleted = false
+        var bmpDeleted = false
+
+        if (!originalFile.exists()) {
+          if (webpFile.exists()) {
+            webpFile.delete()
+            webpDeleted = true
+          }
+          if (bmpFile.exists()) {
+            bmpFile.delete()
+            bmpDeleted = true
+          }
         }
+
+        ImageCleanupRecord(
+          m.getId,
+          value,
+          webpDeleted,
+          bmpDeleted,
+          if (webpDeleted || bmpDeleted) "cleaned" else "no_action",
+          System.currentTimeMillis()
+        )
       case None =>
-        ImageConversionRecord(
+        ImageCleanupRecord(
           -1L,
           value,
-          "",
+          false,
+          false,
           "media_not_found",
           System.currentTimeMillis()
         )
