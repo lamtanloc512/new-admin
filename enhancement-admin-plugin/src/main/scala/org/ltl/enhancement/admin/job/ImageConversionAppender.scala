@@ -15,6 +15,7 @@ import org.youngmonkeys.ezyplatform.service.MediaService
 import java.io.File
 import java.util
 import scala.jdk.CollectionConverters.*
+import com.sksamuel.scrimage.ScaleMethod
 
 case class ImageConversionRecord(
     mediaId: Long,
@@ -89,7 +90,7 @@ class ImageConversionAppender @EzyAutoBind() (
           ImmutableImage
             .loader()
             .fromFile(resourceFile)
-            .scale(0.1)
+            .scaleTo(16, 16, ScaleMethod.FastScale)
             .output(WebpWriter.DEFAULT, webpCropFile)
           ImageConversionRecord(
             m.getId,
