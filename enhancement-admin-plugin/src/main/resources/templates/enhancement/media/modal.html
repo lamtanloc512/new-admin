@@ -27,7 +27,7 @@
 					<div class="modal-header">
 						<div class="d-flex">
 							<h4 class="modal-title">[[#{media}]]</h4>
-                            <h1>Hello</h1>
+							<h1>Hello</h1>
 							<button type="button" class="btn btn-outline-primary ml-3"
 								th:if="${adminRoles.isAccessible('/api/v1/media/add', 'POST')}"
 								onclick="ezyadmin.showAddNewMediaModal();">
@@ -382,27 +382,27 @@
 	</th:block>
 	<script th:fragment="scripts" th:inline="javascript">
 		/*<![CDATA[*/
-		ezyadmin.numberOfMediaPerPage = /*[[${numberOfMediaPerPage}]]*/;
-		ezyadmin.messages.administrator = /*[[#{administrator}]]*/;
-		ezyadmin.messages.script = /*[[#{script}]]*/;
-		ezyadmin.messages.delete_successfully = /*[[#{delete_successfully}]]*/;
-		ezyadmin.messages.delete_failed = /*[[#{delete_failed}]]*/;
-		ezyadmin.messages.update_successfully = /*[[#{update_successfully}]]*/;
-		ezyadmin.messages.update_failed = /*[[#{update_failed}]]*/;
-		ezyadmin.messages.user = /*[[#{user}]]*/;
-		ezyadmin.accessibleUris['/api/v1/media/list'] = /*[[${adminRoles.isAccessible('/api/v1/media/list')}]]*/;
-		ezyadmin.accessibleUris['/api/v1/media/{name}'] = /*[[${adminRoles.isAccessible('/api/v1/media/{name}')}]]*/;
-		ezyadmin.accessibleUris['/api/v1/media/{id}/details'] = /*[[${adminRoles.isAccessible('/api/v1/media/{id}/details')}]]*/;
-		ezyadmin.accessibleUris['/api/v1/media/{id}/edit'] = /*[[${adminRoles.isAccessible('/api/v1/media/{id}', 'PUT')}]]*/;
-		ezyadmin.accessibleUris['/api/v1/media/{id}/delete'] = /*[[${adminRoles.isAccessible('/api/v1/media/{id}', 'DELETE')}]]*/;
-		/*]]>*/
+		ezyadmin.numberOfMediaPerPage = /*[[${numberOfMediaPerPage}]]*/
+			ezyadmin.messages.administrator = /*[[#{administrator}]]*/
+			ezyadmin.messages.script = /*[[#{script}]]*/
+			ezyadmin.messages.delete_successfully = /*[[#{delete_successfully}]]*/
+			ezyadmin.messages.delete_failed = /*[[#{delete_failed}]]*/
+			ezyadmin.messages.update_successfully = /*[[#{update_successfully}]]*/
+			ezyadmin.messages.update_failed = /*[[#{update_failed}]]*/
+			ezyadmin.messages.user = /*[[#{user}]]*/
+			ezyadmin.accessibleUris['/api/v1/media/list'] = /*[[${adminRoles.isAccessible('/api/v1/media/list')}]]*/
+			ezyadmin.accessibleUris['/api/v1/media/{name}'] = /*[[${adminRoles.isAccessible('/api/v1/media/{name}')}]]*/
+			ezyadmin.accessibleUris['/api/v1/media/{id}/details'] = /*[[${adminRoles.isAccessible('/api/v1/media/{id}/details')}]]*/
+			ezyadmin.accessibleUris['/api/v1/media/{id}/edit'] = /*[[${adminRoles.isAccessible('/api/v1/media/{id}', 'PUT')}]]*/
+			ezyadmin.accessibleUris['/api/v1/media/{id}/delete'] = /*[[${adminRoles.isAccessible('/api/v1/media/{id}', 'DELETE')}]]*/
+			/*]]>*/
 
-		$('#media-details').on('hidden.bs.modal', function (e) {
-			var items = $('.playable-media-item');
-			for (var i = 0; i < items.length; ++i) {
-				items[i].pause();
-			}
-		})
+			$('#media-details').on('hidden.bs.modal', function (e) {
+				var items = $('.playable-media-item');
+				for (var i = 0; i < items.length; ++i) {
+					items[i].pause();
+				}
+			})
 
 		ezyadmin.mediaSelectedHandlers = {};
 		ezyadmin.showMediaModal = function (command) {
@@ -414,7 +414,7 @@
 			$('#mediaModelSearchKeywordInput').val('');
 			$('#mediaModelSearchTypeSelect').val('');
 			$('#mediaListBody').html('');
-			ezyadmin.fetchMediaList(true);
+			enhancement.fetchMediaList(true);
 			$('#media-modal').modal('show');
 			var handler = {};
 			handler.onMediaShow = function (callback) {
@@ -549,61 +549,19 @@
 		ezyadmin.onKeydownToSearchMedia = function (e) {
 			ezyadmin.searchMediaKeyword = $(e).val();
 			if (event.key === 'Enter' || !ezyadmin.searchMediaKeyword) {
-				ezyadmin.fetchMediaList(true);
+				enhancement.fetchMediaList(true);
 			}
 		}
 
 		ezyadmin.onSearchMediaTypeChanged = function (e) {
 			ezyadmin.searchMediaType = $(e).val();
-			ezyadmin.fetchMediaList(true);
+			enhancement.fetchMediaList(true);
 		}
 
 		// ========== media list =============
 		ezyadmin.mediaCount = 0;
 		ezyadmin.mediaTotal = 0;
 		ezyadmin.mediaById = {};
-		ezyadmin.fetchMediaList = function (replace) {
-			var url = ezyadmin.accessibleUris['/enhancement/api/v1/media/list/webp']
-				? '/enhancement/api/v1/media/list/webp'
-				: '/api/v1/me/media/list';
-			url += '?limit=' + ezyadmin.numberOfMediaPerPage;
-			if (ezyadmin.searchMediaKeyword) {
-				url += '&keyword=' + ezyadmin.searchMediaKeyword;
-			}
-			if (ezyadmin.searchMediaType) {
-				url += '&type=' + ezyadmin.searchMediaType;
-			}
-			if (replace) {
-				ezyadmin.lastNextPageToken = null;
-			}
-			$.ajax({
-				type: "GET",
-				url: url + (ezyadmin.lastNextPageToken
-					? '&nextPageToken=' + ezyadmin.lastNextPageToken
-					: ''),
-				success: function (data) {
-					ezyadmin.appendToMediaListTable(data.items, false, replace);
-					ezyadmin.mediaCount = replace
-						? data.count
-						: ezyadmin.mediaCount + data.count;
-					ezyadmin.mediaTotal = data.total;
-					data.items.forEach((item) => {
-						ezyadmin.mediaById[item.id] = item;
-					});
-					$('#mediaCountText').text(ezyadmin.mediaCount);
-					$('#totalMediaText').text(data.total);
-					ezyadmin.lastNextPageToken = data.pageToken.next;
-					if (data.continuation.hasNext) {
-						$('#loadMoreMediaButton').removeClass('d-none');
-					} else {
-						$('#loadMoreMediaButton').addClass('d-none');
-					}
-				},
-				error: function (data, e) {
-					ezyadmin.processGetApiErrors(data);
-				}
-			});
-		}
 
 		ezyadmin.appendToMediaListTable = function (mediaList, toHead, replace) {
 			var html = ezyadmin.buildMediaListBodyHtml(mediaList);
@@ -666,7 +624,7 @@
 		}
 
 		$('#loadMoreMediaButton').on('click', (e) => {
-			ezyadmin.fetchMediaList();
+			enhancement.fetchMediaList();
 		});
 
 		// ======================= media details =============

@@ -20,6 +20,7 @@ import org.youngmonkeys.ezyplatform.util.StringConverters
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import org.youngmonkeys.ezyplatform.response.MediaResponse
 
 @Api
 @Authenticated
@@ -41,7 +42,7 @@ class ImageEnhancementController @EzyAutoBind() (
       @RequestParam("prevPageToken") prevPageToken: String,
       @RequestParam("lastPage") lastPage: Boolean,
       @RequestParam(value = "limit", defaultValue = "30") limit: Int
-  ): PaginationModel[ImageResponse] = {
+  ): PaginationModel[MediaResponse] = {
     val filterBuilder = defaultMediaFilter(adminId, adminRoles, t, keyword)
     imageEnhancementService.getMediaListWebp(
       filterBuilder,

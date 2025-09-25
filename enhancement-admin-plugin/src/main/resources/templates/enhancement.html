@@ -15,74 +15,59 @@
 -->
 
 <!DOCTYPE html>
-<html
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  xmlns:ezy="http://www.ezyplatform.com/thymeleaf/layout"
-  dir="ltr"
->
-  <head>
-    <title>Admin | Easy Going Platform</title>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1 user-scalable=no"
-    />
-    <meta name="title" content="Easy going platform Administrator" />
-    <meta name="description" content="Easy going platform Administrator" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="icon" type="image/x-icon" ezy:vhref="/favicon.ico" />
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" ezy:vhref="/css/all.min.css" />
-    <!-- IonIcons -->
-    <link rel="stylesheet" ezy:vhref="/css/ionicons.min.css" />
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:ezy="http://www.ezyplatform.com/thymeleaf/layout"
+  dir="ltr">
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" ezy:vhref="/css/bootstrap-icons.min.css" />
-    <!-- Flags -->
-    <link rel="stylesheet" ezy:vhref="/css/flag-icons.min.css" />
-    <!-- datetime picker -->
-    <link rel="stylesheet" ezy:vhref="/css/tempusdominus-bootstrap-4.min.css" />
-    <!-- daterange picker -->
-    <link rel="stylesheet" ezy:vhref="/css/daterangepicker.min.css" />
-    <!-- JQuery UI -->
-    <link rel="stylesheet" ezy:vhref="/css/jquery-ui.min.css" />
-    <!-- Theme style -->
-    <link rel="stylesheet" ezy:vhref="/css/adminlte.min.css" />
-    <!-- Data table -->
-    <link rel="stylesheet" ezy:vhref="/css/dataTables.bootstrap4.min.css" />
-    <link rel="stylesheet" ezy:vhref="/css/responsive.bootstrap4.min.css" />
-    <link rel="stylesheet" ezy:vhref="/css/buttons.bootstrap4.min.css" />
-    <!-- Google Font: Source Sans Pro -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700"
-      rel="stylesheet"
-    />
-    <!-- Admin -->
-    <link rel="stylesheet" type="text/css" ezy:vhref="/css/ezyadmin.css" />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/tdesign-react@1.15.1/dist/tdesign.min.css"
-    />
-    <style th:inline="css">
-      .custom-file-label::after {
-        content: "[[#{browse}]]" !important;
-      }
-    </style>
-    <th:block
-      th:if="${additionalStyleFiles != null}"
-      th:each="astyleFile : ${additionalStyleFiles}"
-    >
-      <link ezy:vhref="${astyleFile}" rel="stylesheet" />
-    </th:block>
-    <script>
-      const ezyadmin = {
-        accessibleUris: {},
-      };
-    </script>
-  </head>
-  <!--
+<head>
+  <title>Admin | Easy Going Platform</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=no" />
+  <meta name="title" content="Easy going platform Administrator" />
+  <meta name="description" content="Easy going platform Administrator" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="icon" type="image/x-icon" ezy:vhref="/favicon.ico" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" ezy:vhref="/css/all.min.css" />
+  <!-- IonIcons -->
+  <link rel="stylesheet" ezy:vhref="/css/ionicons.min.css" />
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" ezy:vhref="/css/bootstrap-icons.min.css" />
+  <!-- Flags -->
+  <link rel="stylesheet" ezy:vhref="/css/flag-icons.min.css" />
+  <!-- datetime picker -->
+  <link rel="stylesheet" ezy:vhref="/css/tempusdominus-bootstrap-4.min.css" />
+  <!-- daterange picker -->
+  <link rel="stylesheet" ezy:vhref="/css/daterangepicker.min.css" />
+  <!-- JQuery UI -->
+  <link rel="stylesheet" ezy:vhref="/css/jquery-ui.min.css" />
+  <!-- Theme style -->
+  <link rel="stylesheet" ezy:vhref="/css/adminlte.min.css" />
+  <!-- Data table -->
+  <link rel="stylesheet" ezy:vhref="/css/dataTables.bootstrap4.min.css" />
+  <link rel="stylesheet" ezy:vhref="/css/responsive.bootstrap4.min.css" />
+  <link rel="stylesheet" ezy:vhref="/css/buttons.bootstrap4.min.css" />
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
+  <!-- Admin -->
+  <link rel="stylesheet" type="text/css" ezy:vhref="/css/ezyadmin.css" />
+  <link rel="stylesheet" href="https://unpkg.com/tdesign-react@1.15.1/dist/tdesign.min.css" />
+  <style th:inline="css">
+    .custom-file-label::after {
+      content: "[[#{browse}]]" !important;
+    }
+  </style>
+  <th:block th:if="${additionalStyleFiles != null}" th:each="astyleFile : ${additionalStyleFiles}">
+    <link ezy:vhref="${astyleFile}" rel="stylesheet" />
+  </th:block>
+  <script>
+    const ezyadmin = {
+      accessibleUris: {},
+    };
+  </script>
+</head>
+<!--
 BODY TAG OPTIONS:
 =================
 Apply one or more of the following classes to to the body tag
@@ -92,790 +77,726 @@ to get the desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-  <body class="hold-transition sidebar-mini">
-    <div class="wrapper">
-      <!-- Navbar -->
-      <nav th:replace="~{fragments/header :: header}"></nav>
-      <!-- /.navbar -->
-      <!-- Main Sidebar Container -->
-      <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
-      <!-- /Main Sidebar Container -->
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <div class="content-header">
-          <div class="container-fluid">
-            <div class="row mb-2">
-              <div class="col-sm-6">
-                <div class="d-flex">
-                  <h1
-                    class="m-0 text-dark"
-                    th:text="#{${currentPageTitle}}"
-                  ></h1>
-                  <button
-                    th:if="${enableAddNewButton == true}"
-                    type="button"
-                    id="ezyAddNewButton"
-                    onclick="ezyadmin.onNewButtonClick(this)"
-                    class="btn btn-outline-primary ml-2 pt-0 pb-0"
-                  >
-                    [[#{add_new}]] <i class="fas fa-plus-circle"></i>
-                  </button>
-                  <button
-                    th:if="${enableEditButton == true}"
-                    type="button"
-                    id="ezyEditButton"
-                    onclick="ezyadmin.onEditButtonClick(this)"
-                    class="btn btn-outline-primary ml-2 pt-0 pb-0"
-                  >
-                    [[#{edit}]] <i class="fas fa-edit"></i>
-                  </button>
-                  <button
-                    th:if="${enableSaveButton == true}"
-                    type="button"
-                    id="ezySaveButton"
-                    onclick="ezyadmin.onSaveButtonClick(this)"
-                    class="btn btn-outline-primary ml-2 pt-0 pb-0"
-                  >
-                    [[#{save}]] <i class="fas fa-save"></i>
-                  </button>
-                  <i
-                    th:if="${showLastSavedInfo == true}"
-                    id="lastSavedInfoTooltip"
-                    class="fas fa-info-circle text-info top-button-tooltip"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    th:title="#{last_saved_at} + ': '"
-                  ></i>
-                  <button
-                    th:if="${enableUploadButton == true}"
-                    type="button"
-                    id="ezyUploadButton"
-                    onclick="ezyadmin.onUploadButtonClick(this)"
-                    class="btn btn-outline-primary ml-2 pt-0 pb-0"
-                  >
-                    [[#{upload}]] <i class="fas fa-upload"></i>
-                  </button>
-                  <button
-                    th:if="${enableHistoryButton == true}"
-                    type="button"
-                    id="ezyHistoryButton"
-                    onclick="ezyadmin.onHistoryButtonClick(this)"
-                    class="btn btn-outline-dark ml-2 pt-0 pb-0"
-                  >
-                    [[#{history}]] <i class="fas fa-history"></i>
-                  </button>
-                  <button
-                    th:if="${enableDeleteButton == true}"
-                    type="button"
-                    id="ezyDeleteButton"
-                    onclick="ezyadmin.onDeleteButtonClick(this)"
-                    class="btn btn-outline-danger ml-2 pt-0 pb-0"
-                  >
-                    [[#{delete}]] <i class="fas fa-trash"></i>
-                  </button>
-                  <button
-                    th:if="${enableRecoverButton == true}"
-                    type="button"
-                    id="ezyRecoverButton"
-                    onclick="ezyadmin.onRecoverButtonClick(this)"
-                    class="btn btn-outline-danger ml-2 pt-0 pb-0"
-                  >
-                    [[#{recover}]] <i class="fas fa-undo"></i>
-                  </button>
-                  <button
-                    th:if="${enableRestartToApplyButton == true}"
-                    type="button"
-                    id="restartToApply"
-                    onclick="ezyadmin.onRestartToApplyButtonClick(this)"
-                    class="btn btn-outline-primary ml-2 pt-0 pb-0"
-                  >
-                    [[#{apply}]] v[[${newApplyItemVersion}]]
-                    <i class="fas fa-paper-plane"></i>
-                  </button>
-                  <i
-                    th:if="${showRestartToApplyInfo == true}"
-                    class="fas fa-info-circle text-info top-button-tooltip"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    th:title="#{restart_server_and_apply}"
-                  ></i>
-                </div>
-              </div>
-              <!-- /.col -->
-              <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                  <li class="breadcrumb-item">
-                    <a
-                      th:href="${currentParentURL}"
-                      th:text="#{${currentParentTitle}}"
-                    ></a>
-                  </li>
-                  <li
-                    class="breadcrumb-item active"
-                    th:text="#{${currentPageTitle}}"
-                  ></li>
-                </ol>
-              </div>
-              <!-- /.col -->
-            </div>
-            <!-- /.row -->
-          </div>
-          <!-- /.container-fluid -->
-        </div>
-        <!-- /.content-header -->
 
-        <!-- Main content -->
-        <div class="content">
-          <div class="container-fluid" id="pageContentBodyWrapper">
-            <div layout:fragment="content" id="pageContentBody"></div>
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/header :: header}"></nav>
+    <!-- /.navbar -->
+    <!-- Main Sidebar Container -->
+    <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
+    <!-- /Main Sidebar Container -->
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <div class="d-flex">
+                <h1 class="m-0 text-dark" th:text="#{${currentPageTitle}}"></h1>
+                <button th:if="${enableAddNewButton == true}" type="button" id="ezyAddNewButton"
+                  onclick="ezyadmin.onNewButtonClick(this)" class="btn btn-outline-primary ml-2 pt-0 pb-0">
+                  [[#{add_new}]] <i class="fas fa-plus-circle"></i>
+                </button>
+                <button th:if="${enableEditButton == true}" type="button" id="ezyEditButton"
+                  onclick="ezyadmin.onEditButtonClick(this)" class="btn btn-outline-primary ml-2 pt-0 pb-0">
+                  [[#{edit}]] <i class="fas fa-edit"></i>
+                </button>
+                <button th:if="${enableSaveButton == true}" type="button" id="ezySaveButton"
+                  onclick="ezyadmin.onSaveButtonClick(this)" class="btn btn-outline-primary ml-2 pt-0 pb-0">
+                  [[#{save}]] <i class="fas fa-save"></i>
+                </button>
+                <i th:if="${showLastSavedInfo == true}" id="lastSavedInfoTooltip"
+                  class="fas fa-info-circle text-info top-button-tooltip" data-toggle="tooltip" data-placement="top"
+                  th:title="#{last_saved_at} + ': '"></i>
+                <button th:if="${enableUploadButton == true}" type="button" id="ezyUploadButton"
+                  onclick="ezyadmin.onUploadButtonClick(this)" class="btn btn-outline-primary ml-2 pt-0 pb-0">
+                  [[#{upload}]] <i class="fas fa-upload"></i>
+                </button>
+                <button th:if="${enableHistoryButton == true}" type="button" id="ezyHistoryButton"
+                  onclick="ezyadmin.onHistoryButtonClick(this)" class="btn btn-outline-dark ml-2 pt-0 pb-0">
+                  [[#{history}]] <i class="fas fa-history"></i>
+                </button>
+                <button th:if="${enableDeleteButton == true}" type="button" id="ezyDeleteButton"
+                  onclick="ezyadmin.onDeleteButtonClick(this)" class="btn btn-outline-danger ml-2 pt-0 pb-0">
+                  [[#{delete}]] <i class="fas fa-trash"></i>
+                </button>
+                <button th:if="${enableRecoverButton == true}" type="button" id="ezyRecoverButton"
+                  onclick="ezyadmin.onRecoverButtonClick(this)" class="btn btn-outline-danger ml-2 pt-0 pb-0">
+                  [[#{recover}]] <i class="fas fa-undo"></i>
+                </button>
+                <button th:if="${enableRestartToApplyButton == true}" type="button" id="restartToApply"
+                  onclick="ezyadmin.onRestartToApplyButtonClick(this)" class="btn btn-outline-primary ml-2 pt-0 pb-0">
+                  [[#{apply}]] v[[${newApplyItemVersion}]]
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+                <i th:if="${showRestartToApplyInfo == true}" class="fas fa-info-circle text-info top-button-tooltip"
+                  data-toggle="tooltip" data-placement="top" th:title="#{restart_server_and_apply}"></i>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item">
+                  <a th:href="${currentParentURL}" th:text="#{${currentParentTitle}}"></a>
+                </li>
+                <li class="breadcrumb-item active" th:text="#{${currentPageTitle}}"></li>
+              </ol>
+            </div>
+            <!-- /.col -->
           </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <div class="content">
+        <div class="container-fluid" id="pageContentBodyWrapper">
+          <div layout:fragment="content" id="pageContentBody"></div>
         </div>
       </div>
-      <!-- Control Sidebar -->
-      <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-      </aside>
-      <!-- /.control-sidebar -->
-      <footer th:replace="~{fragments/footer :: footer}"></footer>
     </div>
-    <div id="loadingScreen" class="screen-loading d-none">
-      <i class="fas fa-3x fa-sync fa-spin"></i>
-    </div>
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+  </div>
+  <div id="loadingScreen" class="screen-loading d-none">
+    <i class="fas fa-3x fa-sync fa-spin"></i>
+  </div>
 
-    <th:block th:replace="~{enhancement/media/modal :: content}" />
-    <th:block th:replace="~{modals/file-permission :: content}" />
-    <th:block th:replace="~{fragments/alert :: content}" />
+  <th:block th:replace="~{enhancement/media/modal :: content}" />
+  <th:block th:replace="~{modals/file-permission :: content}" />
+  <th:block th:replace="~{fragments/alert :: content}" />
 
-    <th:block layout:fragment="modals"></th:block>
+  <th:block layout:fragment="modals"></th:block>
 
-    <div class="scroll-to-top-button" id="scrollToTopButton">
-      <i class="fas fa-arrow-up"></i>
-    </div>
+  <div class="scroll-to-top-button" id="scrollToTopButton">
+    <i class="fas fa-arrow-up"></i>
+  </div>
 
-    <!-- REQUIRED SCRIPTS -->
+  <!-- REQUIRED SCRIPTS -->
 
-    <!-- jQuery -->
-    <script ezy:vsrc="/js/jquery.min.js"></script>
-    <!-- jQuery UI 1.11.4 -->
-    <script ezy:vsrc="/js/jquery-ui.min.js"></script>
-    <!-- Bootstrap -->
-    <script ezy:vsrc="/js/bootstrap.bundle.min.js"></script>
-    <!-- Data table -->
-    <script ezy:vsrc="/js/jquery.dataTables.min.js"></script>
-    <script ezy:vsrc="/js/dataTables.bootstrap4.min.js"></script>
-    <script ezy:vsrc="/js/dataTables.responsive.min.js"></script>
-    <script ezy:vsrc="/js/responsive.bootstrap4.min.js"></script>
-    <script ezy:vsrc="/js/dataTables.buttons.min.js"></script>
-    <script ezy:vsrc="/js/buttons.bootstrap4.min.js"></script>
-    <!-- bs-custom-file-input -->
-    <script ezy:vsrc="/js/bs-custom-file-input.min.js"></script>
-    <!-- Moment -->
-    <script ezy:vsrc="/js/moment.min.js"></script>
-    <!-- datetime-picker -->
-    <script ezy:vsrc="/js/tempusdominus-bootstrap-4.min.js"></script>
-    <!-- date-range-picker -->
-    <script ezy:vsrc="/js/daterangepicker.min.js"></script>
-    <!-- AdminLTE -->
-    <script ezy:vsrc="/js/adminlte.min.js"></script>
+  <!-- jQuery -->
+  <script ezy:vsrc="/js/jquery.min.js"></script>
+  <!-- jQuery UI 1.11.4 -->
+  <script ezy:vsrc="/js/jquery-ui.min.js"></script>
+  <!-- Bootstrap -->
+  <script ezy:vsrc="/js/bootstrap.bundle.min.js"></script>
+  <!-- Data table -->
+  <script ezy:vsrc="/js/jquery.dataTables.min.js"></script>
+  <script ezy:vsrc="/js/dataTables.bootstrap4.min.js"></script>
+  <script ezy:vsrc="/js/dataTables.responsive.min.js"></script>
+  <script ezy:vsrc="/js/responsive.bootstrap4.min.js"></script>
+  <script ezy:vsrc="/js/dataTables.buttons.min.js"></script>
+  <script ezy:vsrc="/js/buttons.bootstrap4.min.js"></script>
+  <!-- bs-custom-file-input -->
+  <script ezy:vsrc="/js/bs-custom-file-input.min.js"></script>
+  <!-- Moment -->
+  <script ezy:vsrc="/js/moment.min.js"></script>
+  <!-- datetime-picker -->
+  <script ezy:vsrc="/js/tempusdominus-bootstrap-4.min.js"></script>
+  <!-- date-range-picker -->
+  <script ezy:vsrc="/js/daterangepicker.min.js"></script>
+  <!-- AdminLTE -->
+  <script ezy:vsrc="/js/adminlte.min.js"></script>
 
-    <!-- OPTIONAL SCRIPTS -->
-    <script ezy:vsrc="/js/ezyclient-1.0.5.min.js"></script>
-    <script th:inline="javascript">
-      /*<![CDATA[*/
-      ezyadmin.debugEnabled = /*[[${debugEnabled}]]*/ '';
-      ezyadmin.socketEnable = /*[[${socketEnable}]]*/ '';
-      ezyadmin.hasNewPlatformVersion = /*[[${hasNewPlatformVersion}]]*/ '';
-      ezyadmin.adminId = /*[[${adminId}]]*/ '';
-      ezyadmin.adminUsername = /*[[${admin.username}]]*/ '';
-      ezyadmin.lang = /*[[${ezyLang}]]*/ '';
-      ezyadmin.defaultLang = /*[[${ezyDefaultLang}]]*/ '';
-      ezyadmin.webUrl = /*[[${webUrl}]]*/ 'http://localhost:8080';
-      ezyadmin.webManagementUrl = /*[[${webManagementUrl}]]*/ 'http://localhost:8080';
-      ezyadmin.websocketUrl = /*[[${websocketUrl}]]*/ 'ws://localhost:2208/ws';
-      ezyadmin.ezyplatformUrl = /*[[${ezyplatformUrl}]]*/ 'http://localhost:8080';
-      ezyadmin.defaultDateFormat = /*[[${defaultDateFormat}]]*/ '';
-      ezyadmin.defaultTimeFormat = /*[[${defaultTimeFormat}]]*/ '';
-      ezyadmin.defaultDateTimeFormat = /*[[${defaultDateTimeFormat}]]*/ '';
-      ezyadmin.defaultDateMinuteFormat = /*[[${defaultDateMinuteFormat}]]*/ '';
-      ezyadmin.valueMap = /*[[${additionalValueMap}]]*/;
-      ezyadmin.messages = {
-          activate: /*[[#{activate}]]*/,
-          by: /*[[#{by}]]*/,
-          category: /*[[#{category}]]*/,
-          check_your_internet_connection: /*[[#{check_your_internet_connection}]]*/,
-          copied: /*[[#{copied}]]*/,
-          dark_mode: /*[[#{dark_mode}]]*/,
-          deactivate: /*[[#{deactivate}]]*/,
-          delete: /*[[#{delete}]]*/,
-          description: /*[[#{description}]]*/,
-          error: /*[[#{error}]]*/,
-          failed: /*[[#{failed}]]*/,
-          'false': /*[[#{false}]]*/,
-          file_too_big: /*[[#{file_too_big}]]*/,
-          install: /*[[#{install}]]*/,
-          interface_options: /*[[#{interface_options}]]*/,
-          invalid_file_type: /*[[#{invalid_file_type}]]*/,
-          invalid_upload_file: /*[[#{invalid_upload_file}]]*/,
-          of: /*[[#{of}]]*/,
-          off: /*[[#{off}]]*/,
-          loading: /*[[#{loading}]]*/,
-          new_message: /*[[#{new_message}]]*/,
-          no_connection: /*[[#{no_connection}]]*/,
-          permission_denied: /*[[#{permission_denied}]]*/,
-          running: /*[[#{running}]]*/,
-          server_error: /*[[#{server_error}]]*/,
-          settings: /*[[#{settings}]]*/,
-          successfully: /*[[#{successfully}]]*/,
-          'true': /*[[#{true}]]*/,
-          unknown: /*[[#{unknown}]]*/,
-          upload: /*[[#{upload}]]*/,
-          version: /*[[#{version}]]*/,
-          warning: /*[[#{warning}]]*/,
-          disable: /*[[#{disable}]]*/,
-          enable: /*[[#{enable}]]*/,
-          restart: /*[[#{restart}]]*/,
-          start: /*[[#{start}]]*/,
-          stop: /*[[#{stop}]]*/,
-          year: /*[[#{year}]]*/,
-          years: /*[[#{years}]]*/,
-          month: /*[[#{month}]]*/,
-          months: /*[[#{months}]]*/,
-          day: /*[[#{day}]]*/,
-          days: /*[[#{days}]]*/,
-          hour: /*[[#{hour}]]*/,
-          hours: /*[[#{hours}]]*/,
-          minute: /*[[#{minute}]]*/,
-          minutes: /*[[#{minutes}]]*/,
-          second: /*[[#{second}]]*/,
-          seconds: /*[[#{seconds}]]*/,
-          ago: /*[[#{ago}]]*/,
-          more: /*[[#{more}]]*/,
-          required: /*[[#{required}]]*/,
-          invalid: /*[[#{invalid}]]*/,
-          not_found: /*[[#{not_found}]]*/,
-          too_short: /*[[#{too_short}]]*/,
-          too_long: /*[[#{too_long}]]*/,
-          over_length: /*[[#{over_length}]]*/,
-          duplicated: /*[[#{duplicated}]]*/,
-          incorrect: /*[[#{incorrect}]]*/,
-          mismatch: /*[[#{mismatch}]]*/,
-          too_many: /*[[#{too_many}]]*/
-      };
-      Object.assign(
-          ezyadmin.messages,
-          /*[[${additionalMessageMap}]]*/
-      );
+  <!-- OPTIONAL SCRIPTS -->
+  <script ezy:vsrc="/js/ezyclient-1.0.5.min.js"></script>
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    ezyadmin.debugEnabled = /*[[${debugEnabled}]]*/ '';
+    ezyadmin.socketEnable = /*[[${socketEnable}]]*/ '';
+    ezyadmin.hasNewPlatformVersion = /*[[${hasNewPlatformVersion}]]*/ '';
+    ezyadmin.adminId = /*[[${adminId}]]*/ '';
+    ezyadmin.adminUsername = /*[[${admin.username}]]*/ '';
+    ezyadmin.lang = /*[[${ezyLang}]]*/ '';
+    ezyadmin.defaultLang = /*[[${ezyDefaultLang}]]*/ '';
+    ezyadmin.webUrl = /*[[${webUrl}]]*/ 'http://localhost:8080';
+    ezyadmin.webManagementUrl = /*[[${webManagementUrl}]]*/ 'http://localhost:8080';
+    ezyadmin.websocketUrl = /*[[${websocketUrl}]]*/ 'ws://localhost:2208/ws';
+    ezyadmin.ezyplatformUrl = /*[[${ezyplatformUrl}]]*/ 'http://localhost:8080';
+    ezyadmin.defaultDateFormat = /*[[${defaultDateFormat}]]*/ '';
+    ezyadmin.defaultTimeFormat = /*[[${defaultTimeFormat}]]*/ '';
+    ezyadmin.defaultDateTimeFormat = /*[[${defaultDateTimeFormat}]]*/ '';
+    ezyadmin.defaultDateMinuteFormat = /*[[${defaultDateMinuteFormat}]]*/ '';
+    ezyadmin.valueMap = /*[[${additionalValueMap}]]*/;
+    ezyadmin.messages = {
+      activate: /*[[#{activate}]]*/,
+      by: /*[[#{by}]]*/,
+      category: /*[[#{category}]]*/,
+      check_your_internet_connection: /*[[#{check_your_internet_connection}]]*/,
+      copied: /*[[#{copied}]]*/,
+      dark_mode: /*[[#{dark_mode}]]*/,
+      deactivate: /*[[#{deactivate}]]*/,
+      delete: /*[[#{delete}]]*/,
+      description: /*[[#{description}]]*/,
+      error: /*[[#{error}]]*/,
+      failed: /*[[#{failed}]]*/,
+      'false': /*[[#{false}]]*/,
+      file_too_big: /*[[#{file_too_big}]]*/,
+      install: /*[[#{install}]]*/,
+      interface_options: /*[[#{interface_options}]]*/,
+      invalid_file_type: /*[[#{invalid_file_type}]]*/,
+      invalid_upload_file: /*[[#{invalid_upload_file}]]*/,
+      of: /*[[#{of}]]*/,
+      off: /*[[#{off}]]*/,
+      loading: /*[[#{loading}]]*/,
+      new_message: /*[[#{new_message}]]*/,
+      no_connection: /*[[#{no_connection}]]*/,
+      permission_denied: /*[[#{permission_denied}]]*/,
+      running: /*[[#{running}]]*/,
+      server_error: /*[[#{server_error}]]*/,
+      settings: /*[[#{settings}]]*/,
+      successfully: /*[[#{successfully}]]*/,
+      'true': /*[[#{true}]]*/,
+      unknown: /*[[#{unknown}]]*/,
+      upload: /*[[#{upload}]]*/,
+      version: /*[[#{version}]]*/,
+      warning: /*[[#{warning}]]*/,
+      disable: /*[[#{disable}]]*/,
+      enable: /*[[#{enable}]]*/,
+      restart: /*[[#{restart}]]*/,
+      start: /*[[#{start}]]*/,
+      stop: /*[[#{stop}]]*/,
+      year: /*[[#{year}]]*/,
+      years: /*[[#{years}]]*/,
+      month: /*[[#{month}]]*/,
+      months: /*[[#{months}]]*/,
+      day: /*[[#{day}]]*/,
+      days: /*[[#{days}]]*/,
+      hour: /*[[#{hour}]]*/,
+      hours: /*[[#{hours}]]*/,
+      minute: /*[[#{minute}]]*/,
+      minutes: /*[[#{minutes}]]*/,
+      second: /*[[#{second}]]*/,
+      seconds: /*[[#{seconds}]]*/,
+      ago: /*[[#{ago}]]*/,
+      more: /*[[#{more}]]*/,
+      required: /*[[#{required}]]*/,
+      invalid: /*[[#{invalid}]]*/,
+      not_found: /*[[#{not_found}]]*/,
+      too_short: /*[[#{too_short}]]*/,
+      too_long: /*[[#{too_long}]]*/,
+      over_length: /*[[#{over_length}]]*/,
+      duplicated: /*[[#{duplicated}]]*/,
+      incorrect: /*[[#{incorrect}]]*/,
+      mismatch: /*[[#{mismatch}]]*/,
+      too_many: /*[[#{too_many}]]*/
+        };
+    Object.assign(
+      ezyadmin.messages,
+      /*[[${additionalMessageMap}]]*/
+    );
 
-      ezyadmin.dataTable = {};
-      ezyadmin.dataTable.language = {
-          decimal: /*[[#{data_table.decimal}]]*/,
-          emptyTable: /*[[#{data_table.empty_table}]]*/,
-          info: /*[[#{data_table.info}]]*/,
-          infoEmpty: /*[[#{data_table.info_empty}]]*/,
-          infoFiltered: /*[[#{data_table.info_filtered}]]*/,
-          infoPostFix: /*[[#{data_table.info_post_fix}]]*/,
-          thousands: /*[[#{data_table.thousands}]]*/,
-          lengthMenu: /*[[#{data_table.length_menu}]]*/,
-          loadingRecords: /*[[#{data_table.loading_records}]]*/,
-          processing: /*[[#{data_table.processing}]]*/,
-          search: /*[[#{data_table.search}]]*/,
-          zeroRecords: /*[[#{data_table.zero_records}]]*/,
-          paginate: {
-              first: /*[[#{data_table.paginate.first}]]*/,
-              last: /*[[#{data_table.paginate.last}]]*/,
-              next: /*[[#{data_table.paginate.next}]]*/,
-              previous: /*[[#{data_table.paginate.previous}]]*/
-          },
-          aria: {
-              sortAscending: /*[[#{data_table.aria.sort_ascending}]]*/,
-              sortDescending: /*[[#{data_table.aria.sort_descending}]]*/
-          }
-      };
-      /*]]>*/
-    </script>
-    <script ezy:vsrc="/js/interface-options.js"></script>
-    <th:block layout:fragment="import-scripts"></th:block>
-    <script layout:fragment="pre-main-scripts" type="text/javascript"></script>
-    <script ezy:vsrc="/js/socket.js"></script>
-    <script ezy:vsrc="/js/ezyadmin.js"></script>
-    <script type="text/javascript">
-      var enhancement = {};
-      enhancement.fetchMediaList = function (replace) {
-        var url = ezyadmin.accessibleUris["/api/v1/media/list"]
-          ? "/enhancement/api/v1/media/list/webp"
-          : "/api/v1/me/media/list";
-        url += "?limit=" + ezyadmin.numberOfMediaPerPage;
-        if (ezyadmin.searchMediaKeyword) {
-          url += "&keyword=" + ezyadmin.searchMediaKeyword;
-        }
-        if (ezyadmin.searchMediaType) {
-          url += "&type=" + ezyadmin.searchMediaType;
-        }
-        if (replace) {
-          ezyadmin.lastNextPageToken = null;
-        }
-        $.ajax({
-          type: "GET",
-          async: true,
-          url:
-            url +
-            (ezyadmin.lastNextPageToken
-              ? "&nextPageToken=" + ezyadmin.lastNextPageToken
-              : ""),
-          success: function (data) {
-            ezyadmin.appendToMediaListTable(data.items, false, replace);
-            ezyadmin.mediaCount = replace
-              ? data.count
-              : ezyadmin.mediaCount + data.count;
-            ezyadmin.mediaTotal = data.total;
-            data.items.forEach((item) => {
-              ezyadmin.mediaById[item.id] = item;
-            });
-            $("#mediaCountText").text(ezyadmin.mediaCount);
-            $("#totalMediaText").text(data.total);
-            ezyadmin.lastNextPageToken = data.pageToken.next;
-            if (data.continuation.hasNext) {
-              $("#loadMoreMediaButton").removeClass("d-none");
-            } else {
-              $("#loadMoreMediaButton").addClass("d-none");
+    ezyadmin.dataTable = {};
+    ezyadmin.dataTable.language = {
+      decimal: /*[[#{data_table.decimal}]]*/,
+      emptyTable: /*[[#{data_table.empty_table}]]*/,
+      info: /*[[#{data_table.info}]]*/,
+      infoEmpty: /*[[#{data_table.info_empty}]]*/,
+      infoFiltered: /*[[#{data_table.info_filtered}]]*/,
+      infoPostFix: /*[[#{data_table.info_post_fix}]]*/,
+      thousands: /*[[#{data_table.thousands}]]*/,
+      lengthMenu: /*[[#{data_table.length_menu}]]*/,
+      loadingRecords: /*[[#{data_table.loading_records}]]*/,
+      processing: /*[[#{data_table.processing}]]*/,
+      search: /*[[#{data_table.search}]]*/,
+      zeroRecords: /*[[#{data_table.zero_records}]]*/,
+      paginate: {
+        first: /*[[#{data_table.paginate.first}]]*/,
+        last: /*[[#{data_table.paginate.last}]]*/,
+        next: /*[[#{data_table.paginate.next}]]*/,
+        previous: /*[[#{data_table.paginate.previous}]]*/
+            },
+      aria: {
+        sortAscending: /*[[#{data_table.aria.sort_ascending}]]*/,
+        sortDescending: /*[[#{data_table.aria.sort_descending}]]*/
             }
-          },
-          error: function (data, e) {
-            ezyadmin.processGetApiErrors(data);
-          },
-        });
-      };
-
-      enhancement.extractMediaUrl = function (media) {
-        return media
-          ? (media.url || "").trim() ||
-              (ezyadmin.accessibleUris["/enhancement/api/v1/media/{name}"] ==
-              false
-                ? "/api/v1/me/media/"
-                : `/enhancement/api/v1/media/${media.name}`)
-          : "";
-      };
-      enhancement.extractPreloadMediaUrl = function (media) {
-        return media
-          ? (media.url || "").trim() ||
-              (ezyadmin.accessibleUris["/enhancement/api/v1/media/{name}"] ==
-              false
-                ? "/api/v1/me/media/"
-                : `/enhancement/api/v1/media/preload/${media.name}`)
-          : "";
-      };
-    </script>
-    <th:block
-      th:if="${moduleScriptFiles != null}"
-      th:each="moduleScriptFile : ${moduleScriptFiles}"
-    >
-      <script ezy:vsrc="${moduleScriptFile}"></script>
-    </th:block>
-    <th:block layout:fragment="import-module-scripts"></th:block>
-    <script>
-      ezyadmin.showLoadingScreen = function () {
-        if (!ezyadmin.loadingScreenShowing) {
-          ezyadmin.loadingScreenShowing = true;
-          $("#loadingScreen").removeClass("d-none");
-        }
-      };
-
-      ezyadmin.hideLoadingScreen = function () {
-        if (ezyadmin.loadingScreenShowing) {
-          ezyadmin.loadingScreenShowing = false;
-          $("#loadingScreen").addClass("d-none");
-        }
-      };
-
-      ezyadmin.enableTooltip = function () {
-        $('[data-toggle="tooltip"]').tooltip();
-      };
-
-      ezyadmin.showProfile = function () {
-        window.location =
-          "/admins/me" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
-      };
-
-      ezyadmin.logout = function () {
-        var form = document.createElement("form");
-        form.method = "POST";
-        form.action =
-          "/logout" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
-        document.body.appendChild(form);
-        form.submit();
-      };
-
-      ezyadmin.redirectToLogin = function () {
-        document.cookie =
-          "adminAccessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-        window.location =
-          "/login" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
-      };
-
-      ezyadmin.redirectToPermissionDenied = function () {
-        window.location =
-          "/permission-denied" +
-          (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
-      };
-
-      ezyadmin.redirectToNotFound = function () {
-        window.location =
-          "/not-found" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
-      };
-
-      ezyadmin.redirectToServerError = function () {
-        window.location =
-          "/server-error" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
-      };
-
-      ezyadmin.processGetApiErrors = function (responseData, handler) {
-        ezyadmin.processUpdateApiErrors({}, responseData, handler);
-      };
-
-      ezyadmin.processUpdateApiErrors = function (
-        formData,
-        responseData,
-        handler
-      ) {
-        if (!responseData) {
-          ezyadmin.shortToast(
-            "bg-warning",
-            ezyadmin.messages.warning,
-            ezyadmin.messages.check_your_internet_connection
-          );
-          return;
-        }
-        if (responseData.status == 401) {
-          ezyadmin.redirectToLogin();
-          return;
-        } else if (responseData.status == 404 && (!handler || !handler[404])) {
-          return;
-        } else if (responseData.status == 403 && (!handler || !handler[403])) {
-          var filePermission = responseData.responseJSON.filePermission;
-          if (filePermission) {
-            $("#filePermissionBody").html(
-              '<span class="text-danger">' + filePermission + "</span>"
-            );
-            ezyadmin.showFilePermissionModal();
-          } else if (responseData.responseJSON.permission == "denied") {
-            return;
-          }
-        } else if (responseData.status == 500 && (!handler || !handler[500])) {
-          return;
-        }
-        var errors = responseData.responseJSON || {};
-        var formView = ezyadmin.formViewByFormData.get(formData);
-        if (formView) {
-          Object.entries(formView).forEach(([key, value]) => {
-            errors[key] = errors[value];
+    };
+    /*]]>*/
+  </script>
+  <script ezy:vsrc="/js/interface-options.js"></script>
+  <th:block layout:fragment="import-scripts"></th:block>
+  <script layout:fragment="pre-main-scripts" type="text/javascript"></script>
+  <script ezy:vsrc="/js/socket.js"></script>
+  <script ezy:vsrc="/js/ezyadmin.js"></script>
+  <script type="text/javascript">
+    var enhancement = {};
+    enhancement.fetchMediaList = function (replace) {
+      var url = ezyadmin.accessibleUris["/api/v1/media/list"]
+        ? "/enhancement/api/v1/media/list"
+        : "/api/v1/me/media/list";
+      url += "?limit=" + ezyadmin.numberOfMediaPerPage;
+      if (ezyadmin.searchMediaKeyword) {
+        url += "&keyword=" + ezyadmin.searchMediaKeyword;
+      }
+      if (ezyadmin.searchMediaType) {
+        url += "&type=" + ezyadmin.searchMediaType;
+      }
+      if (replace) {
+        ezyadmin.lastNextPageToken = null;
+      }
+      $.ajax({
+        type: "GET",
+        async: true,
+        url:
+          url +
+          (ezyadmin.lastNextPageToken
+            ? "&nextPageToken=" + ezyadmin.lastNextPageToken
+            : ""),
+        success: function (data) {
+          ezyadmin.appendToMediaListTable(data.items, false, replace);
+          ezyadmin.mediaCount = replace
+            ? data.count
+            : ezyadmin.mediaCount + data.count;
+          ezyadmin.mediaTotal = data.total;
+          data.items.forEach((item) => {
+            ezyadmin.mediaById[item.id] = item;
           });
-        }
-        for (var key in errors) {
-          if (!errors[key]) {
-            delete errors[key];
-          }
-        }
-        Object.keys(errors).forEach((field) => {
-          var error = errors[field];
-          var errorText = $("#" + field + "Error");
-          if (errorText.length) {
-            errorText.text(ezyadmin.getErrorMessageByCode(error));
-          }
-          var errorLabel = $("#" + field + "ErrorLabel");
-          if (errorLabel.length) {
-            errorLabel.removeClass("d-none");
-          }
-        });
-        formView = formView || formData;
-        Object.keys(formView).forEach((field) => {
-          if (!errors[field]) {
-            var errorLabel = $("#" + field + "ErrorLabel");
-            if (errorLabel.length) {
-              errorLabel.addClass("d-none");
-            }
-          }
-        });
-        if (handler) {
-          if (handler.postHandle) {
-            handler.postHandle(responseData);
+          $("#mediaCountText").text(ezyadmin.mediaCount);
+          $("#totalMediaText").text(data.total);
+          ezyadmin.lastNextPageToken = data.pageToken.next;
+          if (data.continuation.hasNext) {
+            $("#loadMoreMediaButton").removeClass("d-none");
           } else {
-            handler(responseData);
+            $("#loadMoreMediaButton").addClass("d-none");
           }
-        }
-      };
+          window.dispatchEvent(new Event('reload'));
+        },
+        error: function (data, e) {
+          ezyadmin.processGetApiErrors(data);
+        },
+      });
+    };
+    enhancement.extractMediaUrl = function (media) {
+      return media
+        ? (media.url || "").trim() ||
+        (ezyadmin.accessibleUris["/api/v1/media/{name}"] == false
+          ? "/api/v1/me/media/"
+          : "/enhancement/api/v1/media/") + media.name
+        : "";
+    };
+    enhancement.extractPreloadMediaUrl = function (media) {
+      return media
+        ? (media.url || "").trim() ||
+        (ezyadmin.accessibleUris["/api/v1/media/{name}"] == false
+          ? "/api/v1/me/media/"
+          : "/enhancement/api/v1/media/preload/") + media.name
+        : "";
+    };
+  </script>
+  <th:block th:if="${moduleScriptFiles != null}" th:each="moduleScriptFile : ${moduleScriptFiles}">
+    <script ezy:vsrc="${moduleScriptFile}"></script>
+  </th:block>
+  <th:block layout:fragment="import-module-scripts"></th:block>
+  <script>
+    ezyadmin.showLoadingScreen = function () {
+      if (!ezyadmin.loadingScreenShowing) {
+        ezyadmin.loadingScreenShowing = true;
+        $("#loadingScreen").removeClass("d-none");
+      }
+    };
 
-      ezyadmin.hideFormErrors = function (formData) {
-        var formView = ezyadmin.formViewByFormData.get(formData) || formData;
-        Object.keys(formView).forEach((field) => {
+    ezyadmin.hideLoadingScreen = function () {
+      if (ezyadmin.loadingScreenShowing) {
+        ezyadmin.loadingScreenShowing = false;
+        $("#loadingScreen").addClass("d-none");
+      }
+    };
+
+    ezyadmin.enableTooltip = function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    };
+
+    ezyadmin.showProfile = function () {
+      window.location =
+        "/admins/me" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
+    };
+
+    ezyadmin.logout = function () {
+      var form = document.createElement("form");
+      form.method = "POST";
+      form.action =
+        "/logout" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
+      document.body.appendChild(form);
+      form.submit();
+    };
+
+    ezyadmin.redirectToLogin = function () {
+      document.cookie =
+        "adminAccessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+      window.location =
+        "/login" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
+    };
+
+    ezyadmin.redirectToPermissionDenied = function () {
+      window.location =
+        "/permission-denied" +
+        (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
+    };
+
+    ezyadmin.redirectToNotFound = function () {
+      window.location =
+        "/not-found" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
+    };
+
+    ezyadmin.redirectToServerError = function () {
+      window.location =
+        "/server-error" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
+    };
+
+    ezyadmin.processGetApiErrors = function (responseData, handler) {
+      ezyadmin.processUpdateApiErrors({}, responseData, handler);
+    };
+
+    ezyadmin.processUpdateApiErrors = function (
+      formData,
+      responseData,
+      handler
+    ) {
+      if (!responseData) {
+        ezyadmin.shortToast(
+          "bg-warning",
+          ezyadmin.messages.warning,
+          ezyadmin.messages.check_your_internet_connection
+        );
+        return;
+      }
+      if (responseData.status == 401) {
+        ezyadmin.redirectToLogin();
+        return;
+      } else if (responseData.status == 404 && (!handler || !handler[404])) {
+        return;
+      } else if (responseData.status == 403 && (!handler || !handler[403])) {
+        var filePermission = responseData.responseJSON.filePermission;
+        if (filePermission) {
+          $("#filePermissionBody").html(
+            '<span class="text-danger">' + filePermission + "</span>"
+          );
+          ezyadmin.showFilePermissionModal();
+        } else if (responseData.responseJSON.permission == "denied") {
+          return;
+        }
+      } else if (responseData.status == 500 && (!handler || !handler[500])) {
+        return;
+      }
+      var errors = responseData.responseJSON || {};
+      var formView = ezyadmin.formViewByFormData.get(formData);
+      if (formView) {
+        Object.entries(formView).forEach(([key, value]) => {
+          errors[key] = errors[value];
+        });
+      }
+      for (var key in errors) {
+        if (!errors[key]) {
+          delete errors[key];
+        }
+      }
+      Object.keys(errors).forEach((field) => {
+        var error = errors[field];
+        var errorText = $("#" + field + "Error");
+        if (errorText.length) {
+          errorText.text(ezyadmin.getErrorMessageByCode(error));
+        }
+        var errorLabel = $("#" + field + "ErrorLabel");
+        if (errorLabel.length) {
+          errorLabel.removeClass("d-none");
+        }
+      });
+      formView = formView || formData;
+      Object.keys(formView).forEach((field) => {
+        if (!errors[field]) {
           var errorLabel = $("#" + field + "ErrorLabel");
           if (errorLabel.length) {
             errorLabel.addClass("d-none");
           }
-        });
-      };
+        }
+      });
+      if (handler) {
+        if (handler.postHandle) {
+          handler.postHandle(responseData);
+        } else {
+          handler(responseData);
+        }
+      }
+    };
 
-      ezyadmin.resetFormData = function (formData, resetAllFields) {
-        var formView = ezyadmin.formViewByFormData.get(formData) || formData;
-        ezyadmin.hideFormErrors(formView);
-        Object.keys(formView).forEach((field) => {
-          var dataField = $("#" + field);
-          if (dataField.length) {
-            if (resetAllFields) {
+    ezyadmin.hideFormErrors = function (formData) {
+      var formView = ezyadmin.formViewByFormData.get(formData) || formData;
+      Object.keys(formView).forEach((field) => {
+        var errorLabel = $("#" + field + "ErrorLabel");
+        if (errorLabel.length) {
+          errorLabel.addClass("d-none");
+        }
+      });
+    };
+
+    ezyadmin.resetFormData = function (formData, resetAllFields) {
+      var formView = ezyadmin.formViewByFormData.get(formData) || formData;
+      ezyadmin.hideFormErrors(formView);
+      Object.keys(formView).forEach((field) => {
+        var dataField = $("#" + field);
+        if (dataField.length) {
+          if (resetAllFields) {
+            dataField.val("");
+          } else {
+            if (!dataField.is("select")) {
               dataField.val("");
-            } else {
-              if (!dataField.is("select")) {
-                dataField.val("");
-              }
             }
           }
-        });
-      };
+        }
+      });
+    };
 
-      ezyadmin.getUploadFileApiErrorMessage = function (responseData) {
-        var message = ezyadmin.messages.server_error;
-        var error = responseData.responseJSON || {};
-        if (responseData.status == 403) {
-          message = error.filePermission || ezyadmin.messages.permission_denied;
-        } else if (responseData.status == 400) {
-          if (error.fileType) {
-            message = ezyadmin.messages.invalid_file_type;
-          } else if (error.uploadSize) {
-            message = ezyadmin.messages.file_too_big;
-          } else if (error.fileContent) {
-            message = error.fileContent;
+    ezyadmin.getUploadFileApiErrorMessage = function (responseData) {
+      var message = ezyadmin.messages.server_error;
+      var error = responseData.responseJSON || {};
+      if (responseData.status == 403) {
+        message = error.filePermission || ezyadmin.messages.permission_denied;
+      } else if (responseData.status == 400) {
+        if (error.fileType) {
+          message = ezyadmin.messages.invalid_file_type;
+        } else if (error.uploadSize) {
+          message = ezyadmin.messages.file_too_big;
+        } else if (error.fileContent) {
+          message = error.fileContent;
+        } else {
+          message = ezyadmin.messages.invalid_upload_file;
+        }
+      }
+      return message;
+    };
+
+    ezyadmin.processUploadFileApiErrors = function (
+      responseData,
+      uploadView
+    ) {
+      if (responseData.status == 401) {
+        ezyadmin.redirectToLogin();
+        return;
+      }
+      var errorMessage = ezyadmin.getUploadFileApiErrorMessage(responseData);
+      if (errorMessage) {
+        var fileInputId = uploadView.name + "File";
+        $("#" + fileInputId).val("");
+        $("#" + fileInputId + "Label").text(uploadView.chooseFileLabelText);
+        $("#" + fileInputId + "Error").text(errorMessage);
+        $("#" + fileInputId + "ErrorLabel").removeClass("d-none");
+      }
+    };
+
+    ezyadmin.formatDateStringElements = function () {
+      $(".date-string").each((index, e) => {
+        var timestamp = $(e).text();
+        if (!isNaN(timestamp)) {
+          $(e).text(ezyadmin.formatTimeStampDate(parseInt(timestamp, 10)));
+        }
+      });
+    };
+
+    ezyadmin.formatTimeStringElements = function () {
+      $(".time-string").each((index, e) => {
+        var timestamp = $(e).text();
+        if (!isNaN(timestamp)) {
+          $(e).text(ezyadmin.formatTimeStampTime(parseInt(timestamp, 10)));
+        }
+      });
+    };
+
+    ezyadmin.formatDateTimeStringElements = function () {
+      $(".date-time-string").each((index, e) => {
+        var timestamp = $(e).text();
+        if (!isNaN(timestamp)) {
+          $(e).text(ezyadmin.formatTimeStamp(parseInt(timestamp, 10)));
+        }
+      });
+    };
+
+    ezyadmin.formatDateTimeMinuteStringElements = function () {
+      $(".date-time-minute-string").each((index, e) => {
+        var timestamp = $(e).text();
+        if (!isNaN(timestamp)) {
+          $(e).text(ezyadmin.formatTimeStampMinute(parseInt(timestamp, 10)));
+        }
+      });
+    };
+
+    ezyadmin.formatStatusTextElements = function () {
+      $(".status-text").each((index, e) => {
+        $(e).addClass(ezyadmin.getTextColorByStatus($(e).attr("status")));
+      });
+    };
+
+    ezyadmin.formatNumberWithCommasElements = function () {
+      $(".commas-number-string").each((index, e) => {
+        var number = $(e).text();
+        if (number) {
+          number = number.trim();
+          if (!isNaN(number)) {
+            $(e).text(ezyadmin.formatNumberWithCommas(number));
+          }
+        }
+      });
+    };
+
+    ezyadmin.appendLangParameterToFormActions = function () {
+      if (ezyadmin.lang) {
+        $("form").each((index, e) => {
+          var ezyUri = $(e).attr("action");
+          if (ezyUri && ezyUri.startsWith("/")) {
+            var ezyUriNew = ezyUri.includes("?")
+              ? ezyUri + "&lang=" + ezyadmin.lang
+              : ezyUri + "?lang=" + ezyadmin.lang;
+            $(e).attr("action", ezyUriNew);
+          }
+        });
+      }
+    };
+
+    ezyadmin.appendLangParameterToLinks = function () {
+      if (ezyadmin.lang) {
+        $("a").each((index, e) => {
+          var ezyUri = $(e).attr("href");
+          if (
+            ezyUri &&
+            ezyUri.startsWith("/") &&
+            ezyUri.indexOf("lang=") < 0
+          ) {
+            var ezyUriNew = ezyUri.includes("?")
+              ? ezyUri + "&lang=" + ezyadmin.lang
+              : ezyUri + "?lang=" + ezyadmin.lang;
+            $(e).attr("href", ezyUriNew);
+          }
+        });
+      }
+    };
+
+    ezyadmin.dataTableById = {};
+    ezyadmin.destroyDataTableIfExists = function (tableId) {
+      var dataTable = ezyadmin.dataTableById[tableId];
+      if (dataTable) {
+        dataTable.destroy();
+      }
+    };
+
+    ezyadmin.createDataTable = function (
+      tableId,
+      pageLength,
+      searching,
+      responsive,
+      properties
+    ) {
+      var dataTable = $("#" + tableId).DataTable({
+        language: ezyadmin.dataTable.language,
+        paging: true,
+        lengthChange: false,
+        searching: searching != false,
+        ordering: false,
+        info: true,
+        autoWidth: false,
+        responsive: responsive != false,
+        scrollX: responsive == false,
+        pageLength: pageLength || 5,
+        drawCallback: function (settings) {
+          ezyadmin.formatDateStringElements();
+          ezyadmin.formatTimeStringElements();
+          ezyadmin.formatDateTimeStringElements();
+          ezyadmin.formatDateTimeMinuteStringElements();
+          ezyadmin.formatStatusTextElements();
+        },
+        ...properties,
+      });
+      ezyadmin.dataTableById[tableId] = dataTable;
+      $(".dataTables_filter input").removeClass("form-control-sm");
+      return dataTable;
+    };
+
+    ezyadmin.registerScrollToTopButton = function () {
+      $(window).scroll(function () {
+        if ($(this).scrollTop() > 35) {
+          $("#scrollToTopButton").fadeIn();
+        } else {
+          $("#scrollToTopButton").fadeOut();
+        }
+      });
+
+      $("#scrollToTopButton").click(function () {
+        $("html, body").animate({ scrollTop: 0 }, 350);
+        return false;
+      });
+    };
+
+    // ============= notifications and letters =======
+    ezyadmin.fetchUnreadNotificationsCount = function () {
+      $.ajax({
+        url: "/api/v1/admins/me/notifications/count",
+        type: "GET",
+        dataType: "json",
+      })
+        .done(function (data) {
+          if (data.count) {
+            $(".notification-count").text(data.count).removeClass("d-none");
           } else {
-            message = ezyadmin.messages.invalid_upload_file;
+            $(".notification-count").addClass("d-none");
           }
-        }
-        return message;
-      };
-
-      ezyadmin.processUploadFileApiErrors = function (
-        responseData,
-        uploadView
-      ) {
-        if (responseData.status == 401) {
-          ezyadmin.redirectToLogin();
-          return;
-        }
-        var errorMessage = ezyadmin.getUploadFileApiErrorMessage(responseData);
-        if (errorMessage) {
-          var fileInputId = uploadView.name + "File";
-          $("#" + fileInputId).val("");
-          $("#" + fileInputId + "Label").text(uploadView.chooseFileLabelText);
-          $("#" + fileInputId + "Error").text(errorMessage);
-          $("#" + fileInputId + "ErrorLabel").removeClass("d-none");
-        }
-      };
-
-      ezyadmin.formatDateStringElements = function () {
-        $(".date-string").each((index, e) => {
-          var timestamp = $(e).text();
-          if (!isNaN(timestamp)) {
-            $(e).text(ezyadmin.formatTimeStampDate(parseInt(timestamp, 10)));
-          }
+        })
+        .fail(function (e) {
+          ezyadmin.processGetApiErrors(e);
         });
-      };
+    };
 
-      ezyadmin.formatTimeStringElements = function () {
-        $(".time-string").each((index, e) => {
-          var timestamp = $(e).text();
-          if (!isNaN(timestamp)) {
-            $(e).text(ezyadmin.formatTimeStampTime(parseInt(timestamp, 10)));
-          }
-        });
-      };
-
-      ezyadmin.formatDateTimeStringElements = function () {
-        $(".date-time-string").each((index, e) => {
-          var timestamp = $(e).text();
-          if (!isNaN(timestamp)) {
-            $(e).text(ezyadmin.formatTimeStamp(parseInt(timestamp, 10)));
-          }
-        });
-      };
-
-      ezyadmin.formatDateTimeMinuteStringElements = function () {
-        $(".date-time-minute-string").each((index, e) => {
-          var timestamp = $(e).text();
-          if (!isNaN(timestamp)) {
-            $(e).text(ezyadmin.formatTimeStampMinute(parseInt(timestamp, 10)));
-          }
-        });
-      };
-
-      ezyadmin.formatStatusTextElements = function () {
-        $(".status-text").each((index, e) => {
-          $(e).addClass(ezyadmin.getTextColorByStatus($(e).attr("status")));
-        });
-      };
-
-      ezyadmin.formatNumberWithCommasElements = function () {
-        $(".commas-number-string").each((index, e) => {
-          var number = $(e).text();
-          if (number) {
-            number = number.trim();
-            if (!isNaN(number)) {
-              $(e).text(ezyadmin.formatNumberWithCommas(number));
-            }
-          }
-        });
-      };
-
-      ezyadmin.appendLangParameterToFormActions = function () {
-        if (ezyadmin.lang) {
-          $("form").each((index, e) => {
-            var ezyUri = $(e).attr("action");
-            if (ezyUri && ezyUri.startsWith("/")) {
-              var ezyUriNew = ezyUri.includes("?")
-                ? ezyUri + "&lang=" + ezyadmin.lang
-                : ezyUri + "?lang=" + ezyadmin.lang;
-              $(e).attr("action", ezyUriNew);
-            }
-          });
-        }
-      };
-
-      ezyadmin.appendLangParameterToLinks = function () {
-        if (ezyadmin.lang) {
-          $("a").each((index, e) => {
-            var ezyUri = $(e).attr("href");
-            if (
-              ezyUri &&
-              ezyUri.startsWith("/") &&
-              ezyUri.indexOf("lang=") < 0
-            ) {
-              var ezyUriNew = ezyUri.includes("?")
-                ? ezyUri + "&lang=" + ezyadmin.lang
-                : ezyUri + "?lang=" + ezyadmin.lang;
-              $(e).attr("href", ezyUriNew);
-            }
-          });
-        }
-      };
-
-      ezyadmin.dataTableById = {};
-      ezyadmin.destroyDataTableIfExists = function (tableId) {
-        var dataTable = ezyadmin.dataTableById[tableId];
-        if (dataTable) {
-          dataTable.destroy();
-        }
-      };
-
-      ezyadmin.createDataTable = function (
-        tableId,
-        pageLength,
-        searching,
-        responsive,
-        properties
-      ) {
-        var dataTable = $("#" + tableId).DataTable({
-          language: ezyadmin.dataTable.language,
-          paging: true,
-          lengthChange: false,
-          searching: searching != false,
-          ordering: false,
-          info: true,
-          autoWidth: false,
-          responsive: responsive != false,
-          scrollX: responsive == false,
-          pageLength: pageLength || 5,
-          drawCallback: function (settings) {
-            ezyadmin.formatDateStringElements();
-            ezyadmin.formatTimeStringElements();
-            ezyadmin.formatDateTimeStringElements();
-            ezyadmin.formatDateTimeMinuteStringElements();
-            ezyadmin.formatStatusTextElements();
-          },
-          ...properties,
-        });
-        ezyadmin.dataTableById[tableId] = dataTable;
-        $(".dataTables_filter input").removeClass("form-control-sm");
-        return dataTable;
-      };
-
-      ezyadmin.registerScrollToTopButton = function () {
-        $(window).scroll(function () {
-          if ($(this).scrollTop() > 35) {
-            $("#scrollToTopButton").fadeIn();
+    ezyadmin.fetchUnreadLettersCount = function () {
+      $.ajax({
+        url: "/api/v1/admins/me/letters/count",
+        type: "GET",
+        dataType: "json",
+      })
+        .done(function (data) {
+          if (data.count) {
+            $(".letter-count").text(data.count).removeClass("d-none");
           } else {
-            $("#scrollToTopButton").fadeOut();
+            $(".letter-count").addClass("d-none");
           }
-        });
-
-        $("#scrollToTopButton").click(function () {
-          $("html, body").animate({ scrollTop: 0 }, 350);
-          return false;
-        });
-      };
-
-      // ============= notifications and letters =======
-      ezyadmin.fetchUnreadNotificationsCount = function () {
-        $.ajax({
-          url: "/api/v1/admins/me/notifications/count",
-          type: "GET",
-          dataType: "json",
         })
-          .done(function (data) {
-            if (data.count) {
-              $(".notification-count").text(data.count).removeClass("d-none");
-            } else {
-              $(".notification-count").addClass("d-none");
-            }
-          })
-          .fail(function (e) {
-            ezyadmin.processGetApiErrors(e);
-          });
-      };
-
-      ezyadmin.fetchUnreadLettersCount = function () {
-        $.ajax({
-          url: "/api/v1/admins/me/letters/count",
-          type: "GET",
-          dataType: "json",
-        })
-          .done(function (data) {
-            if (data.count) {
-              $(".letter-count").text(data.count).removeClass("d-none");
-            } else {
-              $(".letter-count").addClass("d-none");
-            }
-          })
-          .fail(function (e) {
-            ezyadmin.processGetApiErrors(e);
-          });
-      };
-
-      ezyadmin.fetchNotifications = function () {
-        $.ajax({
-          url: "/api/v1/admins/me/notifications",
-          type: "GET",
-          dataType: "json",
-        })
-          .done(function (data) {
-            $(".notification-item").remove();
-            var html = ezyadmin.buildNotificationItemsHtml(data.items);
-            $(html).insertAfter("#notificationHeaderDivider");
-          })
-          .fail(function (e) {
-            ezyadmin.processGetApiErrors(e);
-          });
-      };
-
-      ezyadmin.buildNotificationItemsHtml = function (notifications) {
-        var html = "";
-        notifications.forEach((notification) => {
-          html += ezyadmin.buildNotificationItemHtml(notification);
+        .fail(function (e) {
+          ezyadmin.processGetApiErrors(e);
         });
-        return html;
-      };
+    };
 
-      ezyadmin.buildNotificationItemHtml = function (notification) {
-        var html = `
+    ezyadmin.fetchNotifications = function () {
+      $.ajax({
+        url: "/api/v1/admins/me/notifications",
+        type: "GET",
+        dataType: "json",
+      })
+        .done(function (data) {
+          $(".notification-item").remove();
+          var html = ezyadmin.buildNotificationItemsHtml(data.items);
+          $(html).insertAfter("#notificationHeaderDivider");
+        })
+        .fail(function (e) {
+          ezyadmin.processGetApiErrors(e);
+        });
+    };
+
+    ezyadmin.buildNotificationItemsHtml = function (notifications) {
+      var html = "";
+      notifications.forEach((notification) => {
+        html += ezyadmin.buildNotificationItemHtml(notification);
+      });
+      return html;
+    };
+
+    ezyadmin.buildNotificationItemHtml = function (notification) {
+      var html = `
 		<a href="javascript:void(0)" class="dropdown-item notification-item"
-		   onclick="ezyadmin.readNotification(${notification.id}, '${
-          notification.deepLink || ""
+		   onclick="ezyadmin.readNotification(${notification.id}, '${notification.deepLink || ""
         }');">
 			<i class="${notification.iconImage || "far fa-envelope"} mr-2"></i>
 			${ezyadmin.truncateString(notification.title, 18, "...")}
@@ -885,75 +806,75 @@ to get the desired effect
 		</a>
 		<div class="dropdown-divider notification-item"></div>
 	`;
-        return html;
-      };
+      return html;
+    };
 
-      ezyadmin.readNotification = function (notificationId, deepLink) {
-        $.ajax({
-          url: "/api/v1/admins/me/notifications/" + notificationId + "/read",
-          type: "POST",
+    ezyadmin.readNotification = function (notificationId, deepLink) {
+      $.ajax({
+        url: "/api/v1/admins/me/notifications/" + notificationId + "/read",
+        type: "POST",
+      })
+        .done(function (data) {
+          var url = deepLink || "/admins/inbox";
+          window.location =
+            url +
+            (ezyadmin.lang
+              ? (url.indexOf("?") < 0 ? "?" : "&") + "lang=" + ezyadmin.lang
+              : "");
         })
-          .done(function (data) {
-            var url = deepLink || "/admins/inbox";
-            window.location =
-              url +
-              (ezyadmin.lang
-                ? (url.indexOf("?") < 0 ? "?" : "&") + "lang=" + ezyadmin.lang
-                : "");
-          })
-          .fail(function (e) {
-            ezyadmin.processUpdateApiErrors({}, e);
-          });
-      };
+        .fail(function (e) {
+          ezyadmin.processUpdateApiErrors({}, e);
+        });
+    };
 
-      ezyadmin.readAllNotifications = function () {
-        $.ajax({
-          url: "/api/v1/admins/me/notifications/read",
-          type: "POST",
+    ezyadmin.readAllNotifications = function () {
+      $.ajax({
+        url: "/api/v1/admins/me/notifications/read",
+        type: "POST",
+      })
+        .done(function (data) {
+          window.location =
+            "/admins/inbox" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
         })
-          .done(function (data) {
-            window.location =
-              "/admins/inbox" + (ezyadmin.lang ? "?lang=" + ezyadmin.lang : "");
-          })
-          .fail(function (e) {
-            ezyadmin.processUpdateApiErrors({}, e);
-          });
-      };
+        .fail(function (e) {
+          ezyadmin.processUpdateApiErrors({}, e);
+        });
+    };
 
-      // ============ messages =============
-      ezyadmin.messageListMenu = {
-        items: [],
-      };
+    // ============ messages =============
+    ezyadmin.messageListMenu = {
+      items: [],
+    };
 
-      ezyadmin.showMessageListMenuItems = function () {
-        var items = ezyadmin.messageListMenu.items.slice(0, 5);
-        if (items.length) {
-          $("#messageListDropdownMenuBadgeCount")
-            .text(items.length)
-            .removeClass("d-none");
-          var html = "";
-          items.forEach((item) => {
-            html += ezyadmin.buildMessageListMenuItemHtml(item);
-          });
-          html += $("#messageListDropdownMenuSeeAllMessages")[0].outerHTML;
-          $("#messageListDropdownMenuItems").html(html).removeClass("d-none");
+    ezyadmin.showMessageListMenuItems = function () {
+      var items = ezyadmin.messageListMenu.items.slice(0, 5);
+      if (items.length) {
+        $("#messageListDropdownMenuBadgeCount")
+          .text(items.length)
+          .removeClass("d-none");
+        var html = "";
+        items.forEach((item) => {
+          html += ezyadmin.buildMessageListMenuItemHtml(item);
+        });
+        html += $("#messageListDropdownMenuSeeAllMessages")[0].outerHTML;
+        $("#messageListDropdownMenuItems").html(html).removeClass("d-none");
+      } else {
+        $("#messageListDropdownMenuBadgeCount").text(0).addClass("d-none");
+        $("#messageListDropdownMenuItems").html("").addClass("d-none");
+      }
+    };
+
+    ezyadmin.buildMessageListMenuItemHtml = function (item) {
+      var itemUrl = item.url || "/";
+      if (!itemUrl.indexOf("lang=") >= 0 && ezyadmin.lang) {
+        if (itemUrl.indexOf("?") >= 0) {
+          itemUrl += "&";
         } else {
-          $("#messageListDropdownMenuBadgeCount").text(0).addClass("d-none");
-          $("#messageListDropdownMenuItems").html("").addClass("d-none");
+          itemUrl += "?";
         }
-      };
-
-      ezyadmin.buildMessageListMenuItemHtml = function (item) {
-        var itemUrl = item.url || "/";
-        if (!itemUrl.indexOf("lang=") >= 0 && ezyadmin.lang) {
-          if (itemUrl.indexOf("?") >= 0) {
-            itemUrl += "&";
-          } else {
-            itemUrl += "?";
-          }
-          itemUrl += "lang=" + ezyadmin.lang;
-        }
-        var html = `
+        itemUrl += "lang=" + ezyadmin.lang;
+      }
+      var html = `
 		<a href="${itemUrl}" class="dropdown-item">
 			<div class="media">
 				<img src="${item.imageUrl || "/images/ezyplatform-logo.png"}"
@@ -976,122 +897,120 @@ to get the desired effect
 		</a>
 		<div class="dropdown-divider"></div>
 	`;
-        return html;
-      };
+      return html;
+    };
 
-      ezyadmin.onNewNotificationMessage = function (message) {
-        ezyadmin.messageListMenu.items.unshift(message);
-        ezyadmin.showMessageListMenuItems();
-      };
+    ezyadmin.onNewNotificationMessage = function (message) {
+      ezyadmin.messageListMenu.items.unshift(message);
+      ezyadmin.showMessageListMenuItems();
+    };
 
-      // ============ language =============
-      ezyadmin.onLanguageSelected = function (selectedLanguage) {
-        var windowLocation = window.location;
-        var newQueryParams = "";
-        if (windowLocation.search) {
-          var queryParams = windowLocation.search.substring(1).split("&");
-          for (var i = 0; i < queryParams.length; i++) {
-            var queryParam = queryParams[i].split("=");
-            if (queryParam[0] != "lang") {
-              newQueryParams += (newQueryParams ? "&" : "?") + queryParams[i];
-            }
+    // ============ language =============
+    ezyadmin.onLanguageSelected = function (selectedLanguage) {
+      var windowLocation = window.location;
+      var newQueryParams = "";
+      if (windowLocation.search) {
+        var queryParams = windowLocation.search.substring(1).split("&");
+        for (var i = 0; i < queryParams.length; i++) {
+          var queryParam = queryParams[i].split("=");
+          if (queryParam[0] != "lang") {
+            newQueryParams += (newQueryParams ? "&" : "?") + queryParams[i];
           }
         }
-        if (selectedLanguage != ezyadmin.defaultLang) {
-          newQueryParams +=
-            (newQueryParams ? "&" : "?") + "lang=" + selectedLanguage;
-        }
-        ezyadmin.setCookie("lang", selectedLanguage);
-        window.location = windowLocation.pathname + newQueryParams;
-      };
+      }
+      if (selectedLanguage != ezyadmin.defaultLang) {
+        newQueryParams +=
+          (newQueryParams ? "&" : "?") + "lang=" + selectedLanguage;
+      }
+      ezyadmin.setCookie("lang", selectedLanguage);
+      window.location = windowLocation.pathname + newQueryParams;
+    };
 
-      // ============ search =============
-      ezyadmin.onKeyDownToGoToGlobalSearch = function () {
-        if (event.key === "Enter") {
-          ezyadmin.goToGlobalSearch();
-        }
-      };
+    // ============ search =============
+    ezyadmin.onKeyDownToGoToGlobalSearch = function () {
+      if (event.key === "Enter") {
+        ezyadmin.goToGlobalSearch();
+      }
+    };
 
-      ezyadmin.goToGlobalSearch = function () {
-        var keyword = $("#globalSearchInput").val();
-        if (keyword) {
-          window.location =
-            "/search?keyword=" +
-            keyword +
-            (ezyadmin.lang ? "&lang=" + ezyadmin.lang : "");
-        }
-      };
-      // ============ admins =============
-      ezyadmin.fetchAdminsByIds = function (ids, callback) {
-        $.ajax({
-          url: "/api/v1/admins?ids=" + ids.join(","),
-          type: "GET",
-          dataType: "json",
-        })
-          .done(function (data) {
-            var adminMap = {};
-            data.items.forEach((e) => {
-              adminMap[e.id] = e;
-            });
-            callback(adminMap);
-          })
-          .fail(function (e) {
-            ezyadmin.processGetApiErrors(e);
+    ezyadmin.goToGlobalSearch = function () {
+      var keyword = $("#globalSearchInput").val();
+      if (keyword) {
+        window.location =
+          "/search?keyword=" +
+          keyword +
+          (ezyadmin.lang ? "&lang=" + ezyadmin.lang : "");
+      }
+    };
+    // ============ admins =============
+    ezyadmin.fetchAdminsByIds = function (ids, callback) {
+      $.ajax({
+        url: "/api/v1/admins?ids=" + ids.join(","),
+        type: "GET",
+        dataType: "json",
+      })
+        .done(function (data) {
+          var adminMap = {};
+          data.items.forEach((e) => {
+            adminMap[e.id] = e;
           });
-      };
-      // ============ users =============
-      ezyadmin.fetchUsersByIds = function (ids, callback) {
-        $.ajax({
-          url: "/api/v1/users-by-ids?ids=" + ids.join(","),
-          type: "GET",
-          dataType: "json",
+          callback(adminMap);
         })
-          .done(function (data) {
-            var userMap = {};
-            data.forEach((e) => {
-              userMap[e.id] = e;
-            });
-            callback(userMap);
-          })
-          .fail(function (e) {
-            ezyadmin.processGetApiErrors(e);
+        .fail(function (e) {
+          ezyadmin.processGetApiErrors(e);
+        });
+    };
+    // ============ users =============
+    ezyadmin.fetchUsersByIds = function (ids, callback) {
+      $.ajax({
+        url: "/api/v1/users-by-ids?ids=" + ids.join(","),
+        type: "GET",
+        dataType: "json",
+      })
+        .done(function (data) {
+          var userMap = {};
+          data.forEach((e) => {
+            userMap[e.id] = e;
           });
-      };
-    </script>
-    <script th:replace="~{enhancement/media/modal :: scripts}"></script>
-    <script th:replace="~{modals/file-permission :: scripts}"></script>
-    <script th:replace="~{fragments/alert :: scripts}"></script>
-    <script layout:fragment="scripts" type="text/javascript"></script>
-    <script layout:fragment="post-scripts" type="text/javascript"></script>
-    <script>
-      $(document).ready(function () {
-        ezyadmin.enableTooltip();
-        ezyadmin.formatDateStringElements();
-        ezyadmin.formatTimeStringElements();
-        ezyadmin.formatDateTimeStringElements();
-        ezyadmin.formatDateTimeMinuteStringElements();
-        ezyadmin.formatStatusTextElements();
-        ezyadmin.formatNumberWithCommasElements();
-        ezyadmin.appendLangParameterToFormActions();
-        ezyadmin.appendLangParameterToLinks();
-        ezyadmin.registerScrollToTopButton();
-        if (ezyadmin.elementsDidFormat) {
-          ezyadmin.elementsDidFormat();
-        }
-        ezyadmin.fetchUnreadNotificationsCount();
-        ezyadmin.fetchUnreadLettersCount();
-        ezyadmin.fetchNotifications();
-        if (ezyadmin.socketEnable) {
-          ezyadmin.socket.connect();
-        }
-      });
-    </script>
-    <th:block
-      th:if="${finalScriptFiles != null}"
-      th:each="finalScriptFile : ${finalScriptFiles}"
-    >
-      <script ezy:vsrc="${finalScriptFile}"></script>
-    </th:block>
-    <script layout:fragment="final-scripts" type="text/javascript"></script>
-  </body>
+          callback(userMap);
+        })
+        .fail(function (e) {
+          ezyadmin.processGetApiErrors(e);
+        });
+    };
+  </script>
+  <script th:replace="~{enhancement/media/modal :: scripts}"></script>
+  <script th:replace="~{modals/file-permission :: scripts}"></script>
+  <script th:replace="~{fragments/alert :: scripts}"></script>
+  <script layout:fragment="scripts" type="text/javascript"></script>
+  <script layout:fragment="post-scripts" type="text/javascript"></script>
+  <script>
+    $(document).ready(function () {
+      ezyadmin.enableTooltip();
+      ezyadmin.formatDateStringElements();
+      ezyadmin.formatTimeStringElements();
+      ezyadmin.formatDateTimeStringElements();
+      ezyadmin.formatDateTimeMinuteStringElements();
+      ezyadmin.formatStatusTextElements();
+      ezyadmin.formatNumberWithCommasElements();
+      ezyadmin.appendLangParameterToFormActions();
+      ezyadmin.appendLangParameterToLinks();
+      ezyadmin.registerScrollToTopButton();
+      if (ezyadmin.elementsDidFormat) {
+        ezyadmin.elementsDidFormat();
+      }
+      ezyadmin.fetchUnreadNotificationsCount();
+      ezyadmin.fetchUnreadLettersCount();
+      ezyadmin.fetchNotifications();
+      if (ezyadmin.socketEnable) {
+        ezyadmin.socket.connect();
+      }
+    });
+  </script>
+  <th:block th:if="${finalScriptFiles != null}" th:each="finalScriptFile : ${finalScriptFiles}">
+    <script ezy:vsrc="${finalScriptFile}"></script>
+  </th:block>
+  <script layout:fragment="final-scripts" type="text/javascript"></script>
+</body>
+
 </html>

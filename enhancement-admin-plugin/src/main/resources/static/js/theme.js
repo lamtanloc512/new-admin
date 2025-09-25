@@ -8,3 +8,11 @@
     });
   }, 500);
 })(jQuery);
+
+(function ($) {
+  $(window).on("reload", function () {
+    setTimeout(function () {
+      $(".progressive-image").progressiveImage();
+    }, 500);
+  });
+})(jQuery);

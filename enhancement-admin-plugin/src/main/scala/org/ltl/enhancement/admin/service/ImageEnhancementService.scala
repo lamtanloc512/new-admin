@@ -59,7 +59,6 @@ case class ImageResponse(
 
 @EzySingleton
 class ImageEnhancementService @EzyAutoBind() (
-    httpClient: HttpClient,
     eventHandlerManager: EventHandlerManager,
     fileSystemManager: FileSystemManager,
     resourceDownloadManager: ResourceDownloadManager,
@@ -164,7 +163,7 @@ class ImageEnhancementService @EzyAutoBind() (
       prevPageToken: String,
       lastPage: Boolean,
       limit: Int
-  ): PaginationModel[ImageResponse] = {
+  ): PaginationModel[MediaResponse] = {
     mediaControllerService
       .getMediaList(
         filter,
@@ -173,7 +172,6 @@ class ImageEnhancementService @EzyAutoBind() (
         lastPage,
         limit
       )
-      .map(toImageResponse)
   }
 
   def removeMedia(imageId: Long): Future[Either[scala.Throwable, Unit]] = {
